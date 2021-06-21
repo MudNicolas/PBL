@@ -144,11 +144,13 @@ export default {
             this.imagecropperShow = false;
         },
         getCover() {
-            getCover({ cover: this.course.cover }).then((res) => {
-                let { url } = res.data;
-                this.srcCoverUrl = [url];
-                this.coverUrl = url;
-            });
+            let path =
+                process.env.VUE_APP_PUBLIC_PATH +
+                VUE_APP_COVER_PATH +
+                course.cover;
+
+            this.srcCoverUrl = [path];
+            this.coverUrl = path;
         },
         toDefaultCover() {
             this.course.cover = "default.jpg";
