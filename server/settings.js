@@ -7,3 +7,5 @@ export const SERVER_ADDRESS = `${SERVER_IP}:${PORT}`
 export const COVER_PATH = `${SERVER_ADDRESS}/public/img/course/`
 
 export const AVATAR_PATH = `${SERVER_ADDRESS}/public/img/avatar/`
+
+export const DEFAULT_PASSWORD = "123456"

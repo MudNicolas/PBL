@@ -90,6 +90,7 @@
                         style="margin-top: 12px"
                         @click="next"
                         type="primary"
+                        :disabled="course.name.trim() == ''"
                         >下一步</el-button
                     >
                 </el-form-item>
