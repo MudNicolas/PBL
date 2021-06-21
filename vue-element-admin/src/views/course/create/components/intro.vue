@@ -112,7 +112,6 @@
 
 <script>
 import ImageCropper from "@/components/ImageCropper";
-import { getCover } from "@/api/course";
 
 export default {
     name: "courseIntro",
@@ -146,7 +145,7 @@ export default {
         getCover() {
             let path =
                 process.env.VUE_APP_PUBLIC_PATH +
-                VUE_APP_COVER_PATH +
+                process.env.VUE_APP_COVER_PATH +
                 course.cover;
 
             this.srcCoverUrl = [path];

@@ -8,13 +8,6 @@ export function searchTeacher(data) {
 	})
 }
 
-export function getCover(data) {
-	return request({
-		url: '/course/cover/get',
-		method: 'post',
-		data
-	})
-}
 
 export function getCourseList(data) {
 	return request({
