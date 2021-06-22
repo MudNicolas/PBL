@@ -14,6 +14,7 @@
                 <el-menu-item
                     :index="resolvePath(onlyOneChild.path)"
                     :class="{ 'submenu-title-noDropdown': !isNest }"
+                    class="too-long-title"
                 >
                     <item
                         :icon="
@@ -124,3 +125,9 @@ export default {
     },
 };
 </script>
+<style lang='css' scoped>
+.too-long-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+</style>
