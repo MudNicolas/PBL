@@ -131,6 +131,9 @@ export default {
             isEdit: false,
             loading: true,
             submitting: false,
+            path:
+                process.env.VUE_APP_PUBLIC_PATH +
+                process.env.VUE_APP_COVER_PATH,
         };
     },
     created() {
@@ -141,10 +144,10 @@ export default {
             this.imagecropperShow = false;
             this.imagecropperKey = this.imagecropperKey + 1;
             /* console.log(resData); */
-
-            this.srcCoverUrl = [resData.url];
+            let url = this.path + resData.coverFilename;
+            this.srcCoverUrl = [url];
             this.course.cover = resData.coverFilename;
-            this.coverUrl = resData.url;
+            this.coverUrl = url;
         },
         close() {
             this.imagecropperShow = false;
@@ -158,13 +161,9 @@ export default {
             });
         },
         getCover() {
-            let path =
-                process.env.VUE_APP_PUBLIC_PATH +
-                process.env.VUE_APP_COVER_PATH +
-                course.cover;
-
-            this.srcCoverUrl = [path];
-            this.coverUrl = path;
+            let url = this.path + this.course.cover;
+            this.srcCoverUrl = [url];
+            this.coverUrl = url;
         },
         toDefaultCover() {
             this.course.cover = "default.jpg";

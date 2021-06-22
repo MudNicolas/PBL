@@ -47,10 +47,7 @@ router.post('/getList', (req, res, next) => {
 				return
 			}
 
-			courseList.map(e => {
-				e.cover = COVER_PATH + e.cover;
-				return e
-			})
+
 			Course.find(findCourseQuery(req.uid))
 				.count().then(courseNum => {
 					res.json({
@@ -166,22 +163,12 @@ router.post('/search/teacher', (req, res, next) => {
 })
 
 
-router.post('/cover/get', (req, res, next) => {
-	let cover = req.body.cover
-	res.json({
-		code: 20000,
-		data: { url: `${COVER_PATH}/${cover}` }
-	})
-})
 
 router.post('/create/cover', (req, res, next) => {
-	UploadImg('course', req).then((data) => {
-		var coverFilename = data.imgFilename;
-		var { urlPath } = data;
+	UploadImg('course', req).then((coverFilename) => {
 		res.json({
 			code: 20000,
 			data: {
-				url: urlPath,
 				coverFilename: coverFilename
 			}
 		})

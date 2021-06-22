@@ -43,12 +43,7 @@ export function UploadImg(path, req) {
 			}
 			const imgPath = files.img[0].path;
 			var imgFilename = imgPath.split('\\')[imgPath.split('\\').length - 1]
-			urlPath = urlPath + path + '/' + imgFilename;
-
-			resolve({
-				imgFilename,
-				urlPath
-			})
+			resolve(imgFilename)
 			return
 		});
 	})

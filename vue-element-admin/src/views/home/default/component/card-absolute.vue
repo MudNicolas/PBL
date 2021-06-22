@@ -11,7 +11,7 @@
     >
         <router-link :to="'/course/view/' + course._id">
             <div class="block">
-                <el-image :src="course.cover" fit="fill"
+                <el-image :src="path + course.cover" fit="fill"
                     ><div slot="placeholder" class="image-slot">
                         加载中<span class="dot">...</span>
                     </div>
@@ -57,6 +57,9 @@ export default {
     data() {
         return {
             isActive: false,
+            path:
+                process.env.VUE_APP_PUBLIC_PATH +
+                process.env.VUE_APP_COVER_PATH,
         };
     },
     watch: {
