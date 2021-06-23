@@ -107,4 +107,31 @@ router.post('/editInfo', (req, res, next) => {
 		})
 })
 
+router.post('/getStudentList', (req, res, next) => {
+	let courseID = req.body.courseID;
+	Course
+		.findById(courseID)
+		.select('studentList')
+		.populate('studentList')
+		.then((list, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: "DataBase Error"
+				})
+				return
+			}
+			let sList = list.studentList.map(e => { return { name: e.name, username: e.username, _id: e._id } })
+			console.log(sList)
+
+			res.json({
+				code: 20000,
+				data: {
+					studentList: sList
+				}
+			})
+
+		})
+})
+
 export default router

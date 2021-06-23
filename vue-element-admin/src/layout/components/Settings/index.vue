@@ -30,28 +30,11 @@ export default {
     computed: {
         fixedHeader: {
             get() {
-                /*   this.$store.dispatch("settings/getThemeSetting", {
-                    key: "fixedHeader",
-                }); */
                 return this.$store.state.settings.fixedHeader;
             },
             set(val) {
                 this.$store.dispatch("settings/changeSetting", {
                     key: "fixedHeader",
-                    value: val,
-                });
-            },
-        },
-        tagsView: {
-            get() {
-                /*  this.$store.dispatch("settings/getThemeSetting", {
-                    key: "tagsView",
-                }); */
-                return this.$store.state.settings.tagsView;
-            },
-            set(val) {
-                this.$store.dispatch("settings/changeSetting", {
-                    key: "tagsView",
                     value: val,
                 });
             },

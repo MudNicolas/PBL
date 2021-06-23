@@ -24,14 +24,16 @@ export default {
     data() {
         return {
             chalk: "", // content of theme-chalk css
-            theme: "",
+            theme: ORIGINAL_THEME,
         };
     },
+
     computed: {
         defaultTheme() {
             this.$store.dispatch("settings/getThemeSetting", {
                 key: "theme",
             });
+
             return this.$store.state.settings.theme;
         },
     },
@@ -42,75 +44,12 @@ export default {
             },
             immediate: true,
         },
-        async theme(val) {
-            const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
-            if (typeof val !== "string") return;
-            const themeCluster = this.getThemeCluster(val.replace("#", ""));
-            const originalCluster = this.getThemeCluster(
-                oldVal.replace("#", "")
-            );
-            /*             console.log(themeCluster, originalCluster);
-             */
-            const $message = this.$message({
-                message: "  Compiling the theme",
-                customClass: "theme-message",
-                type: "success",
-                duration: 0,
-                iconClass: "el-icon-loading",
-            });
-
-            const getHandler = (variable, id) => {
-                return () => {
-                    const originalCluster = this.getThemeCluster(
-                        ORIGINAL_THEME.replace("#", "")
-                    );
-                    const newStyle = this.updateStyle(
-                        this[variable],
-                        originalCluster,
-                        themeCluster
-                    );
-
-                    let styleTag = document.getElementById(id);
-                    if (!styleTag) {
-                        styleTag = document.createElement("style");
-                        styleTag.setAttribute("id", id);
-                        document.head.appendChild(styleTag);
-                    }
-                    styleTag.innerText = newStyle;
-                };
-            };
-
-            if (!this.chalk) {
-                const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`;
-                await this.getCSSString(url, "chalk");
-            }
-
-            const chalkHandler = getHandler("chalk", "chalk-style");
-
-            chalkHandler();
-
-            const styles = [].slice
-                .call(document.querySelectorAll("style"))
-                .filter((style) => {
-                    const text = style.innerText;
-                    return (
-                        new RegExp(oldVal, "i").test(text) &&
-                        !/Chalk Variables/.test(text)
-                    );
-                });
-            styles.forEach((style) => {
-                const { innerText } = style;
-                if (typeof innerText !== "string") return;
-                style.innerText = this.updateStyle(
-                    innerText,
-                    originalCluster,
-                    themeCluster
-                );
-            });
-
-            this.$emit("change", val);
-
-            $message.close();
+        theme: {
+            handler: function (val) {
+                console.log(val);
+                this.changeTheme(val);
+            },
+            immediate: true,
         },
     },
 
@@ -187,6 +126,80 @@ export default {
             }
             clusters.push(shadeColor(theme, 0.1));
             return clusters;
+        },
+        async changeTheme(val) {
+            this.$store.dispatch("settings/changeSetting", {
+                key: "theme",
+                value: val,
+            });
+
+            const oldVal = this.chalk ? this.theme : ORIGINAL_THEME;
+            if (typeof val !== "string") return;
+            const themeCluster = this.getThemeCluster(val.replace("#", ""));
+            const originalCluster = this.getThemeCluster(
+                oldVal.replace("#", "")
+            );
+
+            const $message = this.$message({
+                message: "  正在适配主题",
+                customClass: "theme-message",
+                type: "success",
+                duration: 0,
+                iconClass: "el-icon-loading",
+            });
+
+            const getHandler = (variable, id) => {
+                return () => {
+                    const originalCluster = this.getThemeCluster(
+                        ORIGINAL_THEME.replace("#", "")
+                    );
+                    const newStyle = this.updateStyle(
+                        this[variable],
+                        originalCluster,
+                        themeCluster
+                    );
+
+                    let styleTag = document.getElementById(id);
+                    if (!styleTag) {
+                        styleTag = document.createElement("style");
+                        styleTag.setAttribute("id", id);
+                        document.head.appendChild(styleTag);
+                    }
+                    styleTag.innerText = newStyle;
+                };
+            };
+
+            if (!this.chalk) {
+                const url = `http://127.0.0.1:8080/public/css/chalk.css`;
+                await this.getCSSString(url, "chalk");
+            }
+
+            const chalkHandler = getHandler("chalk", "chalk-style");
+
+            chalkHandler();
+
+            const styles = [].slice
+                .call(document.querySelectorAll("style"))
+                .filter((style) => {
+                    const text = style.innerText;
+                    return (
+                        new RegExp(oldVal, "i").test(text) &&
+                        !/Chalk Variables/.test(text)
+                    );
+                });
+            styles.forEach((style) => {
+                const { innerText } = style;
+                if (typeof innerText !== "string") return;
+                style.innerText = this.updateStyle(
+                    innerText,
+                    originalCluster,
+                    themeCluster
+                );
+            });
+
+            this.$emit("change", val);
+
+            $message.close();
         },
     },
 };

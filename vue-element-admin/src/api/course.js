@@ -48,3 +48,11 @@ export function submitEdit(data) {
 	})
 }
 
+export function getStudentList(data) {
+	return request({
+		url: '/course/manage/getStudentList',
+		method: 'post',
+		data
+	})
+}
+
