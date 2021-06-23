@@ -16,6 +16,14 @@
                 @click="hanleExport"
                 >导出Excel</el-button
             >
+
+            <el-button
+                type="primary"
+                class="filter-item"
+                icon="el-icon-message-solid"
+                @click="handleSendMessagesToSelectedStudent"
+                >向选中学生发送通知</el-button
+            >
         </div>
 
         <el-table
@@ -31,7 +39,9 @@
             style="width: 100%; margin-top: 20px"
             empty-text="暂无学生"
             v-loading="loading"
+            @selection-change="handleSelectionChange"
         >
+            <el-table-column type="selection" width="55"> </el-table-column>
             <el-table-column prop="username" label="学号" sortable />
             <el-table-column label="姓名">
                 <template slot-scope="scope">
@@ -107,7 +117,7 @@
                     >
                     <el-button
                         type="primary"
-                        :disabled="uploadStudentList.length == 0"
+                        :disabled="uploadStudentList.length === 0"
                         @click="handleSubmit"
                         :loading="submitting"
                         >导入</el-button
@@ -147,8 +157,11 @@ export default {
             amount: 0,
             submitting: false,
             popoverOpenDelay: 100,
+            studentSelection: [],
+            multiMessage: false,
         };
     },
+
     created() {
         this.getStudentList();
     },
@@ -184,9 +197,8 @@ export default {
                         autoWidth: true,
                         bookType: "xlsx",
                     });
-                    setTimeout(() => {
-                        this.exporting = false;
-                    }, 500);
+
+                    this.exporting = false;
                 })
                 .catch((e) => {
                     this.$message({
@@ -274,6 +286,22 @@ export default {
                 .catch((e) => {
                     this.submitting = false;
                 });
+        },
+        handleSelectionChange(val) {
+            let selectedUID = val.map((e) => {
+                return e._id;
+            });
+            this.studentSelection = selectedUID;
+        },
+        handleSendMessagesToSelectedStudent() {
+            console.log(this.studentSelection);
+            if (this.studentSelection.length === 0) {
+                this.$message({
+                    type: "warning",
+                    message: "请至少选择一项",
+                });
+                return;
+            }
         },
     },
 };
