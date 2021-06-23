@@ -37,7 +37,12 @@
 
             <el-table-column align="right">
                 <template slot="header" slot-scope="scope">
-                    <el-input v-model="search" placeholder="输入关键字搜索" />
+                    <el-input
+                        v-model="search"
+                        :placeholder="
+                            '输入关键字搜索共 ' + studentList.length + ' 名学生'
+                        "
+                    />
                 </template>
                 <template slot-scope="scope">
                     <el-button size="mini" @click="handleMessage(scope.row._id)"
@@ -245,6 +250,10 @@ export default {
                     this.getStudentList();
                     this.uploadStudentList = [];
                     this.submitting = false;
+                    this.$message({
+                        type: "success",
+                        message: "导入学生成功",
+                    });
                 })
                 .catch((e) => {
                     this.submitting = false;

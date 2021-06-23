@@ -1,10 +1,10 @@
 <template>
     <div class="container">
-        <el-tabs type="border-card">
-            <el-tab-pane label="基础设置" lazy>
+        <el-tabs type="border-card" v-model="activeName">
+            <el-tab-pane label="基础设置" lazy :name="components[0]">
                 <info :course-id="courseID" />
             </el-tab-pane>
-            <el-tab-pane label="学生管理" lazy
+            <el-tab-pane label="学生管理" lazy :name="components[1]"
                 ><student :course-id="courseID"
             /></el-tab-pane>
             <el-tab-pane label="分组管理">分组管理</el-tab-pane>
@@ -21,12 +21,31 @@ import student from "./component/student.vue";
 export default {
     components: { info, student },
     name: "ManageCourse",
-    conponents: { info },
-    created() {},
+
     data() {
         return {
             courseID: this.$route.params.id,
+            activeName: "info",
+            components: ["info", "student"],
         };
+    },
+    watch: {
+        activeName(val) {
+            this.$router.push(`${this.$route.path}?tab=${val}`);
+        },
+        "$route.query.tab"(val) {
+            // console.log(val);
+            if (val && this.components.indexOf(val) !== -1) {
+                this.activeName = val;
+            }
+        },
+    },
+    created() {
+        // init the default selected tab
+        const tab = this.$route.query.tab;
+        if (tab) {
+            this.activeName = tab;
+        }
     },
 };
 </script>
