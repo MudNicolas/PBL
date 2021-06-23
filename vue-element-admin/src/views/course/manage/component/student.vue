@@ -33,7 +33,21 @@
             v-loading="loading"
         >
             <el-table-column prop="username" label="学号" sortable />
-            <el-table-column prop="name" label="姓名" />
+            <el-table-column label="姓名">
+                <template slot-scope="scope">
+                    <el-popover
+                        placement="left"
+                        trigger="hover"
+                        :open-delay="popoverOpenDelay"
+                        width="360"
+                    >
+                        <div>
+                            <profile-popover :uid="scope.row._id" />
+                        </div>
+                        <span slot="reference">{{ scope.row.name }}</span>
+                    </el-popover>
+                </template>
+            </el-table-column>
 
             <el-table-column align="right">
                 <template slot="header" slot-scope="scope">
@@ -45,7 +59,7 @@
                     />
                 </template>
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="handleMessage(scope.row._id)"
+                    <el-button @click="handleMessage(scope.row._id)"
                         ><svg-icon
                             icon-class="email"
                         />&nbsp;发送私信</el-button
@@ -107,11 +121,12 @@
 <script>
 import { getStudentList, submitStudentList } from "@/api/course";
 import UploadExcelComponent from "@/components/UploadExcel/index.vue";
+import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue";
 
 export default {
     name: "ManageStudent",
     props: ["courseId"],
-    components: { UploadExcelComponent },
+    components: { UploadExcelComponent, ProfilePopover },
     data() {
         return {
             studentList: [],
@@ -131,6 +146,7 @@ export default {
             dialogVisible: false,
             amount: 0,
             submitting: false,
+            popoverOpenDelay: 100,
         };
     },
     created() {

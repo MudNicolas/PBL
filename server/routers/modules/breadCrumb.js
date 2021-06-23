@@ -39,6 +39,15 @@ async function generateBreadCrumb(name, id) {
 			parent: 'CourseView',
 			meta: { title: '管理' }
 		},
+		'Profile': {
+			path: '/profile',
+
+			parent: "Home",
+			meta: {
+				title: '个人信息'
+			}
+
+		}
 	}
 
 	let p = name
