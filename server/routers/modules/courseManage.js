@@ -2,6 +2,7 @@ import Router from 'express'
 var router = Router()
 import Course from '../../models/Course.js'
 import { COVER_PATH } from "../../settings.js"
+import { InsertUsersReturnIDs } from './tools.js'
 
 router.all('*', (req, res, next) => {
 	let courseID = req.body.courseID
@@ -111,8 +112,16 @@ router.post('/getStudentList', (req, res, next) => {
 	let courseID = req.body.courseID;
 	Course
 		.findById(courseID)
-		.select('studentList')
-		.populate('studentList')
+		.select('studentList name')
+		.populate({
+			path: 'studentList',
+			options: {
+				sort: {
+					'username': 1
+				}
+			}
+		})
+
 		.then((list, err) => {
 			if (err) {
 				res.json({
@@ -122,16 +131,83 @@ router.post('/getStudentList', (req, res, next) => {
 				return
 			}
 			let sList = list.studentList.map(e => { return { name: e.name, username: e.username, _id: e._id } })
-			console.log(sList)
+			//console.log(sList)
 
 			res.json({
 				code: 20000,
 				data: {
-					studentList: sList
+					studentList: sList,
+					courseName: list.name
 				}
 			})
 
 		})
+})
+
+router.post('/submitStudentList', async (req, res, next) => {
+	let studentList = req.body.studentList
+	let courseID = req.body.courseID
+
+	studentList = studentList.map(item => {
+		return {
+			username: item['学号'],
+			name: item['姓名']
+		}
+	})
+
+
+	let studentIDs = await InsertUsersReturnIDs(studentList, 'student')
+		.then(list => {
+			return list
+		})
+		.catch((err) => {
+			console.log(err, 'insert stuednt to User')
+			return ('err')
+		})
+
+	//返回list说明无err
+	//console.log(studentIDs, typeof (studentIDs))
+	if (typeof (studentIDs) !== 'object') {
+		res.json({
+			code: 30001,
+			message: "DataBase Error"
+		})
+		return
+	}
+
+
+	Course.findById(courseID).select('studentList').then((list, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: "DataBase Error"
+			})
+			return
+		}
+
+		for (let e of studentIDs) {
+			if (list.studentList.indexOf(e) === -1) {
+				list.studentList.push(e)
+			}
+		}
+		//console.log(list, 'before')
+		list.save().then((afterList, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: "DataBase Error"
+				})
+				return
+			}
+
+
+			res.json({
+				code: 20000,
+
+			})
+		})
+
+	})
 })
 
 export default router

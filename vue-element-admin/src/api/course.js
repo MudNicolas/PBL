@@ -56,3 +56,11 @@ export function getStudentList(data) {
 	})
 }
 
+export function submitStudentList(data) {
+	return request({
+		url: '/course/manage/submitStudentList',
+		method: 'post',
+		data
+	})
+}
+

@@ -17,7 +17,6 @@
 </template>
 
 <script>
-const version = require("element-ui/package.json").version; // element-ui version from node_modules
 const ORIGINAL_THEME = "#409EFF"; // default color
 
 export default {
@@ -30,16 +29,13 @@ export default {
 
     computed: {
         defaultTheme() {
-            this.$store.dispatch("settings/getThemeSetting", {
-                key: "theme",
-            });
-
             return this.$store.state.settings.theme;
         },
     },
     watch: {
         defaultTheme: {
             handler: function (val, oldVal) {
+                console.log(oldVal, val);
                 this.theme = val;
             },
             immediate: true,

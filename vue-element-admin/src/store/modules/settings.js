@@ -2,7 +2,7 @@ import variables from '@/styles/element-variables.scss'
 import defaultSettings from '@/settings'
 import { submitThemeSetting, getThemeSetting } from '@/api/theme'
 
-const { showSettings, tagsView, fixedHeader } = defaultSettings
+const { showSettings, fixedHeader } = defaultSettings
 
 const state = {
 	showSettings: showSettings,

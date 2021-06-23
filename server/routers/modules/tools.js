@@ -77,7 +77,7 @@ export function InsertUsersReturnIDs(list, role) {
 					name: e.name,
 					role: [role],
 				})
-				newUser.save().then((err, theUser) => {
+				newUser.save().then((theUser, err) => {
 					if (err) {
 						reject(err)
 						return
@@ -95,7 +95,7 @@ export function InsertUsersReturnIDs(list, role) {
 
 	return Promise.all(IDs)
 		.then((e) => {
-			// console.log(e)
+			//console.log(e)
 			return e
 		})
 		.catch(err => {

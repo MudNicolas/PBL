@@ -29,12 +29,8 @@
                         highlight-current-row
                         style="width: 100%; margin-top: 20px"
                     >
-                        <el-table-column
-                            v-for="item of tableHeader"
-                            :key="item"
-                            :prop="item"
-                            :label="item"
-                        />
+                        <el-table-column prop="学号" label="学号" sortable />
+                        <el-table-column prop="姓名" label="姓名" />
                     </el-table>
                 </el-form-item>
             </el-col>
@@ -67,7 +63,6 @@ export default {
     props: ["course"],
     data() {
         return {
-            tableHeader: ["学号", "姓名"],
             infoText: "导入学生，将Excel文件拖到此处，或",
             amount: 0,
         };
@@ -81,7 +76,7 @@ export default {
             }
 
             this.$message({
-                message: "Please do not upload files larger than 1m in size.",
+                message: "文件大小限制1MB",
                 type: "warning",
             });
             return false;
@@ -92,16 +87,25 @@ export default {
             let studentNum = [];
             results.forEach((e) => {
                 //数组中已有这个学号
-                if (studentNum.indexOf(e["学号"]) != -1) {
+                e["学号"] = e["学号"].toString().trim();
+                e["姓名"] = e["姓名"].trim();
+                if (e["学号"] === "" || e["姓名"] === "") {
+                    this.$message({
+                        type: "warning",
+                        message: "文件中存在学生学号或姓名为空！",
+                    });
+                    this.course.studentList = [];
+                    return;
+                }
+                if (studentNum.indexOf(e["学号"]) !== -1) {
                     this.$message({
                         type: "warning",
                         message: "学生学号存在重复，请检查学生数据",
                     });
                     this.course.studentList = [];
                     return;
-                } else {
-                    studentNum.push(e["学号"]);
                 }
+                studentNum.push(e["学号"]);
             });
 
             this.amount = results.length;
