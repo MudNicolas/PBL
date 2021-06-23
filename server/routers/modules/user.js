@@ -2,7 +2,7 @@ import Router from 'express'
 import fs from 'fs'
 import User from "../../models/User.js"
 import { UploadImg } from './tools.js'
-import { AVATAR_PATH } from "../../settings.js"
+
 
 var router = Router()
 
@@ -12,7 +12,7 @@ router.get('/info', (req, res, next) => {
 		res.json({
 			data: {
 				name: userInfo.name,
-				avatar: AVATAR_PATH + userInfo.avatar,
+				avatar: userInfo.avatar,
 				introduction: userInfo.introduction,
 				username: userInfo.username,
 				roles: [req.role]
@@ -57,8 +57,8 @@ router.post('/uploadAvatar', (req, res, next) => {
 
 	UploadImg('avatar', req).then((data) => {
 
-		var avatarFilename = data.imgFilename;
-		var { urlPath } = data;
+		let avatarFilename = data;
+
 
 		User.findOneAndUpdate({
 			_id: req.uid
@@ -75,16 +75,18 @@ router.post('/uploadAvatar', (req, res, next) => {
 				});
 				return;
 			}
-			fs.unlink('public/img/avatar/' + result.avatar, (err) => {
-				if (err) {
-					console.log('uploadAvatar fs err');
-				}
-				return;
-			})
+			if (result.avatar && result.avatar !== 'default.gif') {
+				fs.unlink('public/img/avatar/' + result.avatar, (err) => {
+					if (err) {
+						console.log('uploadAvatar fs err');
+					}
+					return;
+				})
+			}
 			res.json({
 				code: 20000,
 				data: {
-					avatar: urlPath
+					avatar: avatarFilename
 				}
 			})
 		})

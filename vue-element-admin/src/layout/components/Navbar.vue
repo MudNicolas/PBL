@@ -39,10 +39,7 @@
                 trigger="click"
             >
                 <div class="avatar-wrapper">
-                    <img
-                        :src="avatar + '?imageView2/1/w/80/h/80'"
-                        class="user-avatar"
-                    />
+                    <img :src="path + avatar" class="user-avatar" />
                     <i class="el-icon-caret-bottom" />
                 </div>
                 <el-dropdown-menu slot="dropdown">
@@ -84,6 +81,13 @@ export default {
     },
     computed: {
         ...mapGetters(["sidebar", "avatar", "device"]),
+    },
+    data() {
+        return {
+            path:
+                process.env.VUE_APP_PUBLIC_PATH +
+                process.env.VUE_APP_AVATAR_PATH,
+        };
     },
     methods: {
         toggleSideBar() {
