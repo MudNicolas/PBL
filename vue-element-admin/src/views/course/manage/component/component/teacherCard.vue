@@ -7,15 +7,7 @@
                 </div>
                 <div class="name-message">
                     {{ t.name }}
-                    <el-button
-                        v-if="uid !== t._id"
-                        @click="handleMessage(uid)"
-                        size="mini"
-                        style="margin-top: 4px; width: 100px"
-                        ><svg-icon
-                            icon-class="email"
-                        />&nbsp;发送私信</el-button
-                    >
+                    <emit-message-button v-if="uid !== t._id" :uid="t._id" />
                 </div>
             </div>
         </div>
@@ -23,8 +15,10 @@
 </template>
 
 <script>
+import EmitMessageButton from "@/components/EmitMessageButton";
 export default {
     name: "TeacherCard",
+    components: { EmitMessageButton },
     props: {
         t: {
             type: Object,

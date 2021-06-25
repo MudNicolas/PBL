@@ -15,7 +15,7 @@
                 <teacher-card :t="chiefTeacher" :uid="uid" />
             </el-col>
         </el-row>
-        <el-row>
+        <el-row v-if="partnerTeacher.length > 0">
             <div class="title">协作教师</div>
             <el-row
                 v-for="index in Math.ceil(partnerTeacher.length / 4)"
@@ -158,9 +158,8 @@ export default {
 .title {
     margin-bottom: 16px;
 
-    font-size: 18px;
+    font-size: 16px;
     color: #1f2f3d;
-    font-weight: 400;
 }
 .container {
     padding-top: 15px;

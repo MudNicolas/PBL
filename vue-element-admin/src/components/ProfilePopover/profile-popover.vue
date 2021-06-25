@@ -7,14 +7,7 @@
                 </div>
                 <div class="name-message">
                     {{ profile.name }}
-                    <el-button
-                        @click="handleMessage(uid)"
-                        size="mini"
-                        style="margin-top: 4px; width: 100px"
-                        ><svg-icon
-                            icon-class="email"
-                        />&nbsp;发送私信</el-button
-                    >
+                    <emit-message-button :uid="profile._id" />
                 </div>
             </div>
             <div class="user-bio">
@@ -41,9 +34,11 @@
 
 <script>
 import { getProfilePopoverInfo } from "@/api/user";
+import EmitMessageButton from "@/components/EmitMessageButton";
 export default {
     name: "ProfilePopover",
     props: ["uid", "showUpPopoverKey"],
+    components: { EmitMessageButton },
     data() {
         return {
             loading: true,
