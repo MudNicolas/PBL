@@ -72,3 +72,11 @@ export function getAllTeacher(data) {
 	})
 }
 
+export function manageSearchTeacher(data) {
+	return request({
+		url: '/course/manage/search/teacher',
+		method: 'post',
+		data
+	})
+}
+

@@ -9,7 +9,8 @@ var state = {
 	avatar: '',
 	introduction: '',
 	roles: [],
-	username: ''
+	username: '',
+	uid: ''
 }
 
 const mutations = {
@@ -30,6 +31,9 @@ const mutations = {
 	},
 	SET_USERNAME: (state, username) => {
 		state.username = username
+	},
+	SET_UID: (state, uid) => {
+		state.uid = uid
 	}
 }
 
@@ -59,12 +63,14 @@ const actions = {
 					reject('Verification failed, please Login again.')
 				}
 
+
 				const { roles, name, avatar, introduction, username, _id } = data
 				// console.log(roles, name, avatar)
 				// roles must be a non-empty array
 				if (!roles || roles.length <= 0) {
 					reject('getInfo: roles must be a non-null array!')
 				}
+				commit('SET_UID', _id)
 				commit('SET_NAME', name)
 				commit('SET_AVATAR', avatar)
 				commit('SET_INTRODUCTION', introduction)

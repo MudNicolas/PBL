@@ -11,7 +11,7 @@
 
             <el-tab-pane label="分组管理">分组管理</el-tab-pane>
 
-            <el-tab-pane label="合作教师管理" lazy :name="components[3]">
+            <el-tab-pane label="协作教师管理" lazy :name="components[3]">
                 <partner :course-id="courseID" />
             </el-tab-pane>
 

@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import md5 from 'js-md5';
 import multiparty from 'multiparty';
 import User from '../../models/User.js'
-import { SERVER_ADDRESS, DEFAULT_PASSWORD } from "../../settings.js"
+import { DEFAULT_PASSWORD } from "../../settings.js"
 
 
 
@@ -30,7 +30,7 @@ export function AESDecode(e) {
 //统一图片上传中心
 export function UploadImg(path, req) {
 
-	var urlPath = `${SERVER_ADDRESS}/public/img/`;
+
 
 	var form = new multiparty.Form({
 		uploadDir: 'public/img/' + path

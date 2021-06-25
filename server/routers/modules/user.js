@@ -15,7 +15,8 @@ router.get('/info', (req, res, next) => {
 				avatar: userInfo.avatar,
 				introduction: userInfo.introduction,
 				username: userInfo.username,
-				roles: [req.role]
+				roles: [req.role],
+				_id: _id
 			},
 			code: 20000
 		})

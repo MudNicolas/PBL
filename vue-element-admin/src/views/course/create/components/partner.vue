@@ -3,13 +3,13 @@
         <el-row>
             <el-col :span="16" :offset="4">
                 <el-form-item>
-                    <div class="info">合作教师数据可后续添加</div>
+                    <div class="info">协作教师数据可后续添加</div>
                 </el-form-item>
             </el-col>
         </el-row>
         <el-row>
             <el-col :span="16" :offset="4">
-                <el-form-item label="合作教师">
+                <el-form-item label="协作教师">
                     <el-select
                         v-model="course.partnerID"
                         multiple
