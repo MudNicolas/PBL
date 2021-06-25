@@ -4,11 +4,17 @@
             <el-tab-pane label="基础设置" lazy :name="components[0]">
                 <info :course-id="courseID" />
             </el-tab-pane>
-            <el-tab-pane label="学生管理" lazy :name="components[1]"
-                ><student :course-id="courseID"
+
+            <el-tab-pane label="学生管理" lazy :name="components[1]">
+                <student :course-id="courseID"
             /></el-tab-pane>
+
             <el-tab-pane label="分组管理">分组管理</el-tab-pane>
-            <el-tab-pane label="合作教师管理">合作教师管理</el-tab-pane>
+
+            <el-tab-pane label="合作教师管理" lazy :name="components[3]">
+                <partner :course-id="courseID" />
+            </el-tab-pane>
+
             <el-tab-pane label="评论模板管理">评论模板管理</el-tab-pane>
         </el-tabs>
     </div>
@@ -17,16 +23,17 @@
 <script>
 import info from "./component/info.vue";
 import student from "./component/student.vue";
+import partner from "./component/partner.vue";
 
 export default {
-    components: { info, student },
+    components: { info, student, partner },
     name: "ManageCourse",
 
     data() {
         return {
             courseID: this.$route.params.id,
             activeName: "info",
-            components: ["info", "student"],
+            components: ["info", "student", "", "partner"],
         };
     },
     watch: {

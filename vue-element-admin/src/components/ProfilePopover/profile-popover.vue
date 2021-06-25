@@ -43,7 +43,7 @@
 import { getProfilePopoverInfo } from "@/api/user";
 export default {
     name: "ProfilePopover",
-    props: ["uid"],
+    props: ["uid", "showUpPopoverKey"],
     data() {
         return {
             loading: true,
@@ -55,11 +55,18 @@ export default {
             path:
                 process.env.VUE_APP_PUBLIC_PATH +
                 process.env.VUE_APP_AVATAR_PATH,
+            created: false,
         };
     },
-    created() {
-        this.getProfilePopoverInfo();
+    watch: {
+        showUpPopoverKey(val) {
+            if (val === this.uid && !this.created) {
+                this.getProfilePopoverInfo();
+                this.created = true;
+            }
+        },
     },
+
     methods: {
         getProfilePopoverInfo() {
             getProfilePopoverInfo({ uid: this.uid }).then((res) => {

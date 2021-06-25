@@ -50,9 +50,13 @@
                         trigger="hover"
                         :open-delay="popoverOpenDelay"
                         width="360"
+                        @show="showUpPopoverKey = scope.row._id"
                     >
                         <div>
-                            <profile-popover :uid="scope.row._id" />
+                            <profile-popover
+                                :uid="scope.row._id"
+                                :show-up-popover-key="showUpPopoverKey"
+                            />
                         </div>
                         <span slot="reference">{{ scope.row.name }}</span>
                     </el-popover>
@@ -159,6 +163,7 @@ export default {
             popoverOpenDelay: 100,
             studentSelection: [],
             multiMessage: false,
+            showUpPopoverKey: "",
         };
     },
 

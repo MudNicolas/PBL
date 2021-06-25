@@ -115,6 +115,7 @@ router.post('/getStudentList', (req, res, next) => {
 		.select('studentList name')
 		.populate({
 			path: 'studentList',
+			select: 'name username',
 			options: {
 				sort: {
 					'username': 1
@@ -130,13 +131,12 @@ router.post('/getStudentList', (req, res, next) => {
 				})
 				return
 			}
-			let sList = list.studentList.map(e => { return { name: e.name, username: e.username, _id: e._id } })
-			//console.log(sList)
+
 
 			res.json({
 				code: 20000,
 				data: {
-					studentList: sList,
+					studentList: list.studentList,
 					courseName: list.name
 				}
 			})
@@ -208,6 +208,24 @@ router.post('/submitStudentList', async (req, res, next) => {
 		})
 
 	})
+})
+
+router.post('/getAllTeacher', (req, res) => {
+	let courseID = req.body.courseID
+	Course
+		.findById(courseID)
+		.select('chiefTeacher partnerTeacher')
+		.populate([{ path: 'chiefTeacher', select: 'name avatar introduction' }, { path: 'partnerTeacher', select: 'name avatar introduction' }])
+		.then((t, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: "DataBase Error"
+				})
+				return
+			}
+			console.log(t)
+		})
 })
 
 export default router

@@ -64,3 +64,11 @@ export function submitStudentList(data) {
 	})
 }
 
+export function getAllTeacher(data) {
+	return request({
+		url: '/course/manage/getAllTeacher',
+		method: 'post',
+		data
+	})
+}
+
