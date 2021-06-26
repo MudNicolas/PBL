@@ -18,11 +18,17 @@ export function AESEncode(e) {
 }
 
 export function AESDecode(e) {
-	var enc = e;
-	var decipher = crypto.createDecipher('aes192', secretkey);
-	var dec = decipher.update(enc, "hex", "utf8");
-	dec += decipher.final("utf8");
-	return JSON.parse(dec);
+	//防止用户乱搞
+	try {
+		var enc = e;
+		var decipher = crypto.createDecipher('aes192', secretkey);
+		var dec = decipher.update(enc, "hex", "utf8");
+		dec += decipher.final("utf8");
+		return JSON.parse(dec);
+	} catch (error) {
+		return 0
+	}
+
 };
 
 

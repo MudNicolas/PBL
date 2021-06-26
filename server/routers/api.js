@@ -61,14 +61,18 @@ router.all('/login', (req, res, next) => {
 
 router.all('*', async (req, res, next) => {
 	let token = req.headers.token;
-	if (!token) {
+
+
+	let dec = AESDecode(token)
+
+	if (dec === 0) {
 		res.json({
 			code: 50008,
 			message: 'token失效，请重新登录'
 		})
 		return;
 	}
-	let { uid, loginTime, role } = AESDecode(token);
+	let { uid, loginTime, role } = dec;
 	let loginCheck = await LoginHistory.findOne({
 		uid: uid,
 		loginTime: loginTime,
@@ -106,8 +110,7 @@ router.all('*', async (req, res, next) => {
 			return;
 		}
 		loginCheck.latestOperationTime = new Date()
-		loginCheck.save().then((e) => {
-
+		loginCheck.save().then(() => {
 			req.uid = uid;
 			req.role = role;
 			next()
