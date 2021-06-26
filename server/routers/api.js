@@ -23,13 +23,19 @@ router.all('/login', (req, res, next) => {
 				})
 				return;
 			}
-			var loginHistory = new LoginHistory({
+			let loginHistory = new LoginHistory({
 				uid: validateUser._id,
 				loginTime: new Date(),
+				latestOperationTime: new Date(),
 				role: role
 			});
-			loginHistory.save().then(() => {
-				var token = AESEncode(loginHistory)
+			loginHistory.save().then((t) => {
+
+				var token = AESEncode({
+					uid: t.uid,
+					loginTime: t.loginTime,
+					role: t.role
+				})
 				//返回token
 				res.json({
 					code: 20000,
@@ -51,35 +57,41 @@ router.all('/login', (req, res, next) => {
 
 })
 
-router.all('/logout', (req, res, next) => {
-	res.json({
-		code: 20000,
-		data: 'success'
-	})
-})
 
 
 router.all('*', async (req, res, next) => {
-	var token = req.headers.token;
+	let token = req.headers.token;
 	if (!token) {
 		res.json({
 			code: 50008
 		})
 		return;
 	}
-	var { uid, loginTime, role } = AESDecode(token);
-	var loginCheck = await LoginHistory.findOne({
+	let { uid, loginTime, role } = AESDecode(token);
+	let loginCheck = await LoginHistory.findOne({
 		uid: uid,
 		loginTime: loginTime,
-		role: role
+		role: role,
+		logout: false
 	}).then((theLogin) => {
 		return theLogin;
 	})
 
+
 	if (!loginCheck) {
 		res.json({
 			code: 50008,
-			message: 'Login failed, unable to get user details.'
+			message: 'token失效，请重新登录'
+		})
+		return;
+	}
+
+
+	//2小时session time
+	if (Date.now() - loginCheck.latestOperationTime > 1000 * 60 * 60 * 2) {
+		res.json({
+			code: 50014,
+			message: '您长时间未活动，请重新登陆'
 		})
 		return;
 	}
@@ -92,11 +104,36 @@ router.all('*', async (req, res, next) => {
 			})
 			return;
 		}
-		req.uid = uid;
-		req.role = role;
-		next()
+		loginCheck.latestOperationTime = new Date()
+		loginCheck.save().then((e) => {
+
+			req.uid = uid;
+			req.role = role;
+			next()
+		})
+
 	})
 })
+
+router.all('/logout', (req, res, next) => {
+	let token = req.headers.token;
+	var { uid, loginTime, role } = AESDecode(token);
+	LoginHistory.findOne({
+		uid: uid,
+		loginTime: loginTime,
+		role: role,
+		logout: false
+	}).then((theLogin) => {
+		theLogin.logout = true
+		theLogin.save().then(() => {
+			res.json({
+				code: 20000,
+				data: 'success'
+			})
+		})
+	})
+})
+
 
 import user from './modules/user.js'
 import theme from './modules/theme.js'

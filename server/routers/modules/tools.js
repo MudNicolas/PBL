@@ -11,7 +11,7 @@ var secretkey = "NicolasAirline";
 export function AESEncode(e) {
 	//加密uid+logintime防止token盗用
 	var content = JSON.stringify(e);
-	var cipher = crypto.createCipher('aes192', secretkey); //使用aes192加密
+	var cipher = crypto.createCipher('aes192', secretkey); //使用aes128加密
 	var enc = cipher.update(content, "utf8", "hex"); //编码方式从utf-8转为hex;
 	enc += cipher.final('hex'); //编码方式转为hex;
 	return enc;
