@@ -115,6 +115,7 @@ router.all('*', async (req, res, next) => {
 	})
 })
 
+//退出登录，将loginhistory的logout设为true
 router.all('/logout', (req, res, next) => {
 	let token = req.headers.token;
 	var { uid, loginTime, role } = AESDecode(token);
