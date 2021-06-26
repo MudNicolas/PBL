@@ -63,7 +63,8 @@ router.all('*', async (req, res, next) => {
 	let token = req.headers.token;
 	if (!token) {
 		res.json({
-			code: 50008
+			code: 50008,
+			message: 'token失效，请重新登录'
 		})
 		return;
 	}
