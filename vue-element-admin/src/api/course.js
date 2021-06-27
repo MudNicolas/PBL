@@ -80,3 +80,11 @@ export function manageSearchTeacher(data) {
 	})
 }
 
+export function addPartnerTeacher(data) {
+	return request({
+		url: '/course/manage/addPartnerTeacher',
+		method: 'post',
+		data
+	})
+}
+

@@ -278,17 +278,17 @@ export default {
                 studentList: this.uploadStudentList,
                 courseID: this.courseId,
             })
-                .then((res) => {
-                    this.dialogVisible = false;
-                    this.getStudentList();
-                    this.uploadStudentList = [];
-                    this.submitting = false;
+                .then(() => {
                     this.$message({
                         type: "success",
                         message: "导入学生成功",
                     });
+                    this.dialogVisible = false;
+                    this.getStudentList();
+                    this.uploadStudentList = [];
+                    this.submitting = false;
                 })
-                .catch((e) => {
+                .catch(() => {
                     this.submitting = false;
                 });
         },

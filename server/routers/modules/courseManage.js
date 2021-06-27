@@ -272,5 +272,24 @@ router.post('/search/teacher', async (req, res, next) => {
 	})
 })
 
+router.post('/addPartnerTeacher', (req, res) => {
+	let { courseID, t_uids } = req.body
+	Course.findById(courseID).select('partnerTeacher').then((c, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: 'DataBase Error'
+			})
+			return;
+		}
+		c.partnerTeacher = [...c.partnerTeacher, ...t_uids]
+		c.save().then(() => {
+			res.json({
+				code: 20000,
+			})
+		})
+	})
+})
+
 
 export default router

@@ -83,7 +83,11 @@
 </template>
 
 <script>
-import { getAllTeacher, manageSearchTeacher } from "@/api/course";
+import {
+    getAllTeacher,
+    manageSearchTeacher,
+    addPartnerTeacher,
+} from "@/api/course";
 import TeacherCard from "./component/teacherCard.vue";
 import { mapGetters } from "vuex";
 export default {
@@ -149,7 +153,27 @@ export default {
         cancel() {
             this.dialogVisible = false;
         },
-        handleSubmit() {},
+        handleSubmit() {
+            this.submitting = true;
+            addPartnerTeacher({
+                courseID: this.courseId,
+                t_uids: this.newPartner,
+            })
+                .then(() => {
+                    this.$message({
+                        type: "success",
+                        message: "添加协作教师成功",
+                    });
+                    this.submitting = false;
+                    this.dialogVisible = false;
+                    this.searchOptions = [];
+                    this.newPartner = [];
+                    this.getAllTeacher();
+                })
+                .catch(() => {
+                    this.submitting = false;
+                });
+        },
     },
 };
 </script>

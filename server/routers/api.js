@@ -101,11 +101,11 @@ router.all('*', async (req, res, next) => {
 		return;
 	}
 
-	User.findById(uid).select('isUsed').then(v_user => {
-		if (v_user.isUsed === false || !v_user) {
+	User.findById(uid).select('isUsed role').then(v_user => {
+		if (!v_user || !v_user.isUsed || !v_user.role.includes(role)) {
 			res.json({
 				code: 60205,
-				message: '该用户不存在'
+				message: '该用户或角色不存在'
 			})
 			return;
 		}
