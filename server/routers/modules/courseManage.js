@@ -294,25 +294,65 @@ router.post('/addPartnerTeacher', (req, res) => {
 
 
 router.post('/getAllCommentTemplate', (req, res) => {
-
 	let courseID = req.body.courseID
-	Course.findById(courseID).select('commentTemplate').then((template, err) => {
+	Course.findById(courseID).select('commentTemplate').then((course, err) => {
 		if (err) {
 			res.json({
 				code: 30001,
 				message: 'DataBase Error'
 			})
+			return;
 		}
-		console.log(template.commentTemplate)
+		let { commentTemplate } = course.toJSON()
+
+		commentTemplate.forEach(e => {
+			e.template.forEach(i => {
+				delete i._id
+			})
+		});
+
 		res.json({
 			code: 20000,
 			data: {
-				commentTemplate: template.commentTemplate
+				commentTemplate: commentTemplate
 			}
 		})
 	})
+})
 
+router.post('/newCommentTemplate', (req, res) => {
+	let { courseID, template } = req.body
+	//console.log(template)
+	Course.findById(courseID).select('commentTemplate').then((course, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: 'DataBase Error'
+			})
+			return;
+		}
 
+		let temp = template.entry.map(e => {
+			return { entry: e }
+		})
+		course.commentTemplate.push({
+			name: template.name,
+			template: temp
+		})
+		course.save().then((c, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: 'DataBase Error'
+				})
+				return;
+			}
+			res.json({
+				code: 20000
+			})
+		})
+
+	})
 })
 
 

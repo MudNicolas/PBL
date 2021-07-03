@@ -239,8 +239,15 @@ export default {
             return false;
         },
         handleSuccess({ results }) {
-            //console.log(results);
+            console.log(results);
             //判断重复
+            if (!results[0]["学号"] || !results[0]["姓名"]) {
+                this.$message({
+                    type: "warning",
+                    message: "文件错误，请遵循模板格式填入信息！",
+                });
+                return;
+            }
             let studentNum = [];
             results.forEach((e) => {
                 //数组中已有这个学号

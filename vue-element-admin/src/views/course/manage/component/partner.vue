@@ -116,6 +116,7 @@ export default {
     },
     methods: {
         getAllTeacher() {
+            this.loading = true;
             getAllTeacher({ courseID: this.courseId })
                 .then((res) => {
                     let { chiefTeacher } = res.data.teahcer;

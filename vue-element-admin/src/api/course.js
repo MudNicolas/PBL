@@ -96,3 +96,11 @@ export function getAllCommentTemplate(data) {
 	})
 }
 
+export function submitNewCommentTemplate(data) {
+	return request({
+		url: '/course/manage/newCommentTemplate',
+		method: 'post',
+		data
+	})
+}
+

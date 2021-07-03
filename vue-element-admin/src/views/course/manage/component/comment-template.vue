@@ -15,6 +15,7 @@
             :span-method="objectSpanMethod"
             border
             style="width: 100%; margin-top: 20px"
+            v-loading="loading"
         >
             <el-table-column
                 prop="name"
@@ -102,10 +103,11 @@
                                 >
                                 <el-button
                                     type="primary"
+                                    :loading="newTemplateSubmitting"
                                     @click="
                                         submitTemplate('newCommentTemplate')
                                     "
-                                    >提交新模板</el-button
+                                    >提交</el-button
                                 >
                                 <el-popconfirm
                                     title="确定将输入的信息重置吗？"
@@ -128,7 +130,7 @@
 </template>
 
 <script>
-import { getAllCommentTemplate } from "@/api/course";
+import { getAllCommentTemplate, submitNewCommentTemplate } from "@/api/course";
 export default {
     name: "CommentTemplate",
     props: ["courseId"],
@@ -143,10 +145,13 @@ export default {
                 name: "",
                 entry: [{ value: "" }],
             },
+            newTemplateSubmitting: false,
+            loading: true,
         };
     },
     methods: {
         getAllCommentTemplate() {
+            this.loading = true;
             getAllCommentTemplate({ courseID: this.courseId }).then((res) => {
                 console.log(res.data);
                 let rowTeamplate = res.data.commentTemplate;
@@ -171,6 +176,7 @@ export default {
             }
             console.log(tableData);
             this.commentTemplate = tableData;
+            this.loading = false;
         },
         objectSpanMethod({ row, column, rowIndex, columnIndex }) {
             if (columnIndex === 0 || columnIndex === 2) {
@@ -185,9 +191,36 @@ export default {
             }
         },
         submitTemplate(formName) {
+            this.newCommentTemplate.name = this.newCommentTemplate.name.trim();
+            this.newCommentTemplate.entry.forEach((e) => {
+                e.value = e.value.trim();
+            });
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    console.log(this.newCommentTemplate);
+                    this.newTemplateSubmitting = true;
+                    let temp = Object.assign({}, this.newCommentTemplate);
+                    let entry = temp.entry.map((e) => {
+                        return e.value;
+                    });
+                    temp.entry = entry;
+
+                    submitNewCommentTemplate({
+                        courseID: this.courseId,
+                        template: temp,
+                    })
+                        .then(() => {
+                            this.$message({
+                                type: "success",
+                                message: "添加模板成功",
+                            });
+                            this.newTemplateSubmitting = false;
+                            this.getAllCommentTemplate();
+                            this.resetTemplate("newCommentTemplate");
+                            this.createTeamplateDialogVisible = false;
+                        })
+                        .catch(() => {
+                            this.newTemplateSubmitting = false;
+                        });
                 } else {
                     this.$message({
                         message: "请将信息填写完整",

@@ -36,9 +36,7 @@ var courseSchema = new mongoose.Schema({
 	commentTemplate: [{
 		name: String,
 		template: [{
-			entry: {
-				type: String
-			}
+			entry: String,
 		}]
 	}]
 })
