@@ -88,3 +88,11 @@ export function addPartnerTeacher(data) {
 	})
 }
 
+export function getAllCommentTemplate(data) {
+	return request({
+		url: '/course/manage/getAllCommentTemplate',
+		method: 'post',
+		data
+	})
+}
+

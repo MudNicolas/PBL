@@ -68,7 +68,9 @@
                     <el-input
                         v-model="search"
                         :placeholder="
-                            '输入关键字搜索共 ' + studentList.length + ' 名学生'
+                            '输入学号或姓名搜索共 ' +
+                            studentList.length +
+                            ' 名学生'
                         "
                     />
                 </template>

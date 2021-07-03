@@ -166,7 +166,7 @@ export default {
             };
 
             if (!this.chalk) {
-                const url = `http://127.0.0.1:8080/public/css/chalk.css`;
+                const url = `${process.env.VUE_APP_PUBLIC_PATH}/css/chalk.css`;
                 await this.getCSSString(url, "chalk");
             }
 

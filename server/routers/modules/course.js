@@ -2,7 +2,6 @@ import Router from 'express'
 import User from '../../models/User.js';
 import Course from '../../models/Course.js'
 import { UploadImg } from './tools.js';
-import { COVER_PATH } from "../../settings.js"
 import { InsertUsersReturnIDs } from './tools.js'
 var router = Router();
 

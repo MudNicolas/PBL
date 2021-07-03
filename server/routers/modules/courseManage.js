@@ -292,4 +292,28 @@ router.post('/addPartnerTeacher', (req, res) => {
 })
 
 
+
+router.post('/getAllCommentTemplate', (req, res) => {
+
+	let courseID = req.body.courseID
+	Course.findById(courseID).select('commentTemplate').then((template, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: 'DataBase Error'
+			})
+		}
+		console.log(template.commentTemplate)
+		res.json({
+			code: 20000,
+			data: {
+				commentTemplate: template.commentTemplate
+			}
+		})
+	})
+
+
+})
+
+
 export default router
