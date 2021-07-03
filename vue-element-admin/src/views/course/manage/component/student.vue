@@ -239,8 +239,8 @@ export default {
             return false;
         },
         handleSuccess({ results }) {
-            console.log(results);
-            //判断重复
+            //console.log(results);
+            //判断文件是否符合规范
             if (!results[0]["学号"] || !results[0]["姓名"]) {
                 this.$message({
                     type: "warning",
@@ -248,6 +248,7 @@ export default {
                 });
                 return;
             }
+            //判断重复
             let studentNum = [];
             results.forEach((e) => {
                 //数组中已有这个学号
