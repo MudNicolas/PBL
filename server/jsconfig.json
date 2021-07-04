@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"paths": {
+			"#root/*": ["*"],
+			"#models/*": ["models/*"]
+		}
+	},
+	"exclude": ["node_modules"],
+	"allowJS":true
+}

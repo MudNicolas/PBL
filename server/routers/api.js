@@ -1,7 +1,7 @@
 import Router from 'express'
 import User from '../models/User.js'
 import LoginHistory from '../models/LoginHistory.js'
-import { AESEncode, AESDecode } from './modules/tools.js'
+import { AESEncode, AESDecode } from './services/tools.js'
 
 var router = Router()
 
@@ -140,11 +140,11 @@ router.all('/logout', (req, res, next) => {
 })
 
 
-import user from './modules/user.js'
-import theme from './modules/theme.js'
-import course from './modules/course.js'
-import view from './modules/view.js'
-import breadCrumb from './modules/breadCrumb.js'
+import user from './services/user.js'
+import theme from './services/theme.js'
+import course from './services/course.js'
+import view from './services/view.js'
+import breadCrumb from './services/breadCrumb.js'
 
 router.use('/user', user)
 router.use('/theme', theme)

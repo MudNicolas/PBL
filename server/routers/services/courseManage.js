@@ -1,9 +1,10 @@
 import Router from 'express'
 var router = Router()
-import Course from '../../models/Course.js'
-import { COVER_PATH } from "../../settings.js"
+import Course from "#models/Course.js"
+import { COVER_PATH } from "#root/settings.js"
 import { InsertUsersReturnIDs } from './tools.js'
-import User from "../../models/User.js"
+import User from "#models/User.js"
+
 
 router.all('*', (req, res, next) => {
 	let courseID = req.body.courseID
