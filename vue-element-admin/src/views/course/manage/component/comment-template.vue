@@ -30,7 +30,7 @@
                     <el-button @click="preview(scope.row._id)"
                         ><i class="el-icon-view" />&nbsp;预览</el-button
                     >
-                    <el-button type="primary"
+                    <el-button type="primary" @click="edit(scope.row._id)"
                         ><i class="el-icon-edit" />&nbsp;编辑</el-button
                     >
                     <el-button type="danger"
@@ -48,6 +48,72 @@
                     <el-input placeholder="具体评论...">
                         <template slot="prepend">{{ entry.title }}</template>
                     </el-input>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        <el-dialog title="编辑模板" :visible.sync="editDialogVisible">
+            <el-form
+                :model="editData"
+                ref="editData"
+                label-position="right"
+                label-width="80px"
+            >
+                <el-form-item
+                    label="模板名"
+                    prop="name"
+                    :rules="{
+                        required: true,
+                        message: '模板名不能为空',
+                        trigger: 'blur',
+                    }"
+                >
+                    <el-row>
+                        <el-col :span="16">
+                            <el-input v-model="editData.name" />
+                        </el-col>
+                    </el-row>
+                </el-form-item>
+
+                <el-form-item
+                    v-for="(entry, index) of editData.entry"
+                    :key="'perview' + entry.key"
+                    :label="'条目' + index"
+                    :prop="'entry.' + index + '.value'"
+                    :rules="{
+                        required: true,
+                        message: '条目不能为空',
+                        trigger: 'blur',
+                    }"
+                >
+                    <el-row>
+                        <el-col :span="16">
+                            <el-input v-model="entry.value" />
+                        </el-col>
+                        <el-button
+                            v-if="editData.entry.length > 1"
+                            @click.prevent="inEditRemoveEntry(entry)"
+                            style="margin-left: 12px"
+                            type="danger"
+                            >删除</el-button
+                        >
+                    </el-row>
+                </el-form-item>
+                <el-form-item>
+                    <el-row>
+                        <el-col :span="16">
+                            <div class="new-template-footbar">
+                                <el-button @click="inEditAddEntry"
+                                    >新增条目</el-button
+                                >
+                                <el-button
+                                    type="primary"
+                                    :loading="editSubmitting"
+                                    @click="inEditSubmitTemplate('editData')"
+                                    >提交</el-button
+                                >
+                            </div>
+                        </el-col>
+                    </el-row>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -142,7 +208,11 @@
 </template>
 
 <script>
-import { getAllCommentTemplate, submitNewCommentTemplate } from "@/api/course";
+import {
+    getAllCommentTemplate,
+    submitNewCommentTemplate,
+    editCommentTemplate,
+} from "@/api/course";
 export default {
     name: "CommentTemplate",
     props: ["courseId"],
@@ -154,6 +224,7 @@ export default {
             commentTemplate: [],
             createTeamplateDialogVisible: false,
             previewDialogVisible: false,
+            editDialogVisible: false,
             newCommentTemplate: {
                 name: "",
                 entry: [{ value: "" }],
@@ -161,6 +232,12 @@ export default {
             newTemplateSubmitting: false,
             loading: true,
             previewData: [],
+            editData: {
+                _id: "",
+                name: "",
+                entry: [{ value: "" }],
+            },
+            editSubmitting: false,
         };
     },
     methods: {
@@ -244,6 +321,44 @@ export default {
                 }
             });
         },
+        inEditSubmitTemplate(formName) {
+            this.editData.name = this.editData.name.trim();
+            this.editData.entry.forEach((e) => {
+                e.value = e.value.trim();
+            });
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.editSubmitting = true;
+                    let temp = Object.assign({}, this.editData);
+                    let entry = temp.entry.map((e) => {
+                        return e.value;
+                    });
+                    temp.entry = entry;
+
+                    editCommentTemplate({
+                        courseID: this.courseId,
+                        template: temp,
+                    })
+                        .then(() => {
+                            this.$message({
+                                type: "success",
+                                message: "修改成功",
+                            });
+                            this.editSubmitting = false;
+                            this.getAllCommentTemplate();
+                            this.editDialogVisible = false;
+                        })
+                        .catch(() => {
+                            this.editSubmitting = false;
+                        });
+                } else {
+                    this.$message({
+                        message: "请将信息填写完整",
+                        type: "warning",
+                    });
+                }
+            });
+        },
         resetTemplate(formName) {
             this.$refs[formName].resetFields();
             this.newCommentTemplate = {
@@ -252,9 +367,15 @@ export default {
             };
         },
         removeEntry(item) {
-            var index = this.newCommentTemplate.entry.indexOf(item);
+            let index = this.newCommentTemplate.entry.indexOf(item);
             if (index !== -1) {
                 this.newCommentTemplate.entry.splice(index, 1);
+            }
+        },
+        inEditRemoveEntry(item) {
+            let index = this.editData.entry.indexOf(item);
+            if (index !== -1) {
+                this.editData.entry.splice(index, 1);
             }
         },
         addEntry() {
@@ -263,8 +384,13 @@ export default {
                 key: Date.now(),
             });
         },
+        inEditAddEntry() {
+            this.editData.entry.push({
+                value: "",
+                key: Date.now(),
+            });
+        },
         preview(_id) {
-            this.previewDialogVisible = !this.previewDialogVisible;
             let tData = this.commentTemplate;
             for (let i = 0; i < tData.length; i++) {
                 if (tData[i]._id === _id) {
@@ -272,6 +398,30 @@ export default {
                     break;
                 }
             }
+            this.previewDialogVisible = !this.previewDialogVisible;
+        },
+        edit(_id) {
+            let tData = this.commentTemplate;
+            let editData = [];
+            let name = "";
+            for (let i = 0; i < tData.length; i++) {
+                if (tData[i]._id === _id) {
+                    editData = tData.slice(i, i + tData[i].length);
+                    this.editData._id = _id;
+                    name = tData[i].name;
+                    console.log(this.editData);
+                    break;
+                }
+            }
+            let formartEditData = editData.map((e) => {
+                return {
+                    value: e.title,
+                    key: e.title + Date.now(),
+                };
+            });
+            this.editData.entry = formartEditData;
+            this.editData.name = name;
+            this.editDialogVisible = !this.editDialogVisible;
         },
     },
 };

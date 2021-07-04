@@ -104,3 +104,11 @@ export function submitNewCommentTemplate(data) {
 	})
 }
 
+export function editCommentTemplate(data) {
+	return request({
+		url: '/course/manage/editCommentTemplate',
+		method: "post",
+		data
+	})
+}
+

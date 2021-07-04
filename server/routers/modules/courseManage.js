@@ -355,5 +355,47 @@ router.post('/newCommentTemplate', (req, res) => {
 	})
 })
 
+router.post('/editCommentTemplate', (req, res) => {
+	let { courseID, template } = req.body
+	console.log(courseID, template)
+	Course.findOne({
+		_id: courseID,
+	}, {
+		commentTemplate: {
+			$elemMatch: { _id: template._id }
+		}
+	}).then((course, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: 'DataBase Error'
+			})
+			return;
+		}
+
+		console.log(course)
+		let temp = template.entry.map(e => {
+			return { entry: e }
+		})
+
+		course.commentTemplate[0].template = temp
+		course.save().then((c, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: 'DataBase Error'
+				})
+				return;
+			}
+			res.json({
+				code: 20000
+			})
+		})
+
+
+
+	})
+})
+
 
 export default router
