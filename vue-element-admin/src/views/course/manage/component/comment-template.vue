@@ -27,7 +27,7 @@
             <el-table-column prop="title" label="模板条目"> </el-table-column>
             <el-table-column label="操作" align="center" width="360">
                 <template slot-scope="scope">
-                    <el-button @click="preview(scope.row)"
+                    <el-button @click="preview(scope.row._id)"
                         ><i class="el-icon-view" />&nbsp;预览</el-button
                     >
                     <el-button type="primary"
@@ -39,6 +39,18 @@
                 </template>
             </el-table-column>
         </el-table>
+        <el-dialog title="模板预览" :visible.sync="previewDialogVisible">
+            <el-form>
+                <el-form-item
+                    v-for="entry of previewData"
+                    :key="'perview' + entry._id + entry.title"
+                >
+                    <el-input placeholder="具体评论...">
+                        <template slot="prepend">{{ entry.title }}</template>
+                    </el-input>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
         <el-dialog
             title="创建评论模板"
             :visible.sync="createTeamplateDialogVisible"
@@ -141,12 +153,14 @@ export default {
         return {
             commentTemplate: [],
             createTeamplateDialogVisible: false,
+            previewDialogVisible: false,
             newCommentTemplate: {
                 name: "",
                 entry: [{ value: "" }],
             },
             newTemplateSubmitting: false,
             loading: true,
+            previewData: [],
         };
     },
     methods: {
@@ -170,6 +184,7 @@ export default {
                     };
                     if (i === 0) {
                         item.length = entry.length;
+                        item._id = template._id;
                     }
                     tableData.push(item);
                 }
@@ -247,6 +262,16 @@ export default {
                 value: "",
                 key: Date.now(),
             });
+        },
+        preview(_id) {
+            this.previewDialogVisible = !this.previewDialogVisible;
+            let tData = this.commentTemplate;
+            for (let i = 0; i < tData.length; i++) {
+                if (tData[i]._id === _id) {
+                    this.previewData = tData.slice(i, i + tData[i].length);
+                    break;
+                }
+            }
         },
     },
 };
