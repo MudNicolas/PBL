@@ -34,7 +34,7 @@ export function getCourseRoute() {
 
 export function getInfo(data) {
 	return request({
-		url: '/course/manage/getInfo',
+		url: '/course/manage/info/get',
 		method: 'post',
 		data
 	})
@@ -42,7 +42,7 @@ export function getInfo(data) {
 
 export function submitEdit(data) {
 	return request({
-		url: '/course/manage/editInfo',
+		url: '/course/manage/info/edit',
 		method: 'post',
 		data
 	})
@@ -50,7 +50,7 @@ export function submitEdit(data) {
 
 export function getStudentList(data) {
 	return request({
-		url: '/course/manage/getStudentList',
+		url: '/course/manage/student/get',
 		method: 'post',
 		data
 	})
@@ -58,7 +58,7 @@ export function getStudentList(data) {
 
 export function submitStudentList(data) {
 	return request({
-		url: '/course/manage/submitStudentList',
+		url: '/course/manage/student/submit',
 		method: 'post',
 		data
 	})
@@ -66,7 +66,7 @@ export function submitStudentList(data) {
 
 export function getAllTeacher(data) {
 	return request({
-		url: '/course/manage/getAllTeacher',
+		url: '/course/manage/partner/getAllTeacher',
 		method: 'post',
 		data
 	})
@@ -74,7 +74,7 @@ export function getAllTeacher(data) {
 
 export function manageSearchTeacher(data) {
 	return request({
-		url: '/course/manage/search/teacher',
+		url: '/course/manage/partner/search/teacher',
 		method: 'post',
 		data
 	})
@@ -82,7 +82,7 @@ export function manageSearchTeacher(data) {
 
 export function addPartnerTeacher(data) {
 	return request({
-		url: '/course/manage/addPartnerTeacher',
+		url: '/course/manage/partner/addTeacher',
 		method: 'post',
 		data
 	})
@@ -90,7 +90,7 @@ export function addPartnerTeacher(data) {
 
 export function getAllCommentTemplate(data) {
 	return request({
-		url: '/course/manage/getAllCommentTemplate',
+		url: '/course/manage/commentTemplate/get',
 		method: 'post',
 		data
 	})
@@ -98,7 +98,7 @@ export function getAllCommentTemplate(data) {
 
 export function submitNewCommentTemplate(data) {
 	return request({
-		url: '/course/manage/newCommentTemplate',
+		url: '/course/manage/commentTemplate/create',
 		method: 'post',
 		data
 	})
@@ -106,8 +106,16 @@ export function submitNewCommentTemplate(data) {
 
 export function editCommentTemplate(data) {
 	return request({
-		url: '/course/manage/editCommentTemplate',
+		url: '/course/manage/commentTemplate/edit',
 		method: "post",
+		data
+	})
+}
+
+export function deleteCommentTemplate(data) {
+	return request({
+		url: '/course/manage/commentTemplate/delete',
+		method: 'post',
 		data
 	})
 }

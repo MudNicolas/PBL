@@ -33,7 +33,10 @@
                     <el-button type="primary" @click="edit(scope.row._id)"
                         ><i class="el-icon-edit" />&nbsp;编辑</el-button
                     >
-                    <el-button type="danger"
+                    <el-button
+                        type="danger"
+                        :disabled="deleteSubmitting"
+                        @click="deleteCommentTemplate(scope.row._id)"
                         ><i class="el-icon-delete" />&nbsp;删除</el-button
                     >
                 </template>
@@ -212,6 +215,7 @@ import {
     getAllCommentTemplate,
     submitNewCommentTemplate,
     editCommentTemplate,
+    deleteCommentTemplate,
 } from "@/api/course";
 export default {
     name: "CommentTemplate",
@@ -238,6 +242,7 @@ export default {
                 entry: [{ value: "" }],
             },
             editSubmitting: false,
+            deleteSubmitting: false,
         };
     },
     methods: {
@@ -282,81 +287,74 @@ export default {
                 }
             }
         },
-        submitTemplate(formName) {
-            this.newCommentTemplate.name = this.newCommentTemplate.name.trim();
-            this.newCommentTemplate.entry.forEach((e) => {
-                e.value = e.value.trim();
-            });
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.newTemplateSubmitting = true;
-                    let temp = Object.assign({}, this.newCommentTemplate);
-                    let entry = temp.entry.map((e) => {
-                        return e.value;
-                    });
-                    temp.entry = entry;
-
-                    submitNewCommentTemplate({
-                        courseID: this.courseId,
-                        template: temp,
-                    })
-                        .then(() => {
-                            this.$message({
-                                type: "success",
-                                message: "添加模板成功",
-                            });
-                            this.newTemplateSubmitting = false;
-                            this.getAllCommentTemplate();
-                            this.resetTemplate("newCommentTemplate");
-                            this.createTeamplateDialogVisible = false;
-                        })
-                        .catch(() => {
-                            this.newTemplateSubmitting = false;
+        formValidate(formName) {
+            return new Promise((resolve, reject) => {
+                this[formName].name = this[formName].name.trim();
+                this[formName].entry.forEach((e) => {
+                    e.value = e.value.trim();
+                });
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let temp = Object.assign({}, this[formName]);
+                        let entry = temp.entry.map((e) => {
+                            return e.value;
                         });
-                } else {
-                    this.$message({
-                        message: "请将信息填写完整",
-                        type: "warning",
-                    });
-                }
+                        temp.entry = entry;
+                        console.log(temp);
+                        resolve(temp);
+                        return;
+                    } else {
+                        this.$message({
+                            message: "请将信息填写完整",
+                            type: "warning",
+                        });
+                        reject();
+                        return;
+                    }
+                });
             });
         },
-        inEditSubmitTemplate(formName) {
-            this.editData.name = this.editData.name.trim();
-            this.editData.entry.forEach((e) => {
-                e.value = e.value.trim();
-            });
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.editSubmitting = true;
-                    let temp = Object.assign({}, this.editData);
-                    let entry = temp.entry.map((e) => {
-                        return e.value;
-                    });
-                    temp.entry = entry;
-
-                    editCommentTemplate({
-                        courseID: this.courseId,
-                        template: temp,
-                    })
-                        .then(() => {
-                            this.$message({
-                                type: "success",
-                                message: "修改成功",
-                            });
-                            this.editSubmitting = false;
-                            this.getAllCommentTemplate();
-                            this.editDialogVisible = false;
-                        })
-                        .catch(() => {
-                            this.editSubmitting = false;
+        submitTemplate(formName) {
+            this.formValidate(formName).then((temp) => {
+                this.newTemplateSubmitting = true;
+                submitNewCommentTemplate({
+                    courseID: this.courseId,
+                    template: temp,
+                })
+                    .then(() => {
+                        this.$message({
+                            type: "success",
+                            message: "添加模板成功",
                         });
-                } else {
-                    this.$message({
-                        message: "请将信息填写完整",
-                        type: "warning",
+                        this.newTemplateSubmitting = false;
+                        this.getAllCommentTemplate();
+                        this.resetTemplate("newCommentTemplate");
+                        this.createTeamplateDialogVisible = false;
+                    })
+                    .catch(() => {
+                        this.newTemplateSubmitting = false;
                     });
-                }
+            });
+        },
+
+        inEditSubmitTemplate(formName) {
+            this.formValidate(formName).then((temp) => {
+                editCommentTemplate({
+                    courseID: this.courseId,
+                    template: temp,
+                })
+                    .then(() => {
+                        this.$message({
+                            type: "success",
+                            message: "修改成功",
+                        });
+                        this.editSubmitting = false;
+                        this.getAllCommentTemplate();
+                        this.editDialogVisible = false;
+                    })
+                    .catch(() => {
+                        this.editSubmitting = false;
+                    });
             });
         },
         resetTemplate(formName) {
@@ -413,15 +411,53 @@ export default {
                     break;
                 }
             }
-            let formartEditData = editData.map((e) => {
+            let formartEditData = editData.map((e, index) => {
                 return {
                     value: e.title,
-                    key: e.title + Date.now(),
+                    key: e.title + Date.now() + index,
                 };
             });
             this.editData.entry = formartEditData;
             this.editData.name = name;
             this.editDialogVisible = !this.editDialogVisible;
+        },
+        deleteCommentTemplate(_id) {
+            this.$confirm(
+                "确认删除此评论模板？删除后将无法再使用此模板，但已有的使用此模板的评论将继续显示",
+                "提示",
+                {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning",
+                    beforeClose: (action, instance, done) => {
+                        if (action === "confirm") {
+                            instance.confirmButtonLoading = true;
+                            this.deleteSubmitting = true;
+                            deleteCommentTemplate({
+                                courseID: this.courseId,
+                                templateID: _id,
+                            })
+                                .then(() => {
+                                    this.deleteSubmitting = false;
+                                    instance.confirmButtonLoading = false;
+                                    this.$message({
+                                        type: "success",
+                                        message: "删除成功!",
+                                    });
+                                    this.getAllCommentTemplate();
+                                    done();
+                                })
+                                .catch(() => {
+                                    this.deleteSubmitting = false;
+                                    instance.confirmButtonLoading = false;
+                                    done();
+                                });
+                        } else {
+                            done();
+                        }
+                    },
+                }
+            ).catch((e) => {});
         },
     },
 };

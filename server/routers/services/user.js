@@ -42,6 +42,8 @@ router.post('/changeInfo', async (req, res, next) => {
 			});
 			return;
 		}
+
+
 		res.json({
 			data: {
 				name: u.name,

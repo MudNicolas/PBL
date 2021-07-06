@@ -37,7 +37,11 @@ var courseSchema = new mongoose.Schema({
 		name: String,
 		template: [{
 			entry: String,
-		}]
+		}],
+		isUsed: {
+			type: Boolean,
+			default: true
+		}
 	}]
 })
 

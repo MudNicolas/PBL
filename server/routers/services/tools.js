@@ -35,9 +35,6 @@ export function AESDecode(e) {
 
 //统一图片上传中心
 export function UploadImg(path, req) {
-
-
-
 	var form = new multiparty.Form({
 		uploadDir: 'public/img/' + path
 	});

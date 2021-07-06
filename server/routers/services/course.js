@@ -83,6 +83,8 @@ router.get('/route', (req, res, next) => {
 				name: "CourseDetail",
 				meta: { title: '课程', roles: ['teacher', 'student'] }
 			}, */
+
+
 			let courseRoute = [];
 			for (let e of course) {
 				let singleRoute = {
