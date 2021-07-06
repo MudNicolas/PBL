@@ -457,7 +457,7 @@ export default {
                         }
                     },
                 }
-            ).catch((e) => {});
+            ).catch(() => {});
         },
     },
 };
