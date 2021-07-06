@@ -50,20 +50,12 @@ router.all('*', (req, res, next) => {
 import info from "./modules/CourseManage/info.js"
 import student from "./modules/CourseManage/student.js"
 import partner from "./modules/CourseManage/partner.js"
-import template from "./modules/CourseManage/commentTemplate.js"
+import commontTemplate from "./modules/CourseManage/commentTemplate.js"
+
 router.use('/info', info)
 router.use('/student', student)
 router.use('/partner', partner)
-router.use('/commentTemplate', template)
-
-
-
-
-
-
-
-
-
+router.use('/commentTemplate', commontTemplate)
 
 
 export default router
