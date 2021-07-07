@@ -9,7 +9,9 @@
                 <student :course-id="courseID"
             /></el-tab-pane>
 
-            <el-tab-pane label="分组管理">分组管理</el-tab-pane>
+            <el-tab-pane label="分组管理" lazy :name="components[2]"
+                ><group :course-id="courseID"
+            /></el-tab-pane>
 
             <el-tab-pane label="协作教师管理" lazy :name="components[3]">
                 <partner :course-id="courseID" />
@@ -27,16 +29,23 @@ import info from "./component/info.vue";
 import student from "./component/student.vue";
 import partner from "./component/partner.vue";
 import commentTemplate from "./component/comment-template.vue";
+import group from "./component/group.vue";
 
 export default {
-    components: { info, student, partner, commentTemplate },
+    components: { info, student, partner, commentTemplate, group },
     name: "ManageCourse",
 
     data() {
         return {
             courseID: this.$route.params.id,
             activeName: "info",
-            components: ["info", "student", "", "partner", "commentTemplate"],
+            components: [
+                "info",
+                "student",
+                "group",
+                "partner",
+                "commentTemplate",
+            ],
         };
     },
     watch: {

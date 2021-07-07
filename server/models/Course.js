@@ -23,10 +23,15 @@ var courseSchema = new mongoose.Schema({
 		//
 	}],
 	group: [{
+		name: String,
 		groupMember: [{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
-		}]
+		}],
+		isUsed: {
+			type: Boolean,
+			default: true
+		}
 	}],
 	isUsed: {
 		type: Boolean,

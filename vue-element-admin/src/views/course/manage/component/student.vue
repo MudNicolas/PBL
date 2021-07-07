@@ -75,11 +75,7 @@
                     />
                 </template>
                 <template slot-scope="scope">
-                    <el-button @click="handleMessage(scope.row._id)"
-                        ><svg-icon
-                            icon-class="email"
-                        />&nbsp;发送私信</el-button
-                    >
+                    <emit-message-button :uid="scope.row._id" />
                 </template>
             </el-table-column>
         </el-table>
@@ -138,11 +134,12 @@
 import { getStudentList, submitStudentList } from "@/api/course";
 import UploadExcelComponent from "@/components/UploadExcel/index.vue";
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue";
+import EmitMessageButton from "@/components/EmitMessageButton";
 
 export default {
     name: "ManageStudent",
     props: ["courseId"],
-    components: { UploadExcelComponent, ProfilePopover },
+    components: { UploadExcelComponent, ProfilePopover, EmitMessageButton },
     data() {
         return {
             studentList: [],
@@ -186,9 +183,7 @@ export default {
                     this.loading = false;
                 });
         },
-        handleMessage(uid) {
-            console.log(uid);
-        },
+
         hanleExport() {
             this.exporting = true;
             import("@/vendor/Export2Excel")
