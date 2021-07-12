@@ -36,7 +36,15 @@ router.post('/get', (req, res) => {
 
 router.post('/create', (req, res) => {
 	let { courseID, template } = req.body
-	//console.log(template)
+	let temp = template.entry
+	let uniqueTemp = new Set(temp)
+	if (uniqueTemp.size !== temp.length) {
+		res.json({
+			code: 31001,
+			message: "存在重复条目"
+		})
+		return
+	}
 	Course.findById(courseID).select('commentTemplate').then((course, err) => {
 		if (err) {
 			res.json({
@@ -46,7 +54,7 @@ router.post('/create', (req, res) => {
 			return;
 		}
 
-		let temp = template.entry
+
 		course.commentTemplate.push({
 			name: template.name,
 			template: temp
@@ -70,8 +78,6 @@ router.post('/create', (req, res) => {
 router.all("*", (req, res, next) => {
 	let { courseID } = req.body
 	let templateID = req.body.templateID || req.body.template._id
-
-
 	Course.findOne({
 		_id: courseID,
 	}, {
@@ -99,7 +105,15 @@ router.all("*", (req, res, next) => {
 
 router.post('/edit', (req, res) => {
 	let { courseID, template } = req.body
-	//console.log(courseID, template)
+	let temp = template.entry
+	let uniqueTemp = new Set(temp)
+	if (uniqueTemp.size !== temp.length) {
+		res.json({
+			code: 31001,
+			message: "存在重复条目"
+		})
+		return
+	}
 	Course.findOne({
 		_id: courseID,
 	}, {
@@ -107,8 +121,6 @@ router.post('/edit', (req, res) => {
 			$elemMatch: { _id: template._id }
 		}
 	}).then((course) => {
-
-		let temp = template.entry
 
 		course.commentTemplate[0].template = temp
 		course.commentTemplate[0].name = template.name

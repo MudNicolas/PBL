@@ -54,7 +54,11 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
-        <el-dialog title="编辑模板" :visible.sync="editDialogVisible">
+        <el-dialog
+            title="编辑模板"
+            :visible.sync="editDialogVisible"
+            :close-on-click-modal="false"
+        >
             <el-form
                 :model="editData"
                 ref="editData"
@@ -123,6 +127,7 @@
         <el-dialog
             title="创建评论模板"
             :visible.sync="createTeamplateDialogVisible"
+            :close-on-click-modal="false"
         >
             <el-form
                 :model="newCommentTemplate"
