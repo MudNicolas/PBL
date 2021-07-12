@@ -1,16 +1,23 @@
 <template>
     <el-button
         @click="handleMessage(uid)"
-        size="mini"
-        style="margin-top: 4px; width: 100px"
-        ><svg-icon icon-class="email" />&nbsp;发送私信</el-button
+        :size="size"
+        style="margin-top: 4px"
+        icon="el-icon-message"
+        >发送私信</el-button
     >
 </template>
 
 <script>
 export default {
     name: "EmitMessageButton",
-    props: ["uid"],
+    props: {
+        uid: String,
+        size: {
+            default: "mini",
+        },
+    },
+
     methods: {
         handleMessage(uid) {
             console.log(uid);

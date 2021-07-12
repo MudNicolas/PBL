@@ -136,3 +136,11 @@ export function getUnGroupedStudents(query) {
 	})
 }
 
+export function submitNewGroup(data) {
+	return request({
+		url: '/course/manage/group/create',
+		method: "post",
+		data
+	})
+}
+

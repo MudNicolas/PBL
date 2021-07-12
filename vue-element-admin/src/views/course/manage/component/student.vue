@@ -22,7 +22,7 @@
                 class="filter-item"
                 icon="el-icon-message-solid"
                 @click="handleSendMessagesToSelectedStudent"
-                >向选中学生发送通知</el-button
+                >向选中学生发送私信</el-button
             >
         </div>
 
