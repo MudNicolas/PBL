@@ -11,7 +11,7 @@ router.post('/getAllTeacher', (req, res) => {
 	Course
 		.findById(courseID)
 		.select('chiefTeacher partnerTeacher')
-		.populate([{ path: 'chiefTeacher', select: 'name avatar introduction' }, { path: 'partnerTeacher', select: 'name avatar introduction' }])
+		.populate([{ path: 'chiefTeacher', select: 'name avatar' }, { path: 'partnerTeacher', select: 'name avatar introduction' }])
 		.then((t, err) => {
 			if (err) {
 				res.json({

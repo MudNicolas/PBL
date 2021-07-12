@@ -21,6 +21,7 @@ router.post('/get', (req, res) => {
 				e.template.forEach(i => {
 					delete i._id
 				})
+				delete e.isUsed
 				return e
 			}
 		});

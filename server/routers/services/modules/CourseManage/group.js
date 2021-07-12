@@ -19,6 +19,7 @@ router.get('/get', (req, res) => {
 			let { group, studentList } = course.toJSON()
 			let g = group.filter(e => {
 				if (e.isUsed) {
+					delete e.isUsed
 					return e
 				}
 			})
