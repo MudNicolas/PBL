@@ -262,7 +262,7 @@ export default {
                 for (let i = 0; i < entry.length; i++) {
                     item = {
                         name: template.name,
-                        title: entry[i].entry,
+                        title: entry[i],
                     };
                     if (i === 0) {
                         item.length = entry.length;

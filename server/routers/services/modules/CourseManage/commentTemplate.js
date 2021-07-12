@@ -46,9 +46,7 @@ router.post('/create', (req, res) => {
 			return;
 		}
 
-		let temp = template.entry.map(e => {
-			return { entry: e }
-		})
+		let temp = template.entry
 		course.commentTemplate.push({
 			name: template.name,
 			template: temp
@@ -110,9 +108,7 @@ router.post('/edit', (req, res) => {
 		}
 	}).then((course) => {
 
-		let temp = template.entry.map(e => {
-			return { entry: e }
-		})
+		let temp = template.entry
 
 		course.commentTemplate[0].template = temp
 		course.commentTemplate[0].name = template.name

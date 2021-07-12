@@ -40,9 +40,7 @@ var courseSchema = new mongoose.Schema({
 	date: Date,
 	commentTemplate: [{
 		name: String,
-		template: [{
-			entry: String,
-		}],
+		template: Array,
 		isUsed: {
 			type: Boolean,
 			default: true
