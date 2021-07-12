@@ -1,24 +1,18 @@
 <template>
     <div class="container">
         <el-tabs type="border-card" v-model="activeName">
-            <el-tab-pane label="基础设置" lazy :name="components[0]">
-                <info :course-id="courseID" />
-            </el-tab-pane>
-
-            <el-tab-pane label="学生管理" lazy :name="components[1]">
-                <student :course-id="courseID"
-            /></el-tab-pane>
-
-            <el-tab-pane label="分组管理" lazy :name="components[2]"
-                ><group :course-id="courseID"
-            /></el-tab-pane>
-
-            <el-tab-pane label="协作教师管理" lazy :name="components[3]">
-                <partner :course-id="courseID" />
-            </el-tab-pane>
-
-            <el-tab-pane label="评论模板管理" lazy :name="components[4]">
-                <comment-template :course-id="courseID" />
+            <el-tab-pane
+                v-for="component of components"
+                :key="'CourseManageTab' + component.name"
+                :label="component.label"
+                lazy
+                :name="component.name"
+            >
+                <component
+                    v-if="activeName === component.name"
+                    :is="component.name"
+                    :course-id="courseID"
+                />
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -40,11 +34,11 @@ export default {
             courseID: this.$route.params.id,
             activeName: "info",
             components: [
-                "info",
-                "student",
-                "group",
-                "partner",
-                "commentTemplate",
+                { name: "info", label: "基础设置" },
+                { name: "student", label: "学生管理" },
+                { name: "group", label: "分组管理" },
+                { name: "partner", label: "协作教师管理" },
+                { name: "commentTemplate", label: "评论模板管理" },
             ],
         };
     },
@@ -53,8 +47,12 @@ export default {
             this.$router.push(`${this.$route.path}?tab=${val}`);
         },
         "$route.query.tab"(val) {
-            // console.log(val);
-            if (val && this.components.indexOf(val) !== -1) {
+            if (
+                val &&
+                this.components.some((e) => {
+                    return e.name === val;
+                })
+            ) {
                 this.activeName = val;
             }
         },

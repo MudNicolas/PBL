@@ -238,7 +238,7 @@ export default {
         // 不预览圆形图片
         noCircle: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         // 不预览方形图片
         noSquare: {

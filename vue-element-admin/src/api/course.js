@@ -120,3 +120,19 @@ export function deleteCommentTemplate(data) {
 	})
 }
 
+export function getGroup(query) {
+	return request({
+		url: '/course/manage/group/get',
+		method: 'get',
+		params: query
+	})
+}
+
+export function getUnGroupedStudents(query) {
+	return request({
+		url: '/course/manage/group/unGroupedStudents/get',
+		method: 'get',
+		params: query
+	})
+}
+

@@ -172,16 +172,12 @@ export default {
     methods: {
         getStudentList() {
             this.loading = true;
-            getStudentList({ courseID: this.courseId })
-                .then((res) => {
-                    let { data } = res;
-                    this.studentList = data.studentList;
-                    this.course.name = data.courseName;
-                    this.loading = false;
-                })
-                .catch((err) => {
-                    this.loading = false;
-                });
+            getStudentList({ courseID: this.courseId }).then((res) => {
+                let { data } = res;
+                this.studentList = data.studentList;
+                this.course.name = data.courseName;
+                this.loading = false;
+            });
         },
 
         hanleExport() {

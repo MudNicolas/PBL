@@ -3,7 +3,7 @@ let router = Router()
 import Course from "#models/Course.js"
 
 router.all('*', (req, res, next) => {
-	let courseID = req.body.courseID
+	let courseID = req.body.courseID || req.query.courseID
 	let validate = /^[a-fA-F0-9]{24}$/.test(courseID);
 	if (!validate) {
 		res.json({
@@ -51,11 +51,13 @@ import info from "./modules/CourseManage/info.js"
 import student from "./modules/CourseManage/student.js"
 import partner from "./modules/CourseManage/partner.js"
 import commontTemplate from "./modules/CourseManage/commentTemplate.js"
+import group from './modules/CourseManage/group.js'
 
 router.use('/info', info)
 router.use('/student', student)
 router.use('/partner', partner)
 router.use('/commentTemplate', commontTemplate)
+router.use('/group', group)
 
 
 export default router
