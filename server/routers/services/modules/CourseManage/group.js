@@ -86,7 +86,14 @@ router.get('/unGroupedStudents/get', (req, res, next) => {
 })
 
 router.post('/create', (req, res) => {
-	let { courseID, newGroup } = req.body
+	let { courseID, targetGroup } = req.body
+	if (targetGroup.groupMembersID.length === 0) {
+		res.json({
+			code: 31004,
+			message: '组员不能为空'
+		})
+		return
+	}
 
 	Course
 		.findById(courseID)
@@ -100,7 +107,7 @@ router.post('/create', (req, res) => {
 				return;
 			}
 			let { studentList } = course
-			let { groupMembersID } = newGroup
+			let { groupMembersID } = targetGroup
 			let isNotInTheCourse = groupMembersID.some(m => {
 				return studentList.indexOf(m) === -1
 			})
@@ -127,7 +134,7 @@ router.post('/create', (req, res) => {
 				return
 			}
 
-			let groupName = newGroup.name || ""
+			let groupName = targetGroup.name || ""
 			let groupSchema = {
 				name: groupName,
 				groupMember: groupMembersID
@@ -148,6 +155,90 @@ router.post('/create', (req, res) => {
 
 		})
 
+})
+
+router.all('*', (req, res, next) => {
+	let { courseID, groupID } = req.query || req.body
+	Course.findById(courseID, {
+		group: {
+			$elemMatch: { _id: groupID }
+		}
+	}).then((course, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: 'DataBase Error'
+			})
+			return;
+		}
+		if (!course.group[0]) {
+			res.json({
+				code: 31005,
+				message: '该组不存在'
+			})
+			return
+		}
+		next()
+	})
+})
+
+router.get('/editData/get', (req, res) => {
+	let { courseID, groupID } = req.query
+	Course
+		.findById(courseID)
+		.select('studentList group')
+		.populate({
+			path: 'studentList', select: 'name username', options: {
+				sort: {
+					'username': 1
+				}
+			}
+		})
+		.then((course, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: 'DataBase Error'
+				})
+				return;
+			}
+			if (!course.group[0]) {
+				res.json({
+					code: 31005,
+					message: '该组不存在'
+				})
+				return
+			}
+
+			let editSourceData = course.studentList.filter(s => {
+				if (!studentInGroup(course.group, s._id)) {
+					return s
+				}
+			})
+
+			let groupMembersID, groupName
+			for (let g of course.group) {
+				if (g._id.toString() === groupID.toString()) {
+					groupMembersID = g.groupMember
+					groupName = g.name
+					break
+				}
+			}
+
+			let groupData = course.studentList.filter(s => groupMembersID.indexOf(s._id) > -1)
+			editSourceData = [...editSourceData, ...groupData]
+
+			res.json({
+				code: 20000,
+				data: {
+					editSourceData: editSourceData,
+					groupMembersID: groupMembersID,
+					groupName: groupName
+				}
+			})
+
+
+		})
 })
 
 export default router

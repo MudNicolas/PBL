@@ -144,3 +144,11 @@ export function submitNewGroup(data) {
 	})
 }
 
+export function getEditData(query) {
+	return request({
+		url: '/course/manage/group/editData/get',
+		method: 'get',
+		params: query
+	})
+}
+
