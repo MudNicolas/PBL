@@ -152,7 +152,7 @@ router.post('/create', (req, res) => {
 
 router.all('*', (req, res, next) => {
 	let courseID = req.query.courseID || req.body.courseID
-	let groupID = req.query.groupID || req.body.targetGroup._id
+	let groupID = req.query.groupID || req.body.groupID || req.body.targetGroup._id
 
 	Course.findById(courseID, {
 		group: {
@@ -292,11 +292,23 @@ router.post('/edit', (req, res) => {
 					code: 20000
 				})
 			})
-
-
-
-
 		})
+})
+
+router.post('/delete', (req, res) => {
+	let { courseID, groupID } = req.body
+	Course.updateOne({ _id: courseID }, { $pull: { "group": { _id: groupID } } }).then((c, err) => {
+		if (err) {
+			res.json({
+				code: 30001,
+				message: 'DataBase Error'
+			})
+			return;
+		}
+		res.json({
+			code: 20000
+		})
+	})
 })
 
 export default router

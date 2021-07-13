@@ -48,7 +48,7 @@
                     <el-button
                         type="danger"
                         :disabled="deleteSubmitting"
-                        @click="deleteCommentTemplate(scope.row._id)"
+                        @click="deleteGroup(scope.row.groupID)"
                         ><i class="el-icon-delete" />&nbsp;删除</el-button
                     >
                 </template>
@@ -208,6 +208,7 @@ import {
     submitNewGroup,
     getEditData,
     submitEditGroup,
+    deleteGroup,
 } from "@/api/course";
 export default {
     name: "ManageCourseGroup",
@@ -385,6 +386,40 @@ export default {
                         this.editGroupSubmitting = false;
                     });
             }
+        },
+        deleteGroup(groupID) {
+            this.$confirm("确认删除此组？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true;
+                        this.deleteSubmitting = true;
+                        deleteGroup({
+                            courseID: this.courseId,
+                            groupID: groupID,
+                        })
+                            .then(() => {
+                                this.deleteSubmitting = false;
+                                instance.confirmButtonLoading = false;
+                                this.$message({
+                                    type: "success",
+                                    message: "删除成功!",
+                                });
+                                this.getGroup();
+                                done();
+                            })
+                            .catch(() => {
+                                this.deleteSubmitting = false;
+                                instance.confirmButtonLoading = false;
+                                done();
+                            });
+                    } else {
+                        done();
+                    }
+                },
+            }).catch(() => {});
         },
         handleSendMessagesToSelectedGroup() {},
     },

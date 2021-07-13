@@ -160,3 +160,11 @@ export function submitEditGroup(data) {
 	})
 }
 
+export function deleteGroup(data) {
+	return request({
+		url: '/course/manage/group/delete',
+		method: 'post',
+		data
+	})
+}
+
