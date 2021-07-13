@@ -10,4 +10,4 @@ export const AVATAR_PATH = `${SERVER_ADDRESS}/public/img/avatar/`
 
 export const DEFAULT_PASSWORD = "123456"
 
-export const SECRET_KEY = 'NicolasAirlineNicolasAirlineWUHU'
+export const SECRET_KEY = 'NicolasAirlineWH'

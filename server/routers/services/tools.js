@@ -5,7 +5,7 @@ import User from '#models/User.js'
 import { DEFAULT_PASSWORD, SECRET_KEY } from "#root/settings.js"
 
 const IV_LENGTH = 16;
-const algorithm = 'aes-256-ctr'
+const algorithm = 'aes-128-cbc'
 //aes加密解密
 export function AESEncode(e) {
 	//加密uid+logintime防止token盗用
