@@ -28,10 +28,7 @@ var courseSchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
 		}],
-		isUsed: {
-			type: Boolean,
-			default: true
-		}
+
 	}],
 	isUsed: {
 		type: Boolean,

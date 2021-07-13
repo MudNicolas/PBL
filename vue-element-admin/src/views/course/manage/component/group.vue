@@ -207,6 +207,7 @@ import {
     getUnGroupedStudents,
     submitNewGroup,
     getEditData,
+    submitEditGroup,
 } from "@/api/course";
 export default {
     name: "ManageCourseGroup",
@@ -262,7 +263,7 @@ export default {
                             username: e.username,
                         };
                     });
-                    this.editGroup._id = groupID;
+                    this.editGroup._id = row.groupID;
                     this.editSourceStudents = students;
                     this.editGroup.groupMembersID = groupMembersID;
                     this.editGroup.name = groupName;
@@ -363,7 +364,28 @@ export default {
                     });
             }
         },
-        submitEditGroup() {},
+        submitEditGroup() {
+            if (this.editGroup.groupMembersID.length > 0) {
+                this.editGroupSubmitting = true;
+                submitEditGroup({
+                    courseID: this.courseId,
+                    targetGroup: this.editGroup,
+                })
+                    .then((res) => {
+                        this.$message({
+                            type: "success",
+                            message: "编辑成功",
+                        });
+                        this.unGroupedStudents = [];
+                        this.getGroup();
+                        this.editGroupSubmitting = false;
+                        this.editGroupVisible = false;
+                    })
+                    .catch(() => {
+                        this.editGroupSubmitting = false;
+                    });
+            }
+        },
         handleSendMessagesToSelectedGroup() {},
     },
 };

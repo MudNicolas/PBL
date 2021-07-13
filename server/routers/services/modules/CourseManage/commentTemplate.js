@@ -93,7 +93,7 @@ router.all("*", (req, res, next) => {
 			})
 			return;
 		}
-		if (!course.commentTemplate[0]) {
+		if (!course || !course.commentTemplate[0]) {
 			res.json({
 				code: 30404,
 				message: '该条目不存在'

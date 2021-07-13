@@ -152,3 +152,11 @@ export function getEditData(query) {
 	})
 }
 
+export function submitEditGroup(data) {
+	return request({
+		url: '/course/manage/group/edit',
+		method: 'post',
+		data
+	})
+}
+

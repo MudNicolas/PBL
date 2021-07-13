@@ -17,17 +17,10 @@ router.get('/get', (req, res) => {
 				return;
 			}
 			let { group, studentList } = course.toJSON()
-			let g = group.filter(e => {
-				if (e.isUsed) {
-					delete e.isUsed
-					return e
-				}
-			})
-
 			res.json({
 				code: 20000,
 				data: {
-					group: g,
+					group: group,
 					studentNumber: studentList.length
 				}
 			})
@@ -158,7 +151,9 @@ router.post('/create', (req, res) => {
 })
 
 router.all('*', (req, res, next) => {
-	let { courseID, groupID } = req.query || req.body
+	let courseID = req.query.courseID || req.body.courseID
+	let groupID = req.query.groupID || req.body.targetGroup._id
+
 	Course.findById(courseID, {
 		group: {
 			$elemMatch: { _id: groupID }
@@ -171,7 +166,7 @@ router.all('*', (req, res, next) => {
 			})
 			return;
 		}
-		if (!course.group[0]) {
+		if (!course || !course.group[0]) {
 			res.json({
 				code: 31005,
 				message: '该组不存在'
@@ -202,13 +197,6 @@ router.get('/editData/get', (req, res) => {
 				})
 				return;
 			}
-			if (!course.group[0]) {
-				res.json({
-					code: 31005,
-					message: '该组不存在'
-				})
-				return
-			}
 
 			let editSourceData = course.studentList.filter(s => {
 				if (!studentInGroup(course.group, s._id)) {
@@ -236,6 +224,77 @@ router.get('/editData/get', (req, res) => {
 					groupName: groupName
 				}
 			})
+
+
+		})
+})
+
+router.post('/edit', (req, res) => {
+	let { courseID, targetGroup } = req.body
+	let groupID = targetGroup._id
+	Course
+		.findById(courseID)
+		.select('studentList group')
+		.then((course, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: 'DataBase Error'
+				})
+				return;
+			}
+			let { studentList } = course
+			let { groupMembersID } = targetGroup
+			let isNotInTheCourse = groupMembersID.some(m => {
+				return studentList.indexOf(m) === -1
+			})
+
+			if (isNotInTheCourse) {
+				res.json({
+					code: 31003,
+					message: "目标组中有学生不属于本课程"
+				})
+				return
+			}
+
+			let { group } = course
+			let otherGroup = group.filter(g => g._id.toString() !== groupID)
+			//如果groupMemberID有在其他组已经成组的
+			let hasGrouped = groupMembersID.some(m_id => {
+				if (studentInGroup(otherGroup, m_id)) {
+					return true
+				}
+			})
+			if (hasGrouped) {
+				res.json({
+					code: 31002,
+					message: "目标组中已有学生成组"
+				})
+				return
+			}
+
+			for (let g of course.group) {
+				if (g._id.toString() === groupID) {
+					g.name = targetGroup.name;
+					g.groupMember = targetGroup.groupMembersID
+				}
+				break
+			}
+
+			course.save().then((c, err) => {
+				if (err) {
+					res.json({
+						code: 30001,
+						message: 'DataBase Error'
+					})
+					return;
+				}
+				res.json({
+					code: 20000
+				})
+			})
+
+
 
 
 		})
