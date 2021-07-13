@@ -10,4 +10,7 @@ export const AVATAR_PATH = `${SERVER_ADDRESS}/public/img/avatar/`
 
 export const DEFAULT_PASSWORD = "123456"
 
+//16位
 export const SECRET_KEY = 'NicolasAirlineWH'
+//16位
+export const IV = 'WUHUWUHUWUHUWUHU'

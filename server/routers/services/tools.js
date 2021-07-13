@@ -2,31 +2,27 @@ import crypto from 'crypto';
 import md5 from 'js-md5';
 import multiparty from 'multiparty';
 import User from '#models/User.js'
-import { DEFAULT_PASSWORD, SECRET_KEY } from "#root/settings.js"
+import { DEFAULT_PASSWORD, SECRET_KEY, IV } from "#root/settings.js"
 
-const IV_LENGTH = 16;
-const algorithm = 'aes-128-cbc'
+const algorithm = 'aes128'
 //aes加密解密
 export function AESEncode(e) {
 	//加密uid+logintime防止token盗用
-	let iv = crypto.randomBytes(IV_LENGTH);
-	let content = JSON.stringify(e);
-	let cipher = crypto.createCipheriv(algorithm, Buffer.from(SECRET_KEY), iv);
-	let encrypted = cipher.update(content);
-	encrypted = Buffer.concat([encrypted, cipher.final()]);
-	return iv.toString('hex') + ':' + encrypted.toString('hex');
+	var content = JSON.stringify(e);
+	var cipher = crypto.createCipheriv(algorithm, SECRET_KEY, IV); //使用aes192加密
+	var enc = cipher.update(content, "utf8", "hex"); //编码方式从utf-8转为hex;
+	enc += cipher.final('hex'); //编码方式转为hex;
+	return enc;
 }
 
 export function AESDecode(e) {
 	//防止用户乱搞
 	try {
-		let textParts = e.split(':');
-		let iv = Buffer.from(textParts.shift(), 'hex');
-		let encryptedText = Buffer.from(textParts.join(':'), 'hex');
-		let decipher = crypto.createDecipheriv(algorithm, Buffer.from(SECRET_KEY), iv);
-		let decrypted = decipher.update(encryptedText);
-		decrypted = Buffer.concat([decrypted, decipher.final()]);
-		return JSON.parse(decrypted.toString());
+		var enc = e;
+		var decipher = crypto.createDecipheriv(algorithm, SECRET_KEY, IV);
+		var dec = decipher.update(enc, "hex", "utf8");
+		dec += decipher.final("utf8");
+		return JSON.parse(dec);
 	} catch (error) {
 		return 0
 	}
