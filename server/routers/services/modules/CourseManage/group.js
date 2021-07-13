@@ -277,10 +277,9 @@ router.post('/edit', (req, res) => {
 				if (g._id.toString() === groupID) {
 					g.name = targetGroup.name;
 					g.groupMember = targetGroup.groupMembersID
+					break
 				}
-				break
 			}
-
 			course.save().then((c, err) => {
 				if (err) {
 					res.json({
