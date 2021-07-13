@@ -54,8 +54,6 @@ router.post('/create', (req, res) => {
 			})
 			return;
 		}
-
-
 		course.commentTemplate.push({
 			name: template.name,
 			template: temp
@@ -79,6 +77,14 @@ router.post('/create', (req, res) => {
 router.all("*", (req, res, next) => {
 	let { courseID } = req.body
 	let templateID = req.body.templateID || req.body.template._id
+	let validate = /^[a-fA-F0-9]{24}$/.test(templateID);
+	if (!validate) {
+		res.json({
+			code: 404,
+			message: "error"
+		})
+		return
+	}
 	Course.findOne({
 		_id: courseID,
 	}, {
@@ -100,12 +106,13 @@ router.all("*", (req, res, next) => {
 			})
 			return
 		}
+		req.template = course
 		next()
 	})
 })
 
 router.post('/edit', (req, res) => {
-	let { courseID, template } = req.body
+	let { template } = req.body
 	let temp = template.entry
 	let uniqueTemp = new Set(temp)
 	if (uniqueTemp.size !== temp.length) {
@@ -115,47 +122,35 @@ router.post('/edit', (req, res) => {
 		})
 		return
 	}
-	Course.findOne({
-		_id: courseID,
-	}, {
-		commentTemplate: {
-			$elemMatch: { _id: template._id }
-		}
-	}).then((course) => {
 
-		course.commentTemplate[0].template = temp
-		course.commentTemplate[0].name = template.name
-		course.save().then((c, err) => {
-			if (err) {
-				res.json({
-					code: 30001,
-					message: 'DataBase Error'
-				})
-				return;
-			}
+	let docCourseTemplate = req.template
+	docCourseTemplate.commentTemplate[0].template = temp
+	docCourseTemplate.commentTemplate[0].name = template.name
+	docCourseTemplate.save().then((c, err) => {
+		if (err) {
 			res.json({
-				code: 20000
+				code: 30001,
+				message: 'DataBase Error'
 			})
+			return;
+		}
+		res.json({
+			code: 20000
 		})
 	})
+
 })
 
 router.post('/delete', (req, res) => {
-	let { courseID, templateID } = req.body
-	Course.findOne({
-		_id: courseID,
-	}, {
-		commentTemplate: {
-			$elemMatch: { _id: templateID }
-		}
-	}).then((course) => {
-		course.commentTemplate[0].isUsed = false;
-		course.save().then(() => {
-			res.json({
-				code: 20000
-			})
+
+	let docCourseTemplate = req.template
+	docCourseTemplate.commentTemplate[0].isUsed = false;
+	docCourseTemplate.save().then(() => {
+		res.json({
+			code: 20000
 		})
 	})
+
 })
 
 export default router

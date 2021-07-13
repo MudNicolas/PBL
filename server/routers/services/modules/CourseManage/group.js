@@ -154,27 +154,38 @@ router.all('*', (req, res, next) => {
 	let courseID = req.query.courseID || req.body.courseID
 	let groupID = req.query.groupID || req.body.groupID || req.body.targetGroup._id
 
-	Course.findById(courseID, {
-		group: {
-			$elemMatch: { _id: groupID }
-		}
-	}).then((course, err) => {
-		if (err) {
-			res.json({
-				code: 30001,
-				message: 'DataBase Error'
-			})
-			return;
-		}
-		if (!course || !course.group[0]) {
-			res.json({
-				code: 31005,
-				message: '该组不存在'
-			})
-			return
-		}
-		next()
-	})
+	let validate = /^[a-fA-F0-9]{24}$/.test(groupID);
+	if (!validate) {
+		res.json({
+			code: 404,
+			message: "error"
+		})
+		return
+	}
+
+	Course
+		.findById(courseID, {
+			group: {
+				$elemMatch: { _id: groupID }
+			}
+		})
+		.then((course, err) => {
+			if (err) {
+				res.json({
+					code: 30001,
+					message: 'DataBase Error'
+				})
+				return;
+			}
+			if (!course || !course.group[0]) {
+				res.json({
+					code: 31005,
+					message: '该组不存在'
+				})
+				return
+			}
+			next()
+		})
 })
 
 router.get('/editData/get', (req, res) => {
@@ -242,6 +253,13 @@ router.post('/edit', (req, res) => {
 					message: 'DataBase Error'
 				})
 				return;
+			}
+			if (!course || !course.group[0]) {
+				res.json({
+					code: 31005,
+					message: '该组不存在'
+				})
+				return
 			}
 			let { studentList } = course
 			let { groupMembersID } = targetGroup

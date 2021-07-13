@@ -42,7 +42,7 @@
             <el-table-column prop="name" label="姓名"> </el-table-column>
             <el-table-column label="操作" align="center" width="360">
                 <template slot-scope="scope">
-                    <el-button type="primary" @click="edit(scope.row)"
+                    <el-button type="primary" @click="edit(scope.row.groupID)"
                         ><i class="el-icon-edit" />&nbsp;编辑</el-button
                     >
                     <el-button
@@ -249,10 +249,10 @@ export default {
             this.getUnGroupedStudents();
         },
         //编辑组时，获取未分组及本组学生
-        edit(row) {
+        edit(groupID) {
             this.editGroupVisible = true;
             this.sourceStudentsLoading = true;
-            getEditData({ courseID: this.courseId, groupID: row.groupID }).then(
+            getEditData({ courseID: this.courseId, groupID: groupID }).then(
                 (res) => {
                     let { editSourceData, groupMembersID, groupName } =
                         res.data;
@@ -362,6 +362,8 @@ export default {
                     })
                     .catch(() => {
                         this.newGroupSubmitting = false;
+                        this.getUnGroupedStudents();
+                        this.getGroup();
                     });
             }
         },
@@ -384,6 +386,8 @@ export default {
                     })
                     .catch(() => {
                         this.editGroupSubmitting = false;
+                        this.edit();
+                        this.getGroup();
                     });
             }
         },
@@ -405,7 +409,7 @@ export default {
                                 instance.confirmButtonLoading = false;
                                 this.$message({
                                     type: "success",
-                                    message: "删除成功!",
+                                    message: "删除成功",
                                 });
                                 this.getGroup();
                                 done();

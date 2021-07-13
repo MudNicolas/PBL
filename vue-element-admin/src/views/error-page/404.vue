@@ -25,15 +25,7 @@
             </div>
             <div class="bullshit">
                 <div class="bullshit__oops">OOPS!</div>
-                <div class="bullshit__info">
-                    All rights reserved
-                    <a
-                        style="color: #20a0ff"
-                        href="https://wallstreetcn.com"
-                        target="_blank"
-                        >wallstreetcn</a
-                    >
-                </div>
+                <div class="bullshit__info">All rights reserved Nicolas</div>
                 <div class="bullshit__headline">{{ message }}</div>
                 <div class="bullshit__info">
                     请检查您输入的url是否正确, 或者点击下面的按钮回到首页
