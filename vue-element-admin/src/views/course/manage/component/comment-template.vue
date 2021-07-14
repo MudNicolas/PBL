@@ -9,7 +9,7 @@
                 "
                 >创建评论模板</el-button
             >
-            <div class="switch">
+            <div class="right-panel">
                 <el-switch v-model="editAndDeleteActive" active-text="启用编辑">
                 </el-switch>
             </div>
@@ -480,8 +480,8 @@ export default {
 .toolbar {
     display: flex;
     align-items: center;
-    .switch {
-        margin-left: 10px;
+    .right-panel {
+        margin-left: auto;
     }
 }
 </style>

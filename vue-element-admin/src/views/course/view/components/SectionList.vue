@@ -40,7 +40,7 @@
 import draggable from "vuedraggable";
 
 export default {
-    name: "DragList",
+    name: "SectionList",
     components: { draggable },
     props: ["dragable"],
     computed: {

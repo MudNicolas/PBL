@@ -1,11 +1,7 @@
 <template>
     <div class="container" v-loading="loading">
         <div v-if="uid === chiefTeacher._id" style="margin-bottom: 24px">
-            <el-button
-                type="primary"
-                icon="el-icon-user-solid"
-                @click="dialogVisible = true"
-            >
+            <el-button type="primary" icon="el-icon-user-solid" @click="dialogVisible = true">
                 添加协作教师
             </el-button>
         </div>
@@ -25,10 +21,7 @@
             >
                 <el-col
                     :span="6"
-                    v-for="t in partnerTeacher.slice(
-                        (index - 1) * 4,
-                        index * 4
-                    )"
+                    v-for="t in partnerTeacher.slice((index - 1) * 4, index * 4)"
                     :key="'managePartnerTeacher-col' + t._id"
                 >
                     <teacher-card :t="t" :uid="uid" />
@@ -61,9 +54,7 @@
                         </el-form-item>
                         <el-form-item>
                             <div style="display: flex">
-                                <el-button
-                                    style="margin-left: auto"
-                                    @click="cancel"
+                                <el-button style="margin-left: auto" @click="cancel"
                                     >取消</el-button
                                 >
                                 <el-button
@@ -83,13 +74,9 @@
 </template>
 
 <script>
-import {
-    getAllTeacher,
-    manageSearchTeacher,
-    addPartnerTeacher,
-} from "@/api/course";
-import TeacherCard from "./component/teacherCard.vue";
-import { mapGetters } from "vuex";
+import { getAllTeacher, manageSearchTeacher, addPartnerTeacher } from "@/api/course"
+import TeacherCard from "./component/teacherCard.vue"
+import { mapGetters } from "vuex"
 export default {
     name: "Partner",
     props: ["courseId"],
@@ -106,56 +93,56 @@ export default {
             submitting: false,
 
             popperAppendToBody: true,
-        };
+        }
     },
     computed: {
         ...mapGetters(["uid"]),
     },
     created() {
-        this.getAllTeacher();
+        this.getAllTeacher()
     },
     methods: {
         getAllTeacher() {
-            this.loading = true;
+            this.loading = true
             getAllTeacher({ courseID: this.courseId })
                 .then((res) => {
-                    let { chiefTeacher } = res.data.teahcer;
-                    let { partnerTeacher } = res.data.teahcer;
-                    this.chiefTeacher = chiefTeacher;
+                    let { chiefTeacher } = res.data.teahcer
+                    let { partnerTeacher } = res.data.teahcer
+                    this.chiefTeacher = chiefTeacher
 
-                    this.partnerTeacher = partnerTeacher;
-                    this.loading = false;
+                    this.partnerTeacher = partnerTeacher
+                    this.loading = false
                 })
-                .catch(() => {});
+                .catch(() => {})
         },
         fetchTeacher(query) {
             if (query !== "") {
-                this.searchLoading = true;
+                this.searchLoading = true
                 manageSearchTeacher({ name: query, courseID: this.courseId })
                     .then((res) => {
-                        const { data } = res;
+                        const { data } = res
                         this.searchOptions = data.map((item) => {
                             return {
                                 value: item._id,
                                 label: item.username + " " + item.name,
-                            };
-                        });
+                            }
+                        })
 
-                        this.searchLoading = false;
+                        this.searchLoading = false
                     })
                     .catch(() => {
-                        this.searchLoading = false;
-                    });
+                        this.searchLoading = false
+                    })
             } else {
-                this.searchOptions = [];
-                this.$emit("update:options", []);
+                this.searchOptions = []
+                this.$emit("update:options", [])
             }
         },
         cancel() {
-            this.dialogVisible = false;
+            this.dialogVisible = false
         },
         handleSubmit() {
-            this.submitting = true;
+            this.submitting = true
             addPartnerTeacher({
                 courseID: this.courseId,
                 t_uids: this.newPartner,
@@ -164,19 +151,19 @@ export default {
                     this.$message({
                         type: "success",
                         message: "添加协作教师成功",
-                    });
-                    this.submitting = false;
-                    this.dialogVisible = false;
-                    this.searchOptions = [];
-                    this.newPartner = [];
-                    this.getAllTeacher();
+                    })
+                    this.submitting = false
+                    this.dialogVisible = false
+                    this.searchOptions = []
+                    this.newPartner = []
+                    this.getAllTeacher()
                 })
                 .catch(() => {
-                    this.submitting = false;
-                });
+                    this.submitting = false
+                })
         },
     },
-};
+}
 </script>
 
 <style lang='scss' scoped>
