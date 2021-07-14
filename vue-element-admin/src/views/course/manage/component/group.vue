@@ -11,10 +11,14 @@
             <el-button
                 type="primary"
                 class="filter-item"
-                icon="el-icon-message-solid"
+                icon="el-icon-message"
                 @click="handleSendMessagesToSelectedGroup"
                 >向选中组发送私信</el-button
             >
+            <div class="switch">
+                <el-switch v-model="editAndDeleteActive" active-text="启用编辑">
+                </el-switch>
+            </div>
             <span class="infoLabel"
                 >本课程共 {{ studentNumber }} 名学生，
                 {{ groupedStudentNumber }} 名已分组</span
@@ -38,15 +42,22 @@
                 align="center"
             >
             </el-table-column>
-            <el-table-column prop="username" label="学号"> </el-table-column>
-            <el-table-column prop="name" label="姓名"> </el-table-column>
+            <el-table-column prop="username" label="学号" align="center">
+            </el-table-column>
+            <el-table-column prop="name" label="姓名" align="center">
+            </el-table-column>
             <el-table-column label="操作" align="center" width="360">
                 <template slot-scope="scope">
-                    <el-button type="primary" @click="edit(scope.row.groupID)"
+                    <el-button icon="el-icon-message"> 发送私信 </el-button>
+                    <el-button
+                        type="primary"
+                        v-if="editAndDeleteActive"
+                        @click="edit(scope.row.groupID)"
                         ><i class="el-icon-edit" />&nbsp;编辑</el-button
                     >
                     <el-button
                         type="danger"
+                        v-if="editAndDeleteActive"
                         :disabled="deleteSubmitting"
                         @click="deleteGroup(scope.row.groupID)"
                         ><i class="el-icon-delete" />&nbsp;删除</el-button
@@ -57,6 +68,13 @@
         <el-dialog title="添加组" :visible.sync="addGroupVisible">
             <div style="text-align: center" v-loading="sourceStudentsLoading">
                 <el-form>
+                    <el-row>
+                        <el-col
+                            ><el-form-item>
+                                建议将组长放在首位</el-form-item
+                            ></el-col
+                        ></el-row
+                    >
                     <el-row>
                         <el-col>
                             <el-form-item>
@@ -129,6 +147,13 @@
         <el-dialog title="编辑组" :visible.sync="editGroupVisible">
             <div style="text-align: center" v-loading="sourceStudentsLoading">
                 <el-form>
+                    <el-row>
+                        <el-col
+                            ><el-form-item>
+                                建议将组长放在首位</el-form-item
+                            ></el-col
+                        ></el-row
+                    >
                     <el-row>
                         <el-col>
                             <el-form-item>
@@ -238,6 +263,7 @@ export default {
             studentNumber: 0,
             groupedStudentNumber: 0,
             spanList: new Set([0, 1, 2, 5]),
+            editAndDeleteActive: false,
         };
     },
     created() {
@@ -251,9 +277,12 @@ export default {
         //编辑组时，获取未分组及本组学生
         edit(groupID) {
             this.editGroupVisible = true;
+            this.getEditData(groupID);
+        },
+        getEditData(groupID) {
             this.sourceStudentsLoading = true;
-            getEditData({ courseID: this.courseId, groupID: groupID }).then(
-                (res) => {
+            getEditData({ courseID: this.courseId, groupID: groupID })
+                .then((res) => {
                     let { editSourceData, groupMembersID, groupName } =
                         res.data;
                     let students = editSourceData.map((e) => {
@@ -264,13 +293,16 @@ export default {
                             username: e.username,
                         };
                     });
-                    this.editGroup._id = row.groupID;
+                    this.editGroup._id = groupID;
                     this.editSourceStudents = students;
                     this.editGroup.groupMembersID = groupMembersID;
                     this.editGroup.name = groupName;
                     this.sourceStudentsLoading = false;
-                }
-            );
+                })
+                .catch(() => {
+                    this.editGroupVisible = false;
+                    this.getGroup();
+                });
         },
         //新建组时，获取未分组学生
         getUnGroupedStudents() {
@@ -386,7 +418,7 @@ export default {
                     })
                     .catch(() => {
                         this.editGroupSubmitting = false;
-                        this.edit();
+                        this.getEditData(this.editGroup._id);
                         this.getGroup();
                     });
             }
@@ -433,11 +465,16 @@ export default {
 <style lang='scss' scoped>
 .toolbar {
     display: flex;
+    align-items: center;
 
     .infoLabel {
         margin-left: auto;
         line-height: 36px;
         color: #909399;
+    }
+
+    .switch {
+        margin-left: 10px;
     }
 }
 

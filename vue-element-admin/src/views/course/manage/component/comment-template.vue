@@ -1,6 +1,6 @@
 <template>
     <div style="padding-top: 15px">
-        <div>
+        <div class="toolbar">
             <el-button
                 type="primary"
                 icon="el-icon-plus"
@@ -9,6 +9,10 @@
                 "
                 >创建评论模板</el-button
             >
+            <div class="switch">
+                <el-switch v-model="editAndDeleteActive" active-text="启用编辑">
+                </el-switch>
+            </div>
         </div>
         <el-table
             :data="commentTemplate"
@@ -30,11 +34,15 @@
                     <el-button @click="preview(scope.row._id)"
                         ><i class="el-icon-view" />&nbsp;预览</el-button
                     >
-                    <el-button type="primary" @click="edit(scope.row._id)"
+                    <el-button
+                        v-if="editAndDeleteActive"
+                        type="primary"
+                        @click="edit(scope.row._id)"
                         ><i class="el-icon-edit" />&nbsp;编辑</el-button
                     >
                     <el-button
                         type="danger"
+                        v-if="editAndDeleteActive"
                         :disabled="deleteSubmitting"
                         @click="deleteCommentTemplate(scope.row._id)"
                         ><i class="el-icon-delete" />&nbsp;删除</el-button
@@ -243,6 +251,7 @@ export default {
             },
             editSubmitting: false,
             deleteSubmitting: false,
+            editAndDeleteActive: false,
         };
     },
     methods: {
@@ -466,5 +475,13 @@ export default {
 <style lang="scss" scoped>
 .new-template-footbar {
     display: flex;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    .switch {
+        margin-left: 10px;
+    }
 }
 </style>
