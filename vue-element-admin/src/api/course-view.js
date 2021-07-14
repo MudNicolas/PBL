@@ -1,10 +1,9 @@
 import request from "@/utils/request"
 
-export function getCourseInfo(data) {
+export function getCourseView(query) {
     return request({
-        url: '/view/getInfo',
-        method: 'post',
-        data
-
+        url: "/view/get",
+        method: "get",
+        params: query,
     })
 }

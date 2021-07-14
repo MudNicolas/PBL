@@ -6,8 +6,8 @@
         v-bind="dragOptions"
         @start="drag = true"
         @end="
-            drag = false;
-            onDragEnd();
+            drag = false
+            onDragEnd()
         "
         :disabled="!dragable"
     >
@@ -16,16 +16,21 @@
                 class="section"
                 :class="{ 'list-group-item': dragable }"
                 v-for="element in sectionList"
-                :key="element.id"
+                :key="element._id"
             >
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
-                        <span>{{ element.name }} </span>
+                        <span style="font-size: 18px">
+                            {{ element.name }}
+                            <svg-icon v-if="element.visible" icon-class="invisible" />
+                        </span>
                         <el-button
+                            icon="el-icon-set-up"
                             style="float: right; padding: 3px 0"
                             type="text"
-                            >操作按钮</el-button
                         >
+                            设置
+                        </el-button>
                     </div>
                     <div class="section-info">
                         {{ element.info }}
@@ -37,12 +42,12 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
+import draggable from "vuedraggable"
 
 export default {
     name: "SectionList",
     components: { draggable },
-    props: ["dragable"],
+    props: ["dragable", "sections"],
     computed: {
         dragOptions() {
             return {
@@ -50,25 +55,21 @@ export default {
                 group: "description",
                 disabled: false,
                 ghostClass: "ghost",
-            };
+            }
         },
     },
     data() {
         return {
             drag: true,
-            sectionList: [
-                { name: "name1", info: "info1", id: "1" },
-                { name: "name2", info: "info2", id: "2" },
-                { name: "nam32", info: "info3", id: "3" },
-            ],
-        };
+            sectionList: this.sections,
+        }
     },
     methods: {
         onDragEnd() {
-            alert("?");
+            alert("?")
         },
     },
-};
+}
 </script>
 
 <style scoped>

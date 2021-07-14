@@ -5,7 +5,8 @@
                 <div class="block">
                     <el-image :src="course.cover">
                         <div slot="placeholder" class="image-slot">
-                            加载中<span class="dot">...</span>
+                            加载中
+                            <span class="dot">...</span>
                         </div>
                     </el-image>
                 </div>
@@ -34,9 +35,8 @@
                     <div class="course-bio">
                         <div class="course-education course-bio-section">
                             <div class="course-bio-section-header">
-                                <svg-icon icon-class="education" /><span
-                                    >Introduction</span
-                                >
+                                <svg-icon icon-class="education" />
+                                <span>Introduction</span>
                             </div>
                             <div class="course-bio-section-body">
                                 <div class="text-muted">
@@ -65,11 +65,11 @@ export default {
                     },
                     partnerTeacher: [{ name: "" }],
                     cover: "",
-                };
+                }
             },
         },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

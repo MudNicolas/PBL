@@ -1,14 +1,10 @@
 <template>
     <el-card :body-style="{ padding: '0px' }" style="visibility: hidden">
-        <div class="block image-loading-wrap">
-            <el-image :src="course.cover" fit="fill"> </el-image>
-        </div>
+        <div class="image-loading-wrap"></div>
         <div style="width: 100%">
             <div style="padding: 14px">
-                <span style="float: right; margin: 0 8px"
-                    ><i class="el-icon-arrow-down"
-                /></span>
-                <span>{{ course.title }} </span>
+                <span style="float: right; margin: 0 8px"><i class="el-icon-arrow-down" /></span>
+                <span>{{ course.title }}</span>
                 <div class="bottom clearfix">
                     <div class="teacher">
                         <span>
@@ -31,7 +27,7 @@
 export default {
     name: "card-relative",
     props: ["course"],
-};
+}
 </script>
 
 <style>

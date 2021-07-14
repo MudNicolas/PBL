@@ -11,32 +11,31 @@
     >
         <router-link :to="'/course/view/' + course._id">
             <div class="block">
-                <el-image :src="path + course.cover" fit="fill"
-                    ><div slot="placeholder" class="image-slot">
-                        加载中<span class="dot">...</span>
+                <el-image :src="path + course.cover" fit="fill">
+                    <div slot="placeholder" class="image-slot">
+                        加载中
+                        <span class="dot">...</span>
                     </div>
                 </el-image>
             </div>
         </router-link>
 
         <div style="padding: 14px; cursor: pointer" @click="onActive">
-            <span style="float: right; margin: 0 8px"
-                ><i
+            <span style="float: right; margin: 0 8px">
+                <i
                     class="el-icon-arrow-down intro-arrow"
                     :class="{
                         'intro-arrow-rotate': isActive,
                     }"
-            /></span>
-            <span>{{ course.name }} </span>
+                />
+            </span>
+            <span>{{ course.name }}</span>
             <div class="bottom clearfix">
                 <div class="teacher">
                     <span>
                         {{ course.chiefTeacher.name }}
                     </span>
-                    <span
-                        v-for="teacher in course.partnerTeacher"
-                        :key="course._id + teacher.name"
-                    >
+                    <span v-for="teacher in course.partnerTeacher" :key="course._id + teacher.name">
                         {{ teacher.name }}
                     </span>
                 </div>
@@ -57,18 +56,16 @@ export default {
     data() {
         return {
             isActive: false,
-            path:
-                process.env.VUE_APP_PUBLIC_PATH +
-                process.env.VUE_APP_COVER_PATH,
-        };
+            path: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_COVER_PATH,
+        }
     },
     watch: {
         //监听点击的卡片，若点击的卡片不是本card，则收回卡片
         clickedItemID: {
             handler(item) {
                 if (item !== this.course._id) {
-                    this.isActive = false;
-                    this.$refs.intro.style.height = "0px";
+                    this.isActive = false
+                    this.$refs.intro.style.height = "0px"
                 }
             },
         },
@@ -77,17 +74,16 @@ export default {
         //点击卡片伸缩，同时传给其他卡片本卡片的id，让他们回收，始终最多只会有一个card展开
         onActive() {
             //console.log(this.clickedItemID, "+", this.course._id);
-            this.$emit("update:clickedItemID", this.course._id);
-            this.isActive = !this.isActive;
+            this.$emit("update:clickedItemID", this.course._id)
+            this.isActive = !this.isActive
             if (this.isActive) {
-                this.$refs.intro.style.height =
-                    this.$refs.intro.scrollHeight + "px";
+                this.$refs.intro.style.height = this.$refs.intro.scrollHeight + "px"
             } else {
-                this.$refs.intro.style.height = "0px";
+                this.$refs.intro.style.height = "0px"
             }
         },
     },
-};
+}
 </script>
 
 <style scoped>

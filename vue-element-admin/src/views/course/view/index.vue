@@ -5,10 +5,13 @@
                 <el-col :span="23" :xs="24">
                     <div class="tools-wrapper">
                         <router-link :to="'/course/manage/' + courseID">
-                            <el-button plain><i class="el-icon-s-tools" />课程设置</el-button>
+                            <el-button plain>
+                                <i class="el-icon-s-tools" />
+                                课程设置
+                            </el-button>
                         </router-link>
                         <div class="switch-wrapper">
-                            <el-switch v-model="dragable" active-text="开启拖动"> </el-switch>
+                            <el-switch v-model="dragable" active-text="开启拖动"></el-switch>
                         </div>
                     </div>
                 </el-col>
@@ -18,7 +21,7 @@
                     <info-card :course="course" />
                 </el-col>
                 <el-col :span="18" :xs="24">
-                    <section-list :dragable="dragable" />
+                    <section-list :dragable="dragable" :sections="sections" />
                 </el-col>
             </el-row>
         </div>
@@ -26,7 +29,7 @@
 </template>
 
 <script>
-import { getCourseInfo } from "@/api/course-view"
+import { getCourseView } from "@/api/course-view"
 import SectionList from "./components/SectionList.vue"
 import InfoCard from "./components/info-card"
 
@@ -37,6 +40,7 @@ export default {
         return {
             courseID: "",
             course: {},
+            sections: [],
             loading: true,
             dragable: false,
         }
@@ -44,12 +48,13 @@ export default {
     created() {
         //let selfParam = this.$route.path.split("/");
         this.courseID = this.$route.params.id
-        this.getCourseInfo()
+        this.getCourseView()
     },
     methods: {
-        getCourseInfo() {
-            getCourseInfo({ courseID: this.courseID }).then(res => {
+        getCourseView() {
+            getCourseView({ courseID: this.courseID }).then(res => {
                 this.course = res.data.course
+                this.sections = res.data.sections
                 this.loading = false
             })
         },
