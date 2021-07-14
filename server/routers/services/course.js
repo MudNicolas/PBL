@@ -47,8 +47,9 @@ router.post('/getList', (req, res, next) => {
 			}
 
 
-			Course.find(findCourseQuery(req.uid))
-				.count().then(courseNum => {
+			Course
+				.countDocuments(findCourseQuery(req.uid))
+				.then(courseNum => {
 					res.json({
 						code: 20000,
 						data: {

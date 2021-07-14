@@ -42,6 +42,7 @@ app.use('*', (req, res, next) => {
 app.use('/api', api)
 
 mongoose.set('useFindAndModify', false)
+mongoose.set('useUnifiedTopology', true)
 mongoose.connect('mongodb://localhost:27027/PBL', function (err) {
 	if (err) {
 		console.log("fail");

@@ -6,11 +6,6 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
-/* Router Modules */
-import componentsRouter from './modules/components'
-import chartsRouter from './modules/charts'
-import tableRouter from './modules/table'
-import nestedRouter from './modules/nested'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -80,47 +75,6 @@ export const constantRoutes = [
 				component: () => import('@/views/home/index'),
 				name: 'Home',
 				meta: { title: '首页', icon: 'el-icon-s-home', affix: true }
-			}
-		]
-	},
-	{
-		path: '/dashboard',
-		component: Layout,
-		redirect: '/dashboard',
-		hidden: true,
-		children: [
-			{
-				path: '',
-				component: () => import('@/views/dashboard/index'),
-				name: 'Dashboard',
-				meta: { title: 'Dashboard', icon: 'dashboard' }
-			}
-		]
-	},
-	{
-		path: '/documentation',
-		component: Layout,
-		hidden: true,
-		children: [
-			{
-				path: 'index',
-				component: () => import('@/views/documentation/index'),
-				name: 'Documentation',
-				meta: { title: 'Documentation', icon: 'documentation' }
-			}
-		]
-	},
-	{
-		path: '/guide',
-		component: Layout,
-		redirect: '/guide/index',
-		hidden: true,
-		children: [
-			{
-				path: 'index',
-				component: () => import('@/views/guide/index'),
-				name: 'Guide',
-				meta: { title: 'Guide', icon: 'guide', noCache: true }
 			}
 		]
 	},
@@ -215,12 +169,14 @@ export const asyncRoutes = [
 		children: [
 			{
 				path: 'create',
-
 				component: () => import('@/views/course/create/index'),
 				name: "CreateCourse",
-				meta: { title: '创建课程', roles: ['teacher'], icon: "el-icon-plus" }
+				meta: {
+					title: '创建课程',
+					roles: ['teacher'],
+					icon: "el-icon-plus"
+				}
 			},
-
 			{
 				path: 'view/:id(\[a-f0-9]{24})',
 				hidden: true,
@@ -247,11 +203,6 @@ export const asyncRoutes = [
 	},
 
 
-	/** when your routing map is too long, you can split it into small modules **/
-	componentsRouter,
-	chartsRouter,
-	nestedRouter,
-	tableRouter,
 
 	{
 		path: '/example',
@@ -326,19 +277,7 @@ export const asyncRoutes = [
 		]
 	},
 
-	{
-		path: '/error-log',
-		component: Layout,
-		hidden: true,
-		children: [
-			{
-				path: 'log',
-				component: () => import('@/views/error-log/index'),
-				name: 'ErrorLog',
-				meta: { title: 'Error Log', icon: 'bug' }
-			}
-		]
-	},
+
 
 	{
 		path: '/excel',
@@ -417,19 +356,7 @@ export const asyncRoutes = [
 		hidden: true
 	},
 
-	{
-		path: '/theme',
-		hidden: true,
-		component: Layout,
-		children: [
-			{
-				path: 'index',
-				component: () => import('@/views/theme/index'),
-				name: 'Theme',
-				meta: { title: 'Theme', icon: 'theme' }
-			}
-		]
-	},
+
 
 	{
 		path: '/clipboard',
@@ -445,17 +372,7 @@ export const asyncRoutes = [
 		]
 	},
 
-	{
-		path: 'external-link',
-		hidden: true,
-		component: Layout,
-		children: [
-			{
-				path: 'https://github.com/PanJiaChen/vue-element-admin',
-				meta: { title: 'External Link', icon: 'link' }
-			}
-		]
-	},
+
 
 	// 404 page must be placed at the end !!!
 	{ path: '*', redirect: '/404', hidden: true }
