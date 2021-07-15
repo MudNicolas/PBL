@@ -4,7 +4,7 @@ var router = Router()
 
 import User from "#models/User.js"
 import Verification from "#models/Verification.js"
-import { AESEncode, AESDecode } from "./tools.js"
+import { AESEncode, AESDecode } from "#services/tools.js"
 
 router.all("/login", (req, res, next) => {
     var username = req.body.username

@@ -1,8 +1,8 @@
 import Router from "express"
-import User from "../../models/User.js"
-import Course from "../../models/Course.js"
-import { UploadImg } from "./tools.js"
-import { InsertUsersReturnIDs } from "./tools.js"
+import User from "#models/User.js"
+import Course from "#models/Course.js"
+import { UploadImg } from "#services/tools.js"
+import { InsertUsersReturnIDs } from "#services/tools.js"
 var router = Router()
 
 var findCourseQuery = uid => {

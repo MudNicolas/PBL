@@ -1,6 +1,6 @@
 import Router from "express"
 var router = Router()
-import Course from "../../models/Course.js"
+import Course from "#models/Course.js"
 
 async function generateBreadCrumb(name, id) {
     const routeTree = {

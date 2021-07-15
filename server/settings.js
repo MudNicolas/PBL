@@ -1,16 +1,21 @@
-export const SERVER_IP = 'http://127.0.0.1'
-
-export const PORT = 14758
-
-export const SERVER_ADDRESS = `${SERVER_IP}:${PORT}`
-
-export const COVER_PATH = `${SERVER_ADDRESS}/public/img/course/`
-
-export const AVATAR_PATH = `${SERVER_ADDRESS}/public/img/avatar/`
-
-export const DEFAULT_PASSWORD = "123456"
-
+const SERVER_IP = "http://127.0.0.1"
+const PORT = 14758
+const SERVER_ADDRESS = `${SERVER_IP}:${PORT}`
+const COVER_PATH = `${SERVER_ADDRESS}/public/img/course/`
+const AVATAR_PATH = `${SERVER_ADDRESS}/public/img/avatar/`
+const DEFAULT_PASSWORD = "123456"
 //16位
-export const SECRET_KEY = 'NicolasAirlineWH'
+const SECRET_KEY = "NicolasAirlineWH"
 //16位
-export const IV = 'WUHUWUHUWUHUWUHU'
+const IV = "WUHUWUHUWUHUWUHU"
+
+export {
+    SERVER_IP,
+    PORT,
+    SERVER_ADDRESS,
+    COVER_PATH,
+    AVATAR_PATH,
+    DEFAULT_PASSWORD,
+    SECRET_KEY,
+    IV,
+}
