@@ -7,7 +7,7 @@
                         <router-link :to="'/course/manage/' + courseID">
                             <el-button plain>
                                 <i class="el-icon-s-tools" />
-                                课程设置
+                                课程管理
                             </el-button>
                         </router-link>
                         <div class="right-wrapper">
