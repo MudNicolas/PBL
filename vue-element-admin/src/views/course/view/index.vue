@@ -10,8 +10,11 @@
                                 课程设置
                             </el-button>
                         </router-link>
-                        <div class="switch-wrapper">
-                            <el-switch v-model="dragable" active-text="开启拖动"></el-switch>
+                        <div class="right-wrapper">
+                            <el-switch v-model="editable" active-text="启用编辑"></el-switch>
+                            <el-button type="primary" icon="el-icon-plus" style="margin-left: 16px">
+                                新建节
+                            </el-button>
                         </div>
                     </div>
                 </el-col>
@@ -21,7 +24,12 @@
                     <info-card :course="course" />
                 </el-col>
                 <el-col :span="18" :xs="24">
-                    <section-list :dragable="dragable" :sections="sections" />
+                    <section-list
+                        v-if="sections.length > 0"
+                        :sections="sections"
+                        :editable="editable"
+                    />
+                    <no-section-card v-else />
                 </el-col>
             </el-row>
         </div>
@@ -32,17 +40,18 @@
 import { getCourseView } from "@/api/course-view"
 import SectionList from "./components/SectionList.vue"
 import InfoCard from "./components/info-card"
+import NoSectionCard from "./components/NoSectionCard.vue"
 
 export default {
     name: "CourseView",
-    components: { InfoCard, SectionList },
+    components: { InfoCard, SectionList, NoSectionCard },
     data() {
         return {
             courseID: "",
             course: {},
             sections: [],
             loading: true,
-            dragable: false,
+            editable: false,
         }
     },
     created() {
@@ -75,7 +84,7 @@ export default {
     flex-direction: row;
     justify-content: flex-start;
 
-    .switch-wrapper {
+    .right-wrapper {
         margin-left: auto;
     }
 }

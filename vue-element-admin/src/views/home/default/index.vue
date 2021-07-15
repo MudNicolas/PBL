@@ -1,21 +1,17 @@
 <template>
     <div
         class="homepage-teacher-container"
-        :class="{ 'empty-container': courseNum == 0 }"
+        :class="{ 'empty-container': courseNum === 0 }"
         v-loading="loading"
         element-loading-text="加载中"
     >
-        <div v-if="courseNum == 0">
+        <div v-if="courseNum === 0">
             <img src="@/assets/empty_images/empty.gif" class="emptyGif" />
             <div v-if="checkPermission(['teacher'])" style="text-align: center">
                 当前没有课程，点击
-                <el-button type="primary" @click="createCourse"
-                    >新建课程</el-button
-                >
+                <el-button type="primary" @click="createCourse">新建课程</el-button>
             </div>
-            <div v-else style="text-align: center">
-                当前没有课程，请联系老师将你添加入一个课程
-            </div>
+            <div v-else style="text-align: center">当前没有课程，请联系老师将你添加入一个课程</div>
         </div>
         <div v-else>
             <el-row
@@ -25,19 +21,13 @@
             >
                 <el-col
                     :span="5"
-                    v-for="(item, i) in courseList.slice(
-                        (index - 1) * 4,
-                        index * 4
-                    )"
+                    v-for="(item, i) in courseList.slice((index - 1) * 4, index * 4)"
                     :key="'homeCourse' + item._id"
                     :offset="i % 4 == 0 ? 0 : 1"
                     style="margin-bottom: 32px; position: relative"
                 >
                     <card-relative :course="item" />
-                    <card-absolute
-                        :course="item"
-                        :clickedItemID.sync="clickedItemID"
-                    />
+                    <card-absolute :course="item" :clickedItemID.sync="clickedItemID" />
                 </el-col>
             </el-row>
 
@@ -54,11 +44,11 @@
 </template>
 
 <script>
-import { getCourseList } from "@/api/course";
-import Pagination from "@/components/Pagination";
-import cardRelative from "./component/card-relative";
-import cardAbsolute from "./component/card-absolute";
-import checkPermission from "@/utils/permission"; // 权限判断函数
+import { getCourseList } from "@/api/course"
+import Pagination from "@/components/Pagination"
+import cardRelative from "./component/card-relative"
+import cardAbsolute from "./component/card-absolute"
+import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     name: "DefaultHome",
@@ -69,8 +59,7 @@ export default {
     },
     data() {
         return {
-            emptyGif:
-                "https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3",
+            emptyGif: "https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3",
             courseList: [],
             courseNum: -1,
             liftCard: -1,
@@ -80,35 +69,35 @@ export default {
                 page: 1,
                 limit: 12,
             },
-        };
+        }
     },
     created() {
-        this.fetchCourseList();
+        this.fetchCourseList()
     },
 
     methods: {
         createCourse() {
-            this.$router.push(`/course/create`);
+            this.$router.push(`/course/create`)
         },
         fetchCourseList() {
-            getCourseList(this.listQuery).then((res) => {
-                let { courseList, courseNum } = res.data;
-                this.courseList = courseList;
-                this.courseNum = courseNum;
-                this.loading = false;
-            });
+            getCourseList(this.listQuery).then(res => {
+                let { courseList, courseNum } = res.data
+                this.courseList = courseList
+                this.courseNum = courseNum
+                this.loading = false
+            })
         },
         pagination() {
-            this.loading = true;
-            getCourseList(this.listQuery).then((res) => {
-                let { courseList } = res.data;
-                this.courseList = courseList;
-                this.loading = false;
-            });
+            this.loading = true
+            getCourseList(this.listQuery).then(res => {
+                let { courseList } = res.data
+                this.courseList = courseList
+                this.loading = false
+            })
         },
         checkPermission,
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -168,7 +168,7 @@
                                         <div style="margin-left: auto">
                                             <el-input
                                                 v-model="editGroup.name"
-                                                style="width: 132px; height: 32px"
+                                                style="width: 144px; height: 32px"
                                                 placeholder="组名（非必需）"
                                             />
                                             <el-button

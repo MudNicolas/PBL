@@ -4,11 +4,7 @@
             <el-row>
                 <el-col :span="16">
                     <el-form-item label="课程名称">
-                        <el-input
-                            v-model="course.name"
-                            spellcheck="false"
-                            disabled
-                        ></el-input>
+                        <el-input v-model="course.name" spellcheck="false" disabled></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -30,12 +26,8 @@
             <el-row v-if="isEdit">
                 <el-col :span="16">
                     <el-form-item>
-                        <el-button @click="imagecropperShow = true">
-                            上传课程封面
-                        </el-button>
-                        <el-button plain @click="toDefaultCover">
-                            恢复为默认封面
-                        </el-button>
+                        <el-button @click="imagecropperShow = true">上传课程封面</el-button>
+                        <el-button plain @click="toDefaultCover">恢复为默认封面</el-button>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -48,10 +40,7 @@
                                 :src="coverUrl"
                                 :preview-src-list="srcCoverUrl"
                             >
-                                <div
-                                    slot="placeholder"
-                                    class="el-image__placeholder"
-                                >
+                                <div slot="placeholder" class="el-image__placeholder">
                                     <div
                                         style="
                                             width: 100%;
@@ -70,18 +59,11 @@
                             </el-image>
                         </div>
                     </el-form-item>
-                </el-col></el-row
-            >
+                </el-col>
+            </el-row>
             <el-form-item style="margin-top: 12px">
-                <el-button @click="isEdit = false" v-if="isEdit">
-                    取消
-                </el-button>
-                <el-button
-                    type="primary"
-                    @click="submit"
-                    v-if="isEdit"
-                    key="profile-submit-buttom"
-                >
+                <el-button @click="isEdit = false" v-if="isEdit">取消</el-button>
+                <el-button type="primary" @click="submit" v-if="isEdit" key="profile-submit-buttom">
                     确认提交
                 </el-button>
                 <el-button
@@ -109,8 +91,8 @@
 </template>
 
 <script>
-import ImageCropper from "@/components/ImageCropper";
-import { getInfo, submitEdit } from "@/api/course";
+import ImageCropper from "@/components/ImageCropper"
+import { getInfo, submitEdit } from "@/api/course"
 
 export default {
     name: "ManageCourseInfo",
@@ -131,62 +113,60 @@ export default {
             isEdit: false,
             loading: true,
             submitting: false,
-            path:
-                process.env.VUE_APP_PUBLIC_PATH +
-                process.env.VUE_APP_COVER_PATH,
-        };
+            path: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_COVER_PATH,
+        }
     },
     created() {
-        this.getInfo();
+        this.getInfo()
     },
     methods: {
         cropSuccess(resData) {
-            this.imagecropperShow = false;
-            this.imagecropperKey = this.imagecropperKey + 1;
+            this.imagecropperShow = false
+            this.imagecropperKey = this.imagecropperKey + 1
             /* console.log(resData); */
-            let url = this.path + resData.coverFilename;
-            this.srcCoverUrl = [url];
-            this.course.cover = resData.coverFilename;
-            this.coverUrl = url;
+            let url = this.path + resData.coverFilename
+            this.srcCoverUrl = [url]
+            this.course.cover = resData.coverFilename
+            this.coverUrl = url
         },
         close() {
-            this.imagecropperShow = false;
+            this.imagecropperShow = false
         },
         getInfo() {
-            getInfo({ courseID: this.courseId }).then((res) => {
-                this.course = res.data.courseInfo;
-                this.coverUrl = res.data.coverUrl;
-                this.srcCoverUrl = [this.coverUrl];
-                this.loading = false;
-            });
+            getInfo({ courseID: this.courseId }).then(res => {
+                this.course = res.data.courseInfo
+                this.coverUrl = res.data.coverUrl
+                this.srcCoverUrl = [this.coverUrl]
+                this.loading = false
+            })
         },
         getCover() {
-            let url = this.path + this.course.cover;
-            this.srcCoverUrl = [url];
-            this.coverUrl = url;
+            let url = this.path + this.course.cover
+            this.srcCoverUrl = [url]
+            this.coverUrl = url
         },
         toDefaultCover() {
-            this.course.cover = "default.jpg";
-            this.getCover();
+            this.course.cover = "default.jpg"
+            this.getCover()
         },
         submit() {
-            this.course.introduction = this.course.introduction.trim();
-            this.submitting = true;
+            this.course.introduction = this.course.introduction.trim()
+            this.submitting = true
             submitEdit({ course: this.course, courseID: this.course._id })
-                .then((res) => {
+                .then(res => {
                     this.$message({
                         type: "success",
                         message: res.message,
-                    });
-                    this.submitting = false;
-                    this.isEdit = false;
+                    })
+                    this.submitting = false
+                    this.isEdit = false
                 })
                 .catch(() => {
-                    this.submitting = false;
-                });
+                    this.submitting = false
+                })
         },
     },
-};
+}
 </script>
 
 <style scoped>
@@ -196,9 +176,5 @@ export default {
     margin-top: 14px;
 
     background: #f5f7fa;
-}
-
-label {
-    font-weight: 400;
 }
 </style>

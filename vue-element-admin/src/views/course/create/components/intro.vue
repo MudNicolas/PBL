@@ -4,8 +4,7 @@
             <el-col :span="16" :offset="4">
                 <el-form-item>
                     <div class="info">
-                        标 *
-                        的为必填项&nbsp;&nbsp;|&nbsp;&nbsp;未上传封面使用默认封面
+                        标 * 的为必填项&nbsp;&nbsp;|&nbsp;&nbsp;未上传封面使用默认封面
                     </div>
                 </el-form-item>
             </el-col>
@@ -13,10 +12,7 @@
         <el-row>
             <el-col :span="16" :offset="4">
                 <el-form-item label="课程名称*">
-                    <el-input
-                        v-model="course.name"
-                        spellcheck="false"
-                    ></el-input>
+                    <el-input v-model="course.name" spellcheck="false"></el-input>
                 </el-form-item>
             </el-col>
         </el-row>
@@ -37,12 +33,8 @@
         <el-row>
             <el-col :span="16" :offset="4">
                 <el-form-item>
-                    <el-button @click="imagecropperShow = true">
-                        上传课程封面
-                    </el-button>
-                    <el-button plain @click="toDefaultCover">
-                        恢复为默认封面
-                    </el-button>
+                    <el-button @click="imagecropperShow = true">上传课程封面</el-button>
+                    <el-button plain @click="toDefaultCover">恢复为默认封面</el-button>
                 </el-form-item>
             </el-col>
         </el-row>
@@ -55,10 +47,7 @@
                             :src="coverUrl"
                             :preview-src-list="srcCoverUrl"
                         >
-                            <div
-                                slot="placeholder"
-                                class="el-image__placeholder"
-                            >
+                            <div slot="placeholder" class="el-image__placeholder">
                                 <div
                                     style="
                                         width: 100%;
@@ -77,22 +66,21 @@
                         </el-image>
                     </div>
                 </el-form-item>
-            </el-col></el-row
-        >
+            </el-col>
+        </el-row>
         <el-row>
             <el-col :span="16" :offset="4" style="margin-top: 16px">
                 <el-form-item>
-                    <el-button style="margin-top: 12px" @click="prev"
-                        >上一步</el-button
-                    >
+                    <el-button style="margin-top: 12px" @click="prev">上一步</el-button>
 
                     <el-button
                         style="margin-top: 12px"
                         @click="next"
                         type="primary"
                         :disabled="course.name.trim() == ''"
-                        >下一步</el-button
                     >
+                        下一步
+                    </el-button>
                 </el-form-item>
             </el-col>
         </el-row>
@@ -111,7 +99,7 @@
 </template>
 
 <script>
-import ImageCropper from "@/components/ImageCropper";
+import ImageCropper from "@/components/ImageCropper"
 
 export default {
     name: "courseIntro",
@@ -124,51 +112,49 @@ export default {
             imagecropperKey: 0,
             srcCoverUrl: [this.coverUrl],
             coverUrl: "",
-            path:
-                process.env.VUE_APP_PUBLIC_PATH +
-                process.env.VUE_APP_COVER_PATH,
-        };
+            path: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_COVER_PATH,
+        }
     },
     created() {
-        this.getCover();
+        this.getCover()
     },
     methods: {
         cropSuccess(resData) {
-            this.imagecropperShow = false;
-            this.imagecropperKey = this.imagecropperKey + 1;
+            this.imagecropperShow = false
+            this.imagecropperKey = this.imagecropperKey + 1
             /* console.log(resData); */
-            let url = this.path + resData.coverFilename;
-            this.srcCoverUrl = [url];
-            this.course.cover = resData.coverFilename;
-            this.coverUrl = url;
+            let url = this.path + resData.coverFilename
+            this.srcCoverUrl = [url]
+            this.course.cover = resData.coverFilename
+            this.coverUrl = url
         },
         close() {
-            this.imagecropperShow = false;
+            this.imagecropperShow = false
         },
         getCover() {
-            let url = this.path + this.course.cover;
-            this.srcCoverUrl = [url];
-            this.coverUrl = url;
+            let url = this.path + this.course.cover
+            this.srcCoverUrl = [url]
+            this.coverUrl = url
         },
         toDefaultCover() {
-            this.course.cover = "default.jpg";
-            this.getCover();
+            this.course.cover = "default.jpg"
+            this.getCover()
         },
         next() {
-            this.$emit("next");
+            this.$emit("next")
         },
         prev() {
-            this.$emit("prev");
+            this.$emit("prev")
         },
     },
-};
+}
 </script>
 
 <style scoped>
 .image-loading-wrap-intro {
     width: 300px;
     height: 180px;
-    margin-top: 14px;
+    margin-top: 12px;
 
     background: #f5f7fa;
 }
