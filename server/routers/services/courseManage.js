@@ -1,6 +1,6 @@
 import Router from "express"
 let router = Router()
-import Course from "#models/Course.js"
+import { checkCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 router.all("*", (req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
@@ -12,42 +12,13 @@ router.all("*", (req, res, next) => {
         })
         return
     }
-    Course.findById(courseID)
-        .select("isUsed chiefTeacher partnerTeacher")
-        .then((course, err) => {
-            if (err) {
-                res.json({
-                    code: 30001,
-                    message: "DataBase Error",
-                })
-                return
-            }
 
-            if (!course || course.isUsed === false) {
-                res.json({
-                    code: 404,
-                    message: "该课程不存在",
-                })
-                return
-            }
-
-            /*  既不是chief，也不是partner里的
-				 p._id是object，要toString
-			 */
-            if (
-                course.chiefTeacher._id.toString() !== req.uid &&
-                !course.partnerTeacher.some(p => {
-                    return p._id.toString() === req.uid
-                })
-            ) {
-                res.json({
-                    code: 401,
-                    message: "401 Not Permission",
-                })
-                return
-            }
-
+    checkCourseAvailableAndReqUserHasPermission(courseID, 1, req)
+        .then(() => {
             next()
+        })
+        .catch(err => {
+            res.json(err)
         })
 })
 

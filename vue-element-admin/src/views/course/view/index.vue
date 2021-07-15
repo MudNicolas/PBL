@@ -1,7 +1,7 @@
 <template>
     <div class="view-container" v-loading="loading" element-loading-text="加载中">
         <div v-if="course.name">
-            <el-row :gutter="20">
+            <el-row :gutter="20" v-if="checkPermission(['teacher'])">
                 <el-col :span="23" :xs="24">
                     <div class="tools-wrapper">
                         <router-link :to="'/course/manage/' + courseID">
@@ -12,13 +12,20 @@
                         </router-link>
                         <div class="right-wrapper">
                             <el-switch v-model="editable" active-text="启用编辑"></el-switch>
-                            <el-button type="primary" icon="el-icon-plus" style="margin-left: 16px">
-                                新建节
-                            </el-button>
+                            <router-link :to="'/course/section/create/' + courseID">
+                                <el-button
+                                    type="primary"
+                                    icon="el-icon-plus"
+                                    style="margin-left: 16px"
+                                >
+                                    新建节
+                                </el-button>
+                            </router-link>
                         </div>
                     </div>
                 </el-col>
             </el-row>
+
             <el-row :gutter="20">
                 <el-col :span="5" :xs="24">
                     <info-card :course="course" />
@@ -41,6 +48,7 @@ import { getCourseView } from "@/api/course-view"
 import SectionList from "./components/SectionList.vue"
 import InfoCard from "./components/info-card"
 import NoSectionCard from "./components/NoSectionCard.vue"
+import checkPermission from "@/utils/permission"
 
 export default {
     name: "CourseView",
@@ -67,6 +75,7 @@ export default {
                 this.loading = false
             })
         },
+        checkPermission,
     },
 }
 </script>

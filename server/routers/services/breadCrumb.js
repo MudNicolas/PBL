@@ -65,10 +65,11 @@ async function generateBreadCrumb(name, id) {
             f.path += fid
             let func = f.meta.title
             let funcTitle = await func(fid)
-
-            f.meta.title = funcTitle.name
-            if (funcTitle.parentID) {
-                fid = funcTitle.parentID
+            if (funcTitle && funcTitle.name) {
+                f.meta.title = funcTitle.name
+                if (funcTitle.parentID) {
+                    fid = funcTitle.parentID
+                }
             }
         }
     }
