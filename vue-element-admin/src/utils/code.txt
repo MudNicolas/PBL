@@ -1,3 +1,6 @@
+404  : 404
+401  : 401
+1023 : 敏感操作需要验证密码
 20000: success
 50008: Illegal Token
 50012: Other clients logged in

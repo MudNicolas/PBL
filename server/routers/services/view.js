@@ -1,5 +1,4 @@
 import Router from "express"
-import User from "#models/User.js"
 import Course from "#models/Course.js"
 import { COVER_PATH } from "#root/settings.js"
 

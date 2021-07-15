@@ -197,6 +197,15 @@ export const asyncRoutes = [
             },
         ],
     },
+    {
+        path: "/verificate",
+        hidden: true,
+        name: "Verificate",
+        meta: {
+            title: "身份验证",
+        },
+        component: () => import("@/views/verificate"),
+    },
 
     {
         path: "/example",

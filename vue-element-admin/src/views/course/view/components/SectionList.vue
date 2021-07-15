@@ -56,14 +56,8 @@
 
         <el-dialog title="设置" :visible.sync="setUpDialogVisible" width="30%">
             <el-form label-position="right" :model="sectionInfomation" label-width="56px">
-                <el-form-item label="节名">
-                    <el-input v-model="sectionInfomation.name"></el-input>
-                </el-form-item>
                 <el-form-item label="可见性">
                     <el-switch v-model="sectionInfomation.visible"></el-switch>
-                </el-form-item>
-                <el-form-item label="简介">
-                    <el-input type="textarea" autosize v-model="sectionInfomation.info"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -76,6 +70,7 @@
 
 <script>
 import draggable from "vuedraggable"
+import { deleteSection } from "@/api/section"
 
 export default {
     name: "SectionList",
@@ -96,8 +91,6 @@ export default {
             sectionList: this.sections,
             setUpDialogVisible: false,
             sectionInfomation: {
-                name: "",
-                info: "",
                 visible: false,
             },
         }
@@ -107,13 +100,29 @@ export default {
         showSetUpDialog(section) {
             this.setUpDialogVisible = true
             this.sectionInfomation = {
-                name: section.name,
-                info: section.info,
                 visible: section.visible,
             }
         },
         deleteSection(command) {
-            console.log(command)
+            let sectionID = command
+            this.$confirm("确认删除本节？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        deleteSection({ sectionID: sectionID })
+                            .then()
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            }).catch()
         },
     },
 }
