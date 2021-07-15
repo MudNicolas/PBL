@@ -128,7 +128,7 @@
                 </el-form>
             </div>
         </el-dialog>
-        <el-dialog title="编辑组" :visible.sync="editGroupVisible">
+        <el-dialog title="编辑组" :visible.sync="editGroupVisible" :close-on-click-modal="false">
             <div style="text-align: center" v-loading="sourceStudentsLoading">
                 <el-form>
                     <el-row>
