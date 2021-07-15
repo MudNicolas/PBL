@@ -31,20 +31,6 @@
                                     >
                                         设置
                                     </el-button>
-                                    <el-dropdown trigger="click" @command="deleteSection">
-                                        <span class="el-dropdown-link">
-                                            <i class="el-icon-more el-icon--right"></i>
-                                        </span>
-                                        <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item
-                                                icon="el-icon-delete"
-                                                style="color: #f56c6c"
-                                                :command="element._id"
-                                            >
-                                                删除
-                                            </el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </el-dropdown>
                                 </div>
                             </div>
                         </div>
@@ -102,27 +88,6 @@ export default {
             this.sectionInfomation = {
                 visible: section.visible,
             }
-        },
-        deleteSection(command) {
-            let sectionID = command
-            this.$confirm("确认删除本节？", "提示", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning",
-                beforeClose: (action, instance, done) => {
-                    if (action === "confirm") {
-                        instance.confirmButtonLoading = true
-                        deleteSection({ sectionID: sectionID })
-                            .then()
-                            .catch(() => {
-                                instance.confirmButtonLoading = false
-                                done()
-                            })
-                    } else {
-                        done()
-                    }
-                },
-            }).catch()
         },
     },
 }

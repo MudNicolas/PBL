@@ -62,7 +62,7 @@ router.all("/login", (req, res, next) => {
     })
 })
 
-router.all("*", async (req, res, next) => {
+router.use(async (req, res, next) => {
     let token = req.headers.token
 
     let dec = AESDecode(token)
