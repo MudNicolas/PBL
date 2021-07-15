@@ -36,7 +36,7 @@ export default {
     },
     created() {
         if (!this.$route.params || !this.$route.params.url) {
-            // this.$router.replace("/401")
+            this.$router.replace("/401")
         }
         this.url = this.$route.params.url
         this.params = this.$route.params.params

@@ -55,7 +55,7 @@
         </draggable>
 
         <el-dialog title="设置" :visible.sync="setUpDialogVisible" width="30%">
-            <el-form label-position="right" :model="sectionInfomation" label-width="56px">
+            <el-form :model="sectionInfomation" label-width="56px">
                 <el-form-item label="可见性">
                     <el-switch v-model="sectionInfomation.visible"></el-switch>
                 </el-form-item>

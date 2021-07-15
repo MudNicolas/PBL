@@ -58,7 +58,7 @@
                         type="danger"
                         v-if="editAndDeleteActive"
                         :disabled="deleteSubmitting"
-                        @click="deleteGroup(scope.row.groupID)"
+                        @click="deleteGroup(scope.row)"
                     >
                         <i class="el-icon-delete" />
                         &nbsp;删除
@@ -190,6 +190,30 @@
                 </el-form>
             </div>
         </el-dialog>
+        <el-dialog title="删除组" :visible.sync="deleteGroupVisible" width="30%">
+            <span style="display: flex; align-items: center">
+                <i class="el-icon-warning" />
+                <span style="display: flex; flex-direction: column">
+                    <p style="color: #606266; line-height: 24px">
+                        确认删除此组？删除后该组以往提交的成果不受影响。
+                        如果确定要删除此组，请输入组员姓名
+                        <b>{{ deleteConfirm.source }}</b>
+                    </p>
+                    <el-input v-model="deleteConfirm.input" />
+                </span>
+            </span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="deleteGroupVisible = false">取 消</el-button>
+                <el-button
+                    type="primary"
+                    :disabled="deleteConfirm.source !== deleteConfirm.input"
+                    @click="submitDelete"
+                    :loading="deleteSubmitting"
+                >
+                    确 定
+                </el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -202,6 +226,7 @@ import {
     submitEditGroup,
     deleteGroup,
 } from "@/api/course"
+
 export default {
     name: "ManageCourseGroup",
     props: ["courseId"],
@@ -214,6 +239,7 @@ export default {
             editGroupSubmitting: false,
             addGroupVisible: false,
             editGroupVisible: false,
+            deleteGroupVisible: false,
             targetGroup: {
                 name: "",
                 groupMembersID: [],
@@ -231,6 +257,11 @@ export default {
             groupedStudentNumber: 0,
             spanList: new Set([0, 1, 2, 5]),
             editAndDeleteActive: false,
+            deleteConfirm: {
+                source: "",
+                input: "",
+                _id: "",
+            },
         }
     },
     created() {
@@ -386,46 +417,41 @@ export default {
                     })
             }
         },
-        deleteGroup(groupID) {
-            this.$confirm("确认删除此组？删除后该组以往提交的成果不受影响。", "提示", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning",
-                beforeClose: (action, instance, done) => {
-                    if (action === "confirm") {
-                        instance.confirmButtonLoading = true
-                        this.deleteSubmitting = true
-                        deleteGroup({
-                            courseID: this.courseId,
-                            groupID: groupID,
-                        })
-                            .then(() => {
-                                this.deleteSubmitting = false
-                                instance.confirmButtonLoading = false
-                                this.$message({
-                                    type: "success",
-                                    message: "删除成功",
-                                })
-                                this.getGroup()
-                                done()
-                            })
-                            .catch(() => {
-                                this.deleteSubmitting = false
-                                instance.confirmButtonLoading = false
-                                done()
-                            })
-                    } else {
-                        done()
+        deleteGroup(group) {
+            this.deleteGroupVisible = true
+            this.deleteConfirm.source = group.name
+            this.deleteConfirm._id = group.groupID
+        },
+        submitDelete() {
+            this.deleteSubmitting = true
+            deleteGroup({
+                courseID: this.courseId,
+                groupID: this.deleteConfirm._id,
+            })
+                .then(() => {
+                    this.deleteSubmitting = false
+                    this.deleteGroupVisible = false
+                    this.deleteConfirm = {
+                        source: "",
+                        input: "",
+                        _id: "",
                     }
-                },
-            }).catch()
+                    this.$message({
+                        type: "success",
+                        message: "删除成功",
+                    })
+                    this.getGroup()
+                })
+                .catch(() => {
+                    this.deleteSubmitting = false
+                })
         },
         handleSendMessagesToSelectedGroup() {},
     },
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss' >
 .toolbar {
     display: flex;
     align-items: center;
@@ -447,5 +473,13 @@ export default {
     .button {
         margin-left: auto;
     }
+}
+.el-icon-warning {
+    color: #e6a23c;
+    font-size: 24px;
+    margin-right: 12px;
+}
+.el-dialog__body {
+    padding: 0 20px !important;
 }
 </style>
