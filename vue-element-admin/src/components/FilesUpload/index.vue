@@ -1,9 +1,9 @@
 <template>
     <el-upload
-        action="#"
-        :http-request="upload"
+        :action="uploadPath"
         drag
         multiple
+        :headers="headers"
         :on-success="handleSuccess"
         :on-error="handleError"
         :on-remove="handleRemove"
@@ -19,7 +19,6 @@
 
 <script>
 import { getToken } from "@/utils/auth"
-import { uploadFile } from "@/api/files"
 
 export default {
     name: "FilesUpload",
@@ -33,17 +32,7 @@ export default {
         }
     },
     methods: {
-        upload(file) {
-            console.log(file)
-            uploadFile(file)
-        },
         handleSuccess(response, file, fileList) {
-            if (response.code !== 20000) {
-                this.$message.error(response.error)
-                console.log(file, fileList, fileList.indexOf(file))
-
-                return
-            }
             this.fileList = fileList
         },
         handleError() {
