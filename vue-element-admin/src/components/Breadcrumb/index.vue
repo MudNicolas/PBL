@@ -27,8 +27,6 @@ export default {
     watch: {
         "$route.path"(route) {
             // if you go to the redirect page, do not update the breadcrumbs
-            //console.log(route);
-            // console.log(route, "rr");
             if (route.startsWith("/redirect/")) {
                 return
             }
@@ -50,33 +48,8 @@ export default {
                 params: params,
                 name: name,
             }).then(res => {
-                console.log(res, "res")
                 this.levelList = res.data.breadCrumb
             })
-
-            /*
-            let matched = this.$route.matched.filter(
-                (item) => item.meta && item.meta.title
-            );
-            const first = matched[0];
-
-            if (!this.isHome(first)) {
-                matched = [{ path: "/", meta: { title: "首页" } }].concat(
-                    matched
-                );
-            } */
-
-            /*  this.levelList = matched.filter(
-                (item) =>
-                    item.meta &&
-                    item.meta.title &&
-                    item.meta.breadcrumb !== false
-            ); */
-            /* this.levelList = [
-                { path: "/", redirect: "/", meta: { title: "1" } },
-                { path: "/", redirect: "/", meta: { title: "2" } },
-                { path: "/", redirect: "/", meta: { title: "3" } },
-            ]; */
         },
         isHome(route) {
             const name = route && route.name

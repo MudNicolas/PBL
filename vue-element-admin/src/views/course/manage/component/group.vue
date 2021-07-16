@@ -191,14 +191,16 @@
             </div>
         </el-dialog>
         <el-dialog title="删除组" :visible.sync="deleteGroupVisible" width="30%">
-            <span style="display: flex; align-items: center">
-                <i class="el-icon-warning" />
-                <span style="display: flex; flex-direction: column">
+            <span style="display: flex; flex-direction: column">
+                <span style="display: flex; align-items: center">
+                    <i class="el-icon-warning" />
                     <p style="color: #606266; line-height: 24px">
                         确认删除此组？删除后该组以往提交的成果不受影响。
                         如果确定要删除此组，请输入组员姓名
                         <b>{{ deleteConfirm.source }}</b>
                     </p>
+                </span>
+                <span style="margin-left: 36px">
                     <el-input v-model="deleteConfirm.input" />
                 </span>
             </span>
@@ -451,7 +453,7 @@ export default {
 }
 </script>
 
-<style lang='scss' >
+<style lang="scss" scoped>
 .toolbar {
     display: flex;
     align-items: center;
@@ -478,8 +480,5 @@ export default {
     color: #e6a23c;
     font-size: 24px;
     margin-right: 12px;
-}
-.el-dialog__body {
-    padding: 0 20px !important;
 }
 </style>

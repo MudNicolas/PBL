@@ -8,21 +8,15 @@
             @change="handleClick"
         />
         <div
+            @click="handleUpload"
             class="drop"
             @drop="handleDrop"
             @dragover="handleDragover"
             @dragenter="handleDragover"
         >
             {{ infoText }}
-            <el-button
-                :loading="loading"
-                style="margin-left: 16px"
-                size="mini"
-                type="primary"
-                @click="handleUpload"
-            >
-                浏览文件
-            </el-button>
+
+            点击浏览文件
         </div>
         <div class="info">
             注意，请按照模板上传数据，
@@ -32,7 +26,7 @@
 </template>
 
 <script>
-import XLSX from "xlsx";
+import XLSX from "xlsx"
 
 export default {
     props: {
@@ -50,126 +44,124 @@ export default {
             },
             filename: "template",
             list: [{ id: "", name: "" }],
-        };
+        }
     },
     methods: {
         generateData({ header, results }) {
-            this.excelData.header = header;
-            this.excelData.results = results;
-            this.onSuccess && this.onSuccess(this.excelData);
+            this.excelData.header = header
+            this.excelData.results = results
+            this.onSuccess && this.onSuccess(this.excelData)
         },
         handleDrop(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            if (this.loading) return;
-            const files = e.dataTransfer.files;
+            e.stopPropagation()
+            e.preventDefault()
+            if (this.loading) return
+            const files = e.dataTransfer.files
             if (files.length !== 1) {
-                this.$message.error("Only support uploading one file!");
-                return;
+                this.$message.error("请导入一个excel文件")
+                return
             }
-            const rawFile = files[0]; // only use files[0]
+            const rawFile = files[0] // only use files[0]
 
             if (!this.isExcel(rawFile)) {
-                this.$message.error(
-                    "Only supports upload .xlsx, .xls, .csv suffix files"
-                );
-                return false;
+                this.$message.error("支持 .xlsx, .xls, .csv 格式的文件")
+                return false
             }
-            this.upload(rawFile);
-            e.stopPropagation();
-            e.preventDefault();
+            this.upload(rawFile)
+            e.stopPropagation()
+            e.preventDefault()
         },
         handleDragover(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            e.dataTransfer.dropEffect = "copy";
+            e.stopPropagation()
+            e.preventDefault()
+            e.dataTransfer.dropEffect = "copy"
         },
         handleUpload() {
-            this.$refs["excel-upload-input"].click();
+            this.$refs["excel-upload-input"].click()
         },
         handleClick(e) {
-            const files = e.target.files;
-            const rawFile = files[0]; // only use files[0]
-            if (!rawFile) return;
-            this.upload(rawFile);
+            const files = e.target.files
+            const rawFile = files[0] // only use files[0]
+            if (!rawFile) return
+            this.upload(rawFile)
         },
         upload(rawFile) {
-            this.$refs["excel-upload-input"].value = null; // fix can't select the same excel
+            this.$refs["excel-upload-input"].value = null // fix can't select the same excel
 
             if (!this.beforeUpload) {
-                this.readerData(rawFile);
-                return;
+                this.readerData(rawFile)
+                return
             }
-            const before = this.beforeUpload(rawFile);
+            const before = this.beforeUpload(rawFile)
             if (before) {
-                this.readerData(rawFile);
+                this.readerData(rawFile)
             }
         },
         readerData(rawFile) {
-            this.loading = true;
+            this.loading = true
             return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const data = e.target.result;
-                    const workbook = XLSX.read(data, { type: "array" });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const header = this.getHeaderRow(worksheet);
-                    const results = XLSX.utils.sheet_to_json(worksheet);
-                    this.generateData({ header, results });
-                    this.loading = false;
-                    resolve();
-                };
-                reader.readAsArrayBuffer(rawFile);
-            });
+                const reader = new FileReader()
+                reader.onload = e => {
+                    const data = e.target.result
+                    const workbook = XLSX.read(data, { type: "array" })
+                    const firstSheetName = workbook.SheetNames[0]
+                    const worksheet = workbook.Sheets[firstSheetName]
+                    const header = this.getHeaderRow(worksheet)
+                    const results = XLSX.utils.sheet_to_json(worksheet)
+                    this.generateData({ header, results })
+                    this.loading = false
+                    resolve()
+                }
+                reader.readAsArrayBuffer(rawFile)
+            })
         },
         getHeaderRow(sheet) {
-            const headers = [];
-            const range = XLSX.utils.decode_range(sheet["!ref"]);
-            let C;
-            const R = range.s.r;
+            const headers = []
+            const range = XLSX.utils.decode_range(sheet["!ref"])
+            let C
+            const R = range.s.r
             /* start in the first row */
             for (C = range.s.c; C <= range.e.c; ++C) {
                 /* walk every column in the range */
-                const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })];
+                const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })]
                 /* find the cell in the first row */
-                let hdr = "UNKNOWN " + C; // <-- replace with your desired default
-                if (cell && cell.t) hdr = XLSX.utils.format_cell(cell);
-                headers.push(hdr);
+                let hdr = "UNKNOWN " + C // <-- replace with your desired default
+                if (cell && cell.t) hdr = XLSX.utils.format_cell(cell)
+                headers.push(hdr)
             }
-            return headers;
+            return headers
         },
         isExcel(file) {
-            return /\.(xlsx|xls|csv)$/.test(file.name);
+            return /\.(xlsx|xls|csv)$/.test(file.name)
         },
         getTemplate() {
-            this.downloadLoading = true;
-            import("@/vendor/Export2Excel").then((excel) => {
-                const tHeader = [this.listType, "姓名"];
-                const filterVal = ["id", "name"];
-                const list = this.list;
-                const data = this.formatJson(filterVal, list);
+            this.downloadLoading = true
+            import("@/vendor/Export2Excel").then(excel => {
+                const tHeader = [this.listType, "姓名"]
+                const filterVal = ["id", "name"]
+                const list = this.list
+                const data = this.formatJson(filterVal, list)
                 excel.export_json_to_excel({
                     header: tHeader,
                     data,
                     filename: this.filename,
-                });
-                this.downloadLoading = false;
-            });
+                })
+                this.downloadLoading = false
+            })
         },
         formatJson(filterVal, jsonData) {
-            return jsonData.map((v) =>
-                filterVal.map((j) => {
+            return jsonData.map(v =>
+                filterVal.map(j => {
                     if (j === "timestamp") {
-                        return parseTime(v[j]);
+                        return parseTime(v[j])
                     } else {
-                        return v[j];
+                        return v[j]
                     }
                 })
-            );
+            )
         },
     },
-};
+}
 </script>
 
 <style scoped>
@@ -188,6 +180,7 @@ export default {
     text-align: center;
     color: #bbb;
     position: relative;
+    cursor: pointer;
 }
 .info {
     margin-top: 16px;

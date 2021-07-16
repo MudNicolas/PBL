@@ -9,6 +9,7 @@ import course from "#services/course.js"
 import view from "#services/view.js"
 import breadCrumb from "#services/breadCrumb.js"
 import section from "#services/section.js"
+import files from "#services/files.js"
 
 router.use(pretreat)
 router.use("/user", user)
@@ -17,5 +18,6 @@ router.use("/course", course)
 router.use("/view", view)
 router.use("/breadCrumb", breadCrumb)
 router.use("/section", section)
+router.use("/files", files)
 
 export default router

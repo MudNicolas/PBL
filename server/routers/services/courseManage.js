@@ -1,6 +1,6 @@
 import Router from "express"
 let router = Router()
-import { checkCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
+import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 router.all("*", (req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
@@ -13,7 +13,7 @@ router.all("*", (req, res, next) => {
         return
     }
 
-    checkCourseAvailableAndReqUserHasPermission(courseID, 1, req)
+    CheckCourseAvailableAndReqUserHasPermission(courseID, 1, req)
         .then(() => {
             next()
         })

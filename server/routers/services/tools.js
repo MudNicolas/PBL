@@ -48,6 +48,26 @@ export function UploadImg(path, req) {
     })
 }
 
+//统一文件上传中心
+export function UploadFiles(req) {
+    let form = new multiparty.Form({
+        uploadDir: "public/files/temp",
+    })
+    return new Promise((resolve, reject) => {
+        form.parse(req, function (err, field, files) {
+            if (err) {
+                reject(err)
+                return
+            }
+            console.log(files)
+            const filePath = files.file[0].path
+            var filename = filePath.split("\\")[filePath.split("\\").length - 1]
+            resolve(filename)
+            return
+        })
+    })
+}
+
 /**
  * @list 人员列表，包含学号工号、姓名
  * @role 插入的人的角色 student teacher
@@ -104,7 +124,7 @@ export function InsertUsersReturnIDs(list, role) {
  * @param {number} roles
  * @param {req} req
  */
-export function checkCourseAvailableAndReqUserHasPermission(courseID, roles, req) {
+export function CheckCourseAvailableAndReqUserHasPermission(courseID, roles, req) {
     let selection = ["studentList", "partnerTeacher", "chiefTeacher", "isUsed"]
     return new Promise((resolve, reject) => {
         Course.findById(courseID)

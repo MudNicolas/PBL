@@ -189,6 +189,13 @@ router.post("/create", async (req, res, next) => {
     let rowStudentList = course.studentList
     let { name, introduction, cover, partnerID } = course
 
+    if (!name) {
+        res.json({
+            message: "必填项为空",
+        })
+        return
+    }
+
     //格式化studentlist
     let studentList = rowStudentList.map(item => {
         return {

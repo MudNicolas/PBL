@@ -56,7 +56,6 @@
 
 <script>
 import draggable from "vuedraggable"
-import { deleteSection } from "@/api/section"
 
 export default {
     name: "SectionList",

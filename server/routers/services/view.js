@@ -2,7 +2,7 @@ import Router from "express"
 import Course from "#models/Course.js"
 import { COVER_PATH } from "#root/settings.js"
 
-import { checkCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
+import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 var router = Router()
 
@@ -16,7 +16,7 @@ router.all("*", (req, res, next) => {
         })
         return
     }
-    checkCourseAvailableAndReqUserHasPermission(courseID, 0, req)
+    CheckCourseAvailableAndReqUserHasPermission(courseID, 0, req)
         .then(() => {
             next()
         })
