@@ -48,7 +48,7 @@ export function UploadImg(path, req) {
     })
 }
 
-//统一文件上传中心
+//统一文件上传中心，如果上传过程中用户断开连接了会自动删除正在上传的temp文件
 export function UploadFiles(req) {
     let form = new multiparty.Form({
         uploadDir: "public/files/temp",
@@ -59,10 +59,8 @@ export function UploadFiles(req) {
                 reject(err)
                 return
             }
-            console.log(files)
-            const filePath = files.file[0].path
-            var filename = filePath.split("\\")[filePath.split("\\").length - 1]
-            resolve(filename)
+
+            resolve(files.file[0])
             return
         })
     })

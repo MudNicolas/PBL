@@ -98,7 +98,6 @@ router.post("/uploadAvatar", (req, res, next) => {
             )
         })
         .catch(err => {
-            console.log("/user/uploadAvatar,uploadImg", err)
             res.json({
                 code: 30001,
                 message: "MultiParty Error!",
