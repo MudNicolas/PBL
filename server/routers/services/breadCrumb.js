@@ -2,8 +2,8 @@ import Router from "express"
 var router = Router()
 import Course from "#models/Course.js"
 
-async function generateBreadCrumb(name, id) {
-    const routeTree = {
+class routeTree {
+    tree = {
         Home: {
             path: "/",
             redirect: "/",
@@ -20,7 +20,7 @@ async function generateBreadCrumb(name, id) {
             path: "/course/view/",
             parent: "Course",
             meta: {
-                title: async id => {
+                title: async function (id) {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
                         let title = await Course.findById(id)
                             .select("name")
@@ -45,21 +45,40 @@ async function generateBreadCrumb(name, id) {
                 title: "个人信息",
             },
         },
+        CreateCourse: {
+            path: "/course/create",
+            parent: "Course",
+            meta: {
+                title: "创建课程",
+            },
+        },
+        CreateSection: {
+            path: "/course/section/create",
+            parent: "CourseView",
+            meta: { title: "新建节" },
+        },
     }
 
+    get(name) {
+        return this.tree[name]
+    }
+}
+
+async function generateBreadCrumb(name, id) {
+    let tree = new routeTree()
     let p = name
     let gen = []
     while (p != "Null") {
-        if (routeTree[p]) {
-            let item = routeTree[p]
-            gen.push(item)
-            p = item.parent
+        let t = tree.get(p)
+        if (t) {
+            gen.push(t)
+            p = t.parent
         } else {
             p = "Home"
         }
     }
+    //parentID不断传递更新
     let fid = id
-    //console.log(fid)
     for (let f of gen) {
         if (f.meta && f.meta.title && typeof f.meta.title === "function") {
             f.path += fid
