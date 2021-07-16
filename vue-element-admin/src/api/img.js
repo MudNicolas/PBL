@@ -1,18 +1,18 @@
-import request from '@/utils/request'
+import request from "@/utils/request"
 
-export function uploadImg(data, imgType) {
-    if (imgType == 'avatar') {
-        return request({
-            url: '/user/uploadAvatar',
-            method: 'post',
-            data
-        })
+export function uploadImg(data, imgType, cb) {
+    let url = ""
+    if (imgType == "avatar") {
+        url = "/user/uploadAvatar"
     }
-    if (imgType == 'courseCover') {
-        return request({
-            url: '/course/create/cover',
-            method: 'post',
-            data
-        })
+    if (imgType == "courseCover") {
+        url = "/course/create/cover"
     }
+
+    return request({
+        url: url,
+        method: "post",
+        data,
+        onUploadProgress: cb || function() {},
+    })
 }
