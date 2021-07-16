@@ -1,5 +1,14 @@
 <template>
-    <el-upload :action="uploadPath" drag multiple :headers="headers">
+    <el-upload
+        :action="uploadPath"
+        drag
+        multiple
+        :headers="headers"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        :on-remove="handleRemove"
+        :on-preview="handlePreview"
+    >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">
             将文件拖到此处，或
@@ -19,7 +28,22 @@ export default {
             headers: {
                 token: getToken(),
             },
+            fileList: [],
         }
+    },
+    methods: {
+        handleSuccess(response, file, fileList) {
+            this.fileList = fileList
+        },
+        handleError() {
+            this.$message.error("文件上传失败")
+        },
+        handleRemove(file, fileList) {
+            this.fileList = fileList
+        },
+        handlePreview(file) {
+            console.log(file)
+        },
     },
 }
 </script>
@@ -31,5 +55,11 @@ export default {
     .el-upload-dragger {
         width: 100% !important;
     }
+}
+
+.el-list-enter-active,
+.el-list-leave-active {
+    -webkit-transition: all 0s !important;
+    transition: all 0s !important;
 }
 </style>

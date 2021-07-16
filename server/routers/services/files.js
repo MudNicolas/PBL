@@ -23,11 +23,12 @@ router.post("/upload", (req, res) => {
                 }
                 res.json({
                     code: 20000,
-                    url: `/public/files/temp/${f._id}`,
+                    _id: f._id,
                 })
             })
         })
         .catch(err => {
+            console.log(err)
             res.json({
                 code: 30001,
                 message: "MultiParty Error!",
