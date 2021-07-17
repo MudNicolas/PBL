@@ -46,7 +46,6 @@ export default {
         },
         handlePreview(file) {
             if (file.response && file.response._id) {
-                console.log(file.response._id)
                 download(file.response._id)
             }
         },

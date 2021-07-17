@@ -1,5 +1,6 @@
 import store from "@/store"
 import { getToken } from "@/utils/auth"
+import { downloadCheck } from "@/api/files"
 
 function download(_id) {
     let downloadElement = document.createElement("a")
@@ -10,8 +11,13 @@ function download(_id) {
     }
     href += "&token=" + token
     downloadElement.href = href
-    downloadElement.target = "_blank"
     downloadElement.click()
 }
 
-export default download
+function preCheck(_id) {
+    downloadCheck({ _id: _id }).then(() => {
+        download(_id)
+    })
+}
+
+export default preCheck

@@ -10,3 +10,11 @@ export function uploadFile(data, cb, cancelToken) {
         cancelToken: cancelToken,
     })
 }
+
+export function downloadCheck(query) {
+    return request({
+        url: "/files/access",
+        method: "get",
+        params: query,
+    })
+}

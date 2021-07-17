@@ -37,8 +37,7 @@ router.post("/upload", (req, res) => {
         })
 })
 
-router.get("/download/", (req, res) => {
-    let path = "public/files/temp/"
+router.get("/download", (req, res) => {
     let _id = req.query._id
     let validate = /^[a-fA-F0-9]{24}$/.test(_id)
     if (!validate) {
@@ -55,15 +54,50 @@ router.get("/download/", (req, res) => {
             return
         }
 
+        let path
+        if (file.isSubmitted) {
+            path = "public/files/"
+        } else {
+            path = "public/files/temp/"
+        }
+
         let downloadPath = path + file.serverFilename
         fs.access(downloadPath, err => {
             if (err) {
                 res.send(err)
                 return
             }
-
             res.download(downloadPath, file.originalFilename)
         })
+    })
+})
+
+router.get("/access", (req, res) => {
+    let _id = req.query._id
+    let validate = /^[a-fA-F0-9]{24}$/.test(_id)
+    if (!validate) {
+        res.json({
+            code: 30002,
+            message: "该文件不存在",
+        })
+        return
+    }
+    File.findById(_id).then((file, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        if (!file) {
+            res.json({
+                code: 30002,
+                message: "该文件不存在",
+            })
+            return
+        }
+        res.json({ code: 20000 })
     })
 })
 
