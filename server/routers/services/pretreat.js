@@ -65,6 +65,11 @@ router.all("/login", (req, res, next) => {
 router.use(async (req, res, next) => {
     let token = req.headers.token
 
+    //下载的token在query里
+    if (req.path === "/files/download") {
+        token = req.query.token
+    }
+
     let dec = AESDecode(token)
 
     if (dec === 0) {

@@ -20,6 +20,7 @@
 <script>
 import { getToken } from "@/utils/auth"
 import UploadFile from "@/components/UploadFile"
+import download from "@/utils/download"
 
 export default {
     name: "FilesUpload",
@@ -44,7 +45,10 @@ export default {
             this.fileList = fileList
         },
         handlePreview(file) {
-            console.log(file)
+            if (file.response && file.response._id) {
+                console.log(file.response._id)
+                download(file.response._id)
+            }
         },
     },
 }
