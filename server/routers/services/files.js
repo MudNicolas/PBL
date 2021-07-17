@@ -38,67 +38,65 @@ router.post("/upload", (req, res) => {
 })
 
 router.get("/download", (req, res) => {
-    let _id = req.query._id
-    let validate = /^[a-fA-F0-9]{24}$/.test(_id)
-    if (!validate) {
-        res.send("该文件不存在")
-        return
-    }
-    File.findById(_id).then((file, err) => {
-        if (err) {
-            res.send(err)
-            return
-        }
-        if (!file) {
-            res.send("该文件不存在")
-            return
-        }
-
-        let path
-        if (file.isSubmitted) {
-            path = "public/files/"
-        } else {
-            path = "public/files/temp/"
-        }
-
-        let downloadPath = path + file.serverFilename
-        fs.access(downloadPath, err => {
-            if (err) {
-                res.send(err)
-                return
+    fileCheck(req)
+        .then(file => {
+            let path
+            if (file.isSubmitted) {
+                path = "public/files/"
+            } else {
+                path = "public/files/temp/"
             }
-            res.download(downloadPath, file.originalFilename)
+
+            let downloadPath = path + file.serverFilename
+            fs.access(downloadPath, err => {
+                if (err) {
+                    res.send(err)
+                    return
+                }
+                res.download(downloadPath, file.originalFilename)
+            })
         })
-    })
+        .catch(err => {
+            res.send(err)
+        })
 })
 
 router.get("/access", (req, res) => {
-    let _id = req.query._id
-    let validate = /^[a-fA-F0-9]{24}$/.test(_id)
-    if (!validate) {
-        res.json({
-            code: 30002,
-            message: "该文件不存在",
+    fileCheck(req)
+        .then(() => {
+            res.json({ code: 20000 })
         })
-        return
-    }
-    File.findById(_id).then((file, err) => {
-        if (err) {
-            res.json({
-                code: 30001,
-                message: "DataBase Error",
-            })
-            return
-        }
-        if (!file) {
-            res.json({
+        .catch(err => {
+            res.json(err)
+        })
+})
+
+function fileCheck(req) {
+    return new Promise((resolve, reject) => {
+        let _id = req.query._id
+        let validate = /^[a-fA-F0-9]{24}$/.test(_id)
+        if (!validate) {
+            return reject({
                 code: 30002,
                 message: "该文件不存在",
             })
-            return
         }
-        res.json({ code: 20000 })
+        File.findById(_id).then((file, err) => {
+            if (err) {
+                return reject({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+            }
+            if (!file) {
+                return reject({
+                    code: 30002,
+                    message: "该文件不存在",
+                })
+            }
+            resolve(file)
+        })
     })
-})
+}
 
 export default router
