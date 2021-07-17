@@ -190,7 +190,6 @@ export default {
                 const fileList = this.uploadFiles
                 file.status = "fail"
                 fileList.splice(fileList.indexOf(file), 1)
-
                 this.onError(err, file, this.uploadFiles)
                 this.onChange(file, this.uploadFiles)
             }

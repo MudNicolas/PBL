@@ -29,7 +29,6 @@ router.post("/upload", (req, res) => {
             })
         })
         .catch(err => {
-            console.log(err)
             res.json({
                 code: 30001,
                 message: "MultiParty Error!",
