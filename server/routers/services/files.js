@@ -16,6 +16,10 @@ router.post("/upload", (req, res) => {
             file.save().then((f, err) => {
                 if (err) {
                     console.log(err)
+                    res.json({
+                        code: 30001,
+                        message: "DataBase Error",
+                    })
                     return
                 }
                 res.json({
@@ -26,6 +30,10 @@ router.post("/upload", (req, res) => {
         })
         .catch(err => {
             console.log(err)
+            res.json({
+                code: 30001,
+                message: "MultiParty Error!",
+            })
         })
 })
 

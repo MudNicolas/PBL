@@ -14,5 +14,6 @@ export function uploadImg(data, imgType, cb) {
         method: "post",
         data,
         onUploadProgress: cb || function() {},
+        timeout: 1000 * 60,
     })
 }

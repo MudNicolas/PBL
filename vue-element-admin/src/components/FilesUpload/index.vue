@@ -1,5 +1,5 @@
 <template>
-    <el-upload
+    <upload-file
         :action="uploadPath"
         drag
         multiple
@@ -14,14 +14,16 @@
             将文件拖到此处，或
             <em>点击上传</em>
         </div>
-    </el-upload>
+    </upload-file>
 </template>
 
 <script>
 import { getToken } from "@/utils/auth"
+import UploadFile from "@/components/UploadFile"
 
 export default {
     name: "FilesUpload",
+    components: { UploadFile },
     data() {
         return {
             uploadPath: process.env.VUE_APP_BASE_API + process.env.VUE_APP_FILES_API + "/upload",

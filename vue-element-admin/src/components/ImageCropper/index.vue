@@ -161,7 +161,7 @@
 
 <script>
 "use strict"
-import { uploadAvatar } from "@/api/user"
+import { uploadImg } from "@/api/img"
 import language from "./utils/language.js"
 import mimes from "./utils/mimes.js"
 import data2blob from "./utils/data2blob.js"
@@ -744,7 +744,7 @@ export default {
                 this.progress = progressPercent
             }
 
-            uploadAvatar(fmData, this.imgType, cb)
+            uploadImg(fmData, this.imgType, cb)
                 .then(resData => {
                     //console.log(resData);
                     this.loading = 2

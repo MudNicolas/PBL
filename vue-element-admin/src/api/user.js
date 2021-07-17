@@ -31,10 +31,6 @@ export function changeInfo(data) {
     })
 }
 
-export function uploadAvatar(data, imgType, cb) {
-    return uploadImg(data, imgType, cb)
-}
-
 export function sendPWD(data) {
     return request({
         url: "/user/updatePWD",
