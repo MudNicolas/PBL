@@ -111,7 +111,8 @@ router.use((req, res, next) => {
 })
 
 router.post("/set", (req, res) => {
-    let { _id, name, info, visible } = req.body.section
+    let { _id } = req.body.section
+    let sectionKey = Object.keys(req.body.section)
     Section.findById(_id)
         .select("name info visible")
         .then((section, err) => {
@@ -122,14 +123,9 @@ router.post("/set", (req, res) => {
                 })
                 return
             }
-            if (typeof name !== "undefined") {
-                section.name = name
-            }
-            if (typeof info !== "undefined") {
-                section.info = info
-            }
-            if (typeof visible !== "undefined") {
-                section.visible = visible
+
+            for (let k of sectionKey) {
+                section[k] = req.body.section[k]
             }
 
             section.save().then((s, err) => {
