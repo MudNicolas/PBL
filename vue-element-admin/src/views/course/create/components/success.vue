@@ -3,7 +3,7 @@
         <div class="wrapper-col">
             <i class="el-icon-success suc-icon suc-wrapper"></i>
             <div class="suc-wrapper">
-                <div class="suc-word">创捷课程成功</div>
+                <div class="suc-word">创建课程成功</div>
             </div>
             <div class="suc-wrapper">
                 <router-link :to="'/course/view/' + courseId">
@@ -12,9 +12,7 @@
                 <router-link to="/">
                     <el-button style="margin-left: 10px">回到首页</el-button>
                 </router-link>
-                <el-button @click="toCreate" style="margin-left: 10px"
-                    >继续创建</el-button
-                >
+                <el-button @click="toCreate" style="margin-left: 10px">继续创建</el-button>
             </div>
         </div>
     </div>
@@ -26,14 +24,14 @@ export default {
     props: ["courseId"],
     methods: {
         toCreate() {
-            let fullPath = "/course/create";
+            let fullPath = "/course/create"
 
             this.$router.replace({
                 path: "/redirect" + fullPath,
-            });
+            })
         },
     },
-};
+}
 </script>
 
 <style scoped>

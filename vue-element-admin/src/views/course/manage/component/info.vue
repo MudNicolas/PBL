@@ -1,16 +1,12 @@
 <template>
     <div style="padding-top: 15px" v-loading="loading">
-        <el-form ref="course" :model="course" label-width="80px">
-            <el-row>
-                <el-col :span="16">
+        <el-row>
+            <el-col :span="16">
+                <el-form ref="course" :model="course" label-width="80px">
                     <el-form-item label="课程名称">
                         <el-input v-model="course.name" spellcheck="false" disabled></el-input>
                     </el-form-item>
-                </el-col>
-            </el-row>
 
-            <el-row>
-                <el-col :span="16">
                     <el-form-item label="课程简介">
                         <el-input
                             type="textarea"
@@ -20,19 +16,12 @@
                             :disabled="!isEdit"
                         ></el-input>
                     </el-form-item>
-                </el-col>
-            </el-row>
 
-            <el-row v-if="isEdit">
-                <el-col :span="16">
-                    <el-form-item>
+                    <el-form-item v-if="isEdit">
                         <el-button @click="imagecropperShow = true">上传课程封面</el-button>
                         <el-button plain @click="toDefaultCover">恢复为默认封面</el-button>
                     </el-form-item>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="16">
+
                     <el-form-item label="课程封面">
                         <div class="block image-loading-wrap-intro">
                             <el-image
@@ -59,23 +48,29 @@
                             </el-image>
                         </div>
                     </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item style="margin-top: 12px">
-                <el-button @click="isEdit = false" v-if="isEdit">取消</el-button>
-                <el-button type="primary" @click="submit" v-if="isEdit" key="profile-submit-buttom">
-                    确认提交
-                </el-button>
-                <el-button
-                    :loading="submitting"
-                    @click="isEdit = true"
-                    v-if="!isEdit"
-                    key="profile-to-edit-buttom"
-                >
-                    更新信息
-                </el-button>
-            </el-form-item>
-        </el-form>
+
+                    <el-form-item style="margin-top: 12px">
+                        <el-button @click="isEdit = false" v-if="isEdit">取消</el-button>
+                        <el-button
+                            type="primary"
+                            @click="submit"
+                            v-if="isEdit"
+                            key="profile-submit-buttom"
+                        >
+                            确认提交
+                        </el-button>
+                        <el-button
+                            :loading="submitting"
+                            @click="isEdit = true"
+                            v-if="!isEdit"
+                            key="profile-to-edit-buttom"
+                        >
+                            更新信息
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+        </el-row>
 
         <image-cropper
             v-show="imagecropperShow"

@@ -11,7 +11,12 @@
         </el-row>
         <el-row>
             <el-col :span="16" :offset="4">
-                <el-form-item label="课程名称*">
+                <el-form-item
+                    label="课程名称"
+                    :rules="{
+                        required: true,
+                    }"
+                >
                     <el-input v-model="course.name" spellcheck="false"></el-input>
                 </el-form-item>
             </el-col>
