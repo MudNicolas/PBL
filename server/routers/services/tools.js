@@ -125,6 +125,13 @@ export function InsertUsersReturnIDs(list, role) {
 export function CheckCourseAvailableAndReqUserHasPermission(courseID, roles, req) {
     let selection = ["studentList", "partnerTeacher", "chiefTeacher", "isUsed"]
     return new Promise((resolve, reject) => {
+        let validate = /^[a-fA-F0-9]{24}$/.test(courseID)
+        if (!validate) {
+            return reject({
+                code: 404,
+                message: "error",
+            })
+        }
         Course.findById(courseID)
             .select(selection.slice(roles))
             .then((course, err) => {

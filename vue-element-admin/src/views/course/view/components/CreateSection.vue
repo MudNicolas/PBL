@@ -31,7 +31,12 @@
                             <el-switch v-model="section.visible" />
                         </el-form-item>
                         <el-form-item>
-                            <el-button :loading="loading" type="primary" @click="submit">
+                            <el-button
+                                :loading="loading"
+                                :disabled="section.name.trim() === ''"
+                                type="primary"
+                                @click="submit"
+                            >
                                 确认
                             </el-button>
                         </el-form-item>
@@ -45,10 +50,10 @@
                         <div class="suc-word">节创建成功</div>
                     </div>
                     <div class="suc-wrapper">
-                        <router-link :to="'/course/view/'">
+                        <router-link :to="'/course/section/view/' + newSectionID">
                             <el-button type="primary">进入节</el-button>
                         </router-link>
-                        <router-link to="/">
+                        <router-link :to="'/course/view/' + courseID">
                             <el-button style="margin-left: 10px">返回课程</el-button>
                         </router-link>
                         <el-button @click="toCreate" style="margin-left: 10px">继续创建</el-button>
@@ -60,9 +65,13 @@
 </template>
 
 <script>
+import { createSection } from "@/api/section"
+
 export default {
     name: "CreateSection",
-
+    created() {
+        this.courseID = this.$route.params.id
+    },
     data() {
         return {
             section: {
@@ -72,11 +81,25 @@ export default {
             },
             loading: false,
             stage: 1,
+            courseID: "",
+            newSectionID: "",
         }
     },
     methods: {
         submit() {
-            this.stage = 2
+            this.section.name = this.section.name.trim()
+            if (this.section.name) {
+                this.loading = true
+                createSection({ courseID: this.courseID, section: this.section })
+                    .then(res => {
+                        this.stage = 2
+                        this.newSectionID = res.data.sectionID
+                        this.loading = false
+                    })
+                    .catch(() => {
+                        this.loading = false
+                    })
+            }
         },
         toCreate() {
             this.section = {
@@ -84,6 +107,7 @@ export default {
                 info: "",
                 visible: true,
             }
+            this.newSectionID = ""
             this.stage = 1
         },
     },

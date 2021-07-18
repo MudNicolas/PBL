@@ -56,11 +56,12 @@
 
 <script>
 import draggable from "vuedraggable"
+import { sectionSort } from "@/api/section"
 
 export default {
     name: "SectionList",
     components: { draggable },
-    props: ["sections", "editable"],
+    props: ["sections", "editable", "courseId"],
     computed: {
         dragOptions() {
             return {
@@ -81,7 +82,23 @@ export default {
         }
     },
     methods: {
-        onDragEnd() {},
+        onDragEnd() {
+            let $message = this.$message({
+                message: "  正在处理",
+                customClass: "theme-message",
+                type: "success",
+                duration: 0,
+                iconClass: "el-icon-loading",
+            })
+            let sectionIDs = this.sectionList.map(e => e._id)
+            sectionSort({ courseID: this.courseId, sectionIDs: sectionIDs })
+                .then(() => {
+                    $message.close()
+                })
+                .catch(() => {
+                    $message.close()
+                })
+        },
         showSetUpDialog(section) {
             this.setUpDialogVisible = true
             this.sectionInfomation = {

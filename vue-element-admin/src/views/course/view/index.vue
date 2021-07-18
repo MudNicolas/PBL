@@ -35,6 +35,7 @@
                         v-if="sections.length > 0"
                         :sections="sections"
                         :editable="editable"
+                        :course-id="courseID"
                     />
                     <no-section-card v-else />
                 </el-col>

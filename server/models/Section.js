@@ -12,6 +12,11 @@ var sectionSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    courseID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+    },
+    index: Number,
 })
 
 export default mongoose.model("Section", sectionSchema)

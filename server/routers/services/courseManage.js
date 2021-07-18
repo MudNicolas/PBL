@@ -4,14 +4,6 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 router.all("*", (req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
-    let validate = /^[a-fA-F0-9]{24}$/.test(courseID)
-    if (!validate) {
-        res.json({
-            code: 404,
-            message: "error",
-        })
-        return
-    }
 
     CheckCourseAvailableAndReqUserHasPermission(courseID, 1, req)
         .then(() => {
