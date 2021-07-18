@@ -122,9 +122,16 @@ router.post("/set", (req, res) => {
                 })
                 return
             }
-            section.name = name || section.name
-            section.info = info || section.info
-            section.visible = visible || section.visible
+            if (typeof name !== "undefined") {
+                section.name = name
+            }
+            if (typeof info !== "undefined") {
+                section.info = info
+            }
+            if (typeof visible !== "undefined") {
+                section.visible = visible
+            }
+
             section.save().then((s, err) => {
                 if (err) {
                     res.json({
