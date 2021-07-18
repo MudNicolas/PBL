@@ -97,6 +97,49 @@ router.post("/sort", (req, res) => {
     }
 })
 
+router.use((req, res, next) => {
+    let { _id } = req.body.section
+    let validate = /^[a-fA-F0-9]{24}$/.test(_id)
+    if (!validate) {
+        res.json({
+            code: 404,
+            message: "error",
+        })
+        return
+    }
+    next()
+})
+
+router.post("/set", (req, res) => {
+    let { _id, name, info, visible } = req.body.section
+    Section.findById(_id)
+        .select("name info visible")
+        .then((section, err) => {
+            if (err) {
+                res.json({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+                return
+            }
+            section.name = name || section.name
+            section.info = info || section.info
+            section.visible = visible || section.visible
+            section.save().then((s, err) => {
+                if (err) {
+                    res.json({
+                        code: 30001,
+                        message: "DataBase Error",
+                    })
+                    return
+                }
+                res.json({
+                    code: 20000,
+                })
+            })
+        })
+})
+
 router.post("/delete", (req, res) => {
     res.end()
 })

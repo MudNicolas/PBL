@@ -16,6 +16,14 @@ export function sectionSort(data) {
     })
 }
 
+export function sectionSet(data) {
+    return request({
+        url: "/section/set",
+        method: "post",
+        data,
+    })
+}
+
 export function deleteSection(data) {
     return request({
         url: "/section/delete",

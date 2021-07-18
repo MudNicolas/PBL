@@ -48,7 +48,9 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="setUpDialogVisible = false">取 消</el-button>
-                <el-button type="primary">确 定</el-button>
+                <el-button @click="setVisible" :loading="visibleSetting" type="primary">
+                    确 定
+                </el-button>
             </span>
         </el-dialog>
     </div>
@@ -56,7 +58,7 @@
 
 <script>
 import draggable from "vuedraggable"
-import { sectionSort } from "@/api/section"
+import { sectionSort, sectionSet } from "@/api/section"
 
 export default {
     name: "SectionList",
@@ -77,8 +79,10 @@ export default {
             sectionList: this.sections,
             setUpDialogVisible: false,
             sectionInfomation: {
+                _id: "",
                 visible: false,
             },
+            visibleSetting: false,
         }
     },
     methods: {
@@ -103,7 +107,25 @@ export default {
             this.setUpDialogVisible = true
             this.sectionInfomation = {
                 visible: section.visible,
+                _id: section._id,
             }
+        },
+        setVisible() {
+            this.visibleSetting = true
+            let section = this.sectionInfomation
+            sectionSet({
+                courseID: this.courseId,
+                section: section,
+            })
+                .then(() => {
+                    this.visibleSetting = false
+                    this.setUpDialogVisible = false
+                    this.$message.success("设置成功")
+                    this.$emit("updateVisible", section)
+                })
+                .catch(() => {
+                    this.visibleSetting = false
+                })
         },
     },
 }

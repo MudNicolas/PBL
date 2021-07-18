@@ -36,6 +36,7 @@
                         :sections="sections"
                         :editable="editable"
                         :course-id="courseID"
+                        @updateVisible="updateVisible"
                     />
                     <no-section-card v-else />
                 </el-col>
@@ -70,6 +71,7 @@ export default {
     },
     methods: {
         getCourseView() {
+            this.loading = true
             getCourseView({ courseID: this.courseID }).then(res => {
                 this.course = res.data.course
                 this.sections = res.data.sections
@@ -77,6 +79,14 @@ export default {
             })
         },
         checkPermission,
+        updateVisible(section) {
+            for (let i of this.sections) {
+                if (i._id === section._id) {
+                    i.visible = section.visible
+                    break
+                }
+            }
+        },
     },
 }
 </script>
