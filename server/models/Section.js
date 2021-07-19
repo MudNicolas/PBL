@@ -17,6 +17,8 @@ var sectionSchema = new mongoose.Schema({
         ref: "Course",
     },
     index: Number,
+    files: Array,
+    urls: Array,
 })
 
 export default mongoose.model("Section", sectionSchema)

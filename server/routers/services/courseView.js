@@ -34,6 +34,13 @@ router.get("/get", (req, res, next) => {
                 return
             }
 
+            if (!course) {
+                res.json({
+                    code: 404,
+                    message: "该课程不存在",
+                })
+            }
+
             course.cover = `${COVER_PATH}/${course.cover}`
 
             let sections = await Section.find({

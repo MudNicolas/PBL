@@ -33,7 +33,7 @@ router.post("/create", async (req, res) => {
         courseID: courseID,
         index: index,
     })
-    s.save().then((sec, err) => {
+    s.save((err, sec) => {
         if (err) {
             res.json({
                 code: 30001,
@@ -89,7 +89,7 @@ router.post("/sort", (req, res) => {
 
     function saveChange(s) {
         return new Promise((resolve, reject) => {
-            s.save().then((ns, err) => {
+            s.save(err => {
                 if (err) {
                     return reject(err)
                 }
@@ -130,7 +130,7 @@ router.post("/set", (req, res) => {
                 section[k] = req.body.section[k]
             }
 
-            section.save().then((s, err) => {
+            section.save(err => {
                 if (err) {
                     res.json({
                         code: 30001,

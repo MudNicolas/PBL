@@ -23,42 +23,47 @@ router.all("/login", (req, res, next) => {
             return
         }
 
-        if (validateUser) {
-            //console.log(validateUser.role, role)
-            if (!validateUser.role.includes(role)) {
-                res.json({
-                    code: 60205,
-                    message: "该用户无此角色",
-                })
-                return
-            }
-            let verification = new Verification({
-                uid: validateUser._id,
-                loginTime: new Date(),
-                latestOperationTime: new Date(),
-                role: role,
-            })
-            verification.save().then(t => {
-                var token = AESEncode({
-                    uid: t.uid,
-                    loginTime: t.loginTime,
-                    role: t.role,
-                })
-                //返回token
-                res.json({
-                    code: 20000,
-                    data: { token: token },
-                })
-                return
-            })
-            return
-        } else {
+        if (!validateUser) {
             res.json({
                 code: 60204,
                 message: "用户名或密码错误",
             })
             return
         }
+        //console.log(validateUser.role, role)
+        if (!validateUser.role.includes(role)) {
+            res.json({
+                code: 60205,
+                message: "该用户无此角色",
+            })
+            return
+        }
+        let verification = new Verification({
+            uid: validateUser._id,
+            loginTime: new Date(),
+            latestOperationTime: new Date(),
+            role: role,
+        })
+        verification.save((err, t) => {
+            if (err) {
+                res.json({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+                return
+            }
+            var token = AESEncode({
+                uid: t.uid,
+                loginTime: t.loginTime,
+                role: t.role,
+            })
+            //返回token
+            res.json({
+                code: 20000,
+                data: { token: token },
+            })
+            return
+        })
     })
 })
 
@@ -117,7 +122,14 @@ router.use(async (req, res, next) => {
                 return
             }
             loginCheck.latestOperationTime = new Date()
-            loginCheck.save().then(() => {
+            loginCheck.save(err => {
+                if (err) {
+                    res.json({
+                        code: 30001,
+                        message: "DataBase Error",
+                    })
+                    return
+                }
                 req.uid = uid
                 req.role = role
                 next()
@@ -136,7 +148,14 @@ router.all("/logout", (req, res, next) => {
         logout: false,
     }).then(theLogin => {
         theLogin.logout = true
-        theLogin.save().then(() => {
+        theLogin.save(err => {
+            if (err) {
+                res.json({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+                return
+            }
             res.json({
                 code: 20000,
                 data: "success",
@@ -174,7 +193,15 @@ router.all("*/delete", (req, res, next) => {
                 return
             }
             v.dangerousOperationVerificateTime = new Date()
-            v.save().then((v, err) => {})
+            v.save(err => {
+                if (err) {
+                    res.json({
+                        code: 30001,
+                        message: "DataBase Error",
+                    })
+                    return
+                }
+            })
         }
 
         //未验证密码或距上一次验证超过30分钟

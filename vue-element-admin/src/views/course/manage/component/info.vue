@@ -147,7 +147,7 @@ export default {
         submit() {
             this.course.introduction = this.course.introduction.trim()
             this.submitting = true
-            submitEdit({ course: this.course, courseID: this.course._id })
+            submitEdit({ course: this.course, courseID: this.courseId })
                 .then(res => {
                     this.$message({
                         type: "success",

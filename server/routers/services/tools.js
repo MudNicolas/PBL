@@ -90,7 +90,7 @@ export function InsertUsersReturnIDs(list, role) {
                     name: e.name,
                     role: [role],
                 })
-                newUser.save().then((theUser, err) => {
+                newUser.save((err, theUser) => {
                     if (err) {
                         reject(err)
                         return
@@ -123,7 +123,7 @@ export function InsertUsersReturnIDs(list, role) {
  * @param {req} req
  */
 export function CheckCourseAvailableAndReqUserHasPermission(courseID, roles, req) {
-    let selection = ["studentList", "partnerTeacher", "chiefTeacher", "isUsed"]
+    let selection = ["studentList", "partnerTeacher", "chiefTeacher"]
     return new Promise((resolve, reject) => {
         let validate = /^[a-fA-F0-9]{24}$/.test(courseID)
         if (!validate) {
@@ -132,43 +132,47 @@ export function CheckCourseAvailableAndReqUserHasPermission(courseID, roles, req
                 message: "error",
             })
         }
-        Course.findById(courseID)
-            .select(selection.slice(roles))
-            .then((course, err) => {
-                if (err) {
-                    return reject({
-                        code: 30001,
-                        message: "DataBase Error",
-                    })
-                }
+        Course.findById(courseID).then((course, err) => {
+            if (err) {
+                return reject({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+            }
 
-                if (!course || course.isUsed === false) {
-                    return reject({
-                        code: 404,
-                        message: "该课程不存在",
-                    })
-                }
+            if (!course || course.isUsed === false) {
+                return reject({
+                    code: 404,
+                    message: "该课程不存在",
+                })
+            }
 
-                /*
+            /*
 				既不是chief，也不是partner里的，也不是studentlist里的
 				 p._id是object，要toString
 				 studentList是空列表就不执行对应的some了
 			 */
-                let chiefTeacher = course.chiefTeacher
-                let partnerTeacher = course.partnerTeacher || []
-                let studentList = course.studentList || []
-                let valid =
-                    chiefTeacher._id.toString() === req.uid ||
-                    partnerTeacher.some(p => p._id.toString() === req.uid) ||
-                    studentList.some(p => p._id.toString() === req.uid)
-                if (!valid) {
-                    return reject({
-                        code: 401,
-                        message: "401 Not Permission",
-                    })
-                }
 
-                return resolve()
-            })
+            let permissionCheck = {
+                chiefTeacher: {},
+                partnerTeacher: [],
+                studentList: [],
+            }
+            for (let i of selection.slice(roles)) {
+                permissionCheck[i] = course[i]
+            }
+            let valid =
+                permissionCheck.chiefTeacher._id.toString() === req.uid ||
+                permissionCheck.partnerTeacher.some(p => p._id.toString() === req.uid) ||
+                permissionCheck.studentList.some(p => p._id.toString() === req.uid)
+            if (!valid) {
+                return reject({
+                    code: 401,
+                    message: "401 Not Permission",
+                })
+            }
+
+            return resolve(course)
+        })
     })
 }

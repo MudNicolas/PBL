@@ -14,7 +14,7 @@ router.post("/upload", (req, res) => {
                 size: uploadFile.size,
                 uploadTime: Date.now(),
             })
-            file.save().then((f, err) => {
+            file.save((err, f) => {
                 if (err) {
                     console.log(err)
                     res.json({

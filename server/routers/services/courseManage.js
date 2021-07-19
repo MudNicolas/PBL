@@ -6,7 +6,8 @@ router.all("*", (req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
 
     CheckCourseAvailableAndReqUserHasPermission(courseID, 1, req)
-        .then(() => {
+        .then(course => {
+            req.course = course
             next()
         })
         .catch(err => {

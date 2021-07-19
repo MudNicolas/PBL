@@ -1,4 +1,5 @@
 import Router from "express"
+import Section from "#models/Section.js"
 let router = Router()
 
 //验证此section的course是否具有访问权限
@@ -36,7 +37,7 @@ router.use((req, res, next) => {
 })
 
 router.get("/get", (req, res) => {
-    res.end()
+    let { sectionID } = req.query
 })
 
 export default router
