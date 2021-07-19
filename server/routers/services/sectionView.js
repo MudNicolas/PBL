@@ -51,7 +51,7 @@ router.get("/get", (req, res) => {
     for (let i = 0; i < 3; i++) {
         content.push(
             Mock.mock({
-                url: "url",
+                url: "http://www.baidu.com",
                 name: "@ctitle",
                 type: "url",
             })

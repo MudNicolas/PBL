@@ -29,6 +29,7 @@
                             v-if="scope.row.type === 'url'"
                             type="primary"
                             icon="el-icon-view"
+                            @click="openLink(scope.row.url)"
                         >
                             查看
                         </el-button>
@@ -36,6 +37,7 @@
                             v-if="scope.row.type === 'file'"
                             type="primary"
                             icon="el-icon-download"
+                            @click="download(scope.row._id)"
                         >
                             下载
                         </el-button>
@@ -56,6 +58,7 @@
 <script>
 import { getSectionView } from "@/api/section"
 import includeFileType from "@/utils/fileType"
+import download from "@/utils/download"
 
 export default {
     name: "SectionContent",
@@ -106,6 +109,13 @@ export default {
                     this.loading = false
                 })
                 .catch()
+        },
+        openLink(url) {
+            console.log(url)
+            window.open(url)
+        },
+        download(_id) {
+            download(_id)
         },
     },
 }
