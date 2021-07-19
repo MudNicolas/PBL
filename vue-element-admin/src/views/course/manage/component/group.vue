@@ -343,7 +343,6 @@ export default {
             })
         },
         transformGroupData(raw) {
-            console.log(raw)
             let tableData = []
             for (let group of raw) {
                 let groupMember = group.groupMember

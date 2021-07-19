@@ -93,7 +93,6 @@ export default {
 
 <style lang='scss' scoped>
 .view-container {
-    min-height: 80vh;
     padding: 20px;
 }
 

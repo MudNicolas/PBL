@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import info from "./component/info.vue";
-import student from "./component/student.vue";
-import partner from "./component/partner.vue";
-import commentTemplate from "./component/comment-template.vue";
-import group from "./component/group.vue";
+import info from "./component/info.vue"
+import student from "./component/student.vue"
+import partner from "./component/partner.vue"
+import commentTemplate from "./component/comment-template.vue"
+import group from "./component/group.vue"
 
 export default {
     components: { info, student, partner, commentTemplate, group },
@@ -40,31 +40,31 @@ export default {
                 { name: "partner", label: "协作教师管理" },
                 { name: "commentTemplate", label: "评论模板管理" },
             ],
-        };
+        }
     },
     watch: {
         activeName(val) {
-            this.$router.push(`${this.$route.path}?tab=${val}`);
+            this.$router.push(`${this.$route.path}?tab=${val}`)
         },
         "$route.query.tab"(val) {
             if (
                 val &&
-                this.components.some((e) => {
-                    return e.name === val;
+                this.components.some(e => {
+                    return e.name === val
                 })
             ) {
-                this.activeName = val;
+                this.activeName = val
             }
         },
     },
     created() {
         // init the default selected tab
-        const tab = this.$route.query.tab;
+        const tab = this.$route.query.tab
         if (tab) {
-            this.activeName = tab;
+            this.activeName = tab
         }
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

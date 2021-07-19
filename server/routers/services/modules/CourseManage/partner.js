@@ -14,7 +14,7 @@ router.post("/getAllTeacher", (req, res) => {
     course
         .execPopulate([
             { path: "chiefTeacher", select: "name avatar" },
-            { path: "partnerTeacher", select: "name avatar introduction" },
+            { path: "partnerTeacher", select: "name avatar" },
         ])
         .then((t, err) => {
             if (err) {

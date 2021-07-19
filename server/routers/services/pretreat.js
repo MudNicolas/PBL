@@ -90,9 +90,7 @@ router.use(async (req, res, next) => {
         loginTime: loginTime,
         role: role,
         logout: false,
-    }).then(theLogin => {
-        return theLogin
-    })
+    }).exec()
 
     if (!loginCheck) {
         res.json({
@@ -132,6 +130,7 @@ router.use(async (req, res, next) => {
                 }
                 req.uid = uid
                 req.role = role
+                req.loginInfo = loginCheck
                 next()
             })
         })
@@ -139,16 +138,43 @@ router.use(async (req, res, next) => {
 
 //退出登录，将loginhistory的logout设为true
 router.all("/logout", (req, res, next) => {
-    let token = req.headers.token
-    var { uid, loginTime, role } = AESDecode(token)
-    Verification.findOne({
-        uid: uid,
-        loginTime: loginTime,
-        role: role,
-        logout: false,
-    }).then(theLogin => {
-        theLogin.logout = true
-        theLogin.save(err => {
+    let theLogin = req.loginInfo
+    theLogin.logout = true
+    theLogin.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+            data: "success",
+        })
+    })
+})
+
+//对delete操作进行密码验证
+router.all("*/delete", async (req, res, next) => {
+    let { password } = req.body
+
+    let v = req.loginInfo
+    //如果传过来的值有password，更改上次验证时间
+    if (password) {
+        let passwordValidate = await User.findOne({
+            _id: req.uid,
+            password: password,
+        }).exec()
+        if (!passwordValidate) {
+            res.json({
+                code: 60204,
+                message: "密码错误",
+            })
+            return
+        }
+        v.dangerousOperationVerificateTime = new Date()
+        v.save(err => {
             if (err) {
                 res.json({
                     code: 30001,
@@ -156,71 +182,25 @@ router.all("/logout", (req, res, next) => {
                 })
                 return
             }
-            res.json({
-                code: 20000,
-                data: "success",
-            })
         })
-    })
-})
+    }
 
-//对delete操作进行密码验证
-router.all("*/delete", (req, res, next) => {
-    let token = req.headers.token
-    let dec = AESDecode(token)
-    let { uid, loginTime, role } = dec
-    let { password } = req.body
-
-    Verification.findOne({
-        uid: uid,
-        loginTime: loginTime,
-        role: role,
-        logout: false,
-    }).then(async v => {
-        //如果传过来的值有password，更改上次验证时间
-        if (password) {
-            let passwordValidate = false
-            passwordValidate = await User.findOne({
-                _id: uid,
-                password: password,
-                isUsed: true,
-            }).exec()
-            if (!passwordValidate) {
-                res.json({
-                    code: 60204,
-                    message: "密码错误",
-                })
-                return
-            }
-            v.dangerousOperationVerificateTime = new Date()
-            v.save(err => {
-                if (err) {
-                    res.json({
-                        code: 30001,
-                        message: "DataBase Error",
-                    })
-                    return
-                }
-            })
-        }
-
-        //未验证密码或距上一次验证超过30分钟
-        let valid =
-            v.dangerousOperationVerificateTime &&
-            Date.now() - v.dangerousOperationVerificateTime < 1000 * 60 * 30
-        if (!valid) {
-            res.json({
-                code: 1023,
-                message: "需要验证身份",
-                data: {
-                    url: req.url,
-                    params: req.body,
-                },
-            })
-            return
-        }
-        next()
-    })
+    //未验证密码或距上一次验证超过30分钟
+    let valid =
+        v.dangerousOperationVerificateTime &&
+        Date.now() - v.dangerousOperationVerificateTime < 1000 * 60 * 30
+    if (!valid) {
+        res.json({
+            code: 1023,
+            message: "需要验证身份",
+            data: {
+                url: req.url,
+                params: req.body,
+            },
+        })
+        return
+    }
+    next()
 })
 
 export default router

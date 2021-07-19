@@ -2,21 +2,13 @@
     <div class="wscn-http404-container">
         <div class="wscn-http404">
             <div class="pic-404">
-                <img
-                    class="pic-404__parent"
-                    src="@/assets/404_images/404.png"
-                    alt="404"
-                />
+                <img class="pic-404__parent" src="@/assets/404_images/404.png" alt="404" />
                 <img
                     class="pic-404__child left"
                     src="@/assets/404_images/404_cloud.png"
                     alt="404"
                 />
-                <img
-                    class="pic-404__child mid"
-                    src="@/assets/404_images/404_cloud.png"
-                    alt="404"
-                />
+                <img class="pic-404__child mid" src="@/assets/404_images/404_cloud.png" alt="404" />
                 <img
                     class="pic-404__child right"
                     src="@/assets/404_images/404_cloud.png"
@@ -30,7 +22,7 @@
                 <div class="bullshit__info">
                     请检查您输入的url是否正确, 或者点击下面的按钮回到首页
                 </div>
-                <a href="" class="bullshit__return-home">Back to home</a>
+                <a href="/" class="bullshit__return-home">Back to home</a>
             </div>
         </div>
     </div>
@@ -41,10 +33,10 @@ export default {
     name: "Page404",
     computed: {
         message() {
-            return "url输入错误，或者你不属于该页面用户组";
+            return "url输入错误，或者你不属于该页面用户组"
         },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

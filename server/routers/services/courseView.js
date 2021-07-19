@@ -7,11 +7,13 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 var router = Router()
 
+let course
 router.use((req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
 
     CheckCourseAvailableAndReqUserHasPermission(courseID, 0, req)
-        .then(() => {
+        .then(c => {
+            course = c
             next()
         })
         .catch(err => {
@@ -21,11 +23,13 @@ router.use((req, res, next) => {
 
 router.get("/get", (req, res, next) => {
     let courseID = req.query.courseID
-    Course.findById(courseID)
-        .select("name introduction chiefTeacher partnerTeacher cover")
-        .populate("chiefTeacher", "name")
-        .populate("partnerTeacher", "name")
-        .then(async (course, err) => {
+
+    course
+        .execPopulate([
+            { path: "chiefTeacher", select: "name" },
+            { path: "partnerTeacher", select: "name" },
+        ])
+        .then(async (c, err) => {
             if (err) {
                 res.json({
                     code: 30001,
@@ -33,15 +37,15 @@ router.get("/get", (req, res, next) => {
                 })
                 return
             }
-
-            if (!course) {
-                res.json({
-                    code: 404,
-                    message: "该课程不存在",
-                })
+            let theCourse = {
+                name: c.name,
+                introduction: c.introduction,
+                chiefTeacher: c.chiefTeacher,
+                partnerTeacher: c.partnerTeacher,
+                cover: c.cover,
             }
 
-            course.cover = `${COVER_PATH}/${course.cover}`
+            theCourse.cover = `${COVER_PATH}/${theCourse.cover}`
 
             let sections = await Section.find({
                 courseID: courseID,
@@ -56,7 +60,7 @@ router.get("/get", (req, res, next) => {
             res.json({
                 code: 20000,
                 data: {
-                    course: course,
+                    course: theCourse,
                     sections: sections,
                 },
             })

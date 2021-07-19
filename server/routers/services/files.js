@@ -2,7 +2,7 @@ import Router from "express"
 import File from "#models/File.js"
 let router = Router()
 import { UploadFiles } from "#services/tools.js"
-import fs, { exists } from "fs"
+import fs from "fs"
 
 router.post("/upload", (req, res) => {
     UploadFiles(req)

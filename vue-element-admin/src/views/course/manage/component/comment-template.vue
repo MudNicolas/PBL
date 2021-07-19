@@ -241,7 +241,6 @@ export default {
         getAllCommentTemplate() {
             this.loading = true
             getAllCommentTemplate({ courseID: this.courseId }).then(res => {
-                console.log(res.data)
                 let rowTeamplate = res.data.commentTemplate
                 this.transformTemplateData(rowTeamplate)
             })
@@ -263,7 +262,7 @@ export default {
                     tableData.push(item)
                 }
             }
-            console.log(tableData)
+            //console.log(tableData)
             this.commentTemplate = tableData
             this.loading = false
         },
@@ -292,7 +291,7 @@ export default {
                             return e.value
                         })
                         temp.entry = entry
-                        console.log(temp)
+                        //console.log(temp)
                         resolve(temp)
                         return
                     } else {
@@ -399,7 +398,7 @@ export default {
                     editData = tData.slice(i, i + tData[i].length)
                     this.editData._id = _id
                     name = tData[i].name
-                    console.log(this.editData)
+                    //console.log(this.editData)
                     break
                 }
             }

@@ -109,12 +109,6 @@ router.use((req, res, next) => {
         })
         return
     }
-    next()
-})
-
-router.post("/set", (req, res) => {
-    let { _id } = req.body.section
-    let sectionKey = Object.keys(req.body.section)
     Section.findById(_id)
         .select("name info visible")
         .then((section, err) => {
@@ -125,28 +119,48 @@ router.post("/set", (req, res) => {
                 })
                 return
             }
-
-            for (let k of sectionKey) {
-                section[k] = req.body.section[k]
-            }
-
-            section.save(err => {
-                if (err) {
-                    res.json({
-                        code: 30001,
-                        message: "DataBase Error",
-                    })
-                    return
-                }
-                res.json({
-                    code: 20000,
-                })
-            })
+            req.section = section
+            next()
         })
 })
 
+router.post("/set", (req, res) => {
+    let sectionKey = Object.keys(req.body.section)
+    let section = req.section
+
+    for (let k of sectionKey) {
+        section[k] = req.body.section[k]
+    }
+
+    section.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
 router.post("/delete", (req, res) => {
-    res.end()
+    let section = req.section
+    section.isUsed = false
+    section.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
 })
 
 export default router
