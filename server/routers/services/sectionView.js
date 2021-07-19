@@ -61,7 +61,7 @@ router.get("/get", (req, res) => {
         content.push(
             Mock.mock({
                 _id: "@id",
-                name: "文件",
+                name: "文件.2s2",
                 type: "file",
             })
         )

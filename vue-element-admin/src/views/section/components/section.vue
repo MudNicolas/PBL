@@ -55,6 +55,7 @@
 
 <script>
 import { getSectionView } from "@/api/section"
+import includeFileType from "@/utils/fileType"
 
 export default {
     name: "SectionContent",
@@ -75,10 +76,11 @@ export default {
             return map[val]
         },
         fileType: function (val) {
-            if (val.split(".").length === 1) {
-                return "blank"
+            let type = includeFileType(val)
+            if (type) {
+                return type
             }
-            return val.split(".")[val.split(".").length - 1]
+            return "blank"
         },
     },
     data() {
