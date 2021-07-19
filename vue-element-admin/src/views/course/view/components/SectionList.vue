@@ -17,7 +17,7 @@
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
                             <div class="header">
-                                <span class="section-name">
+                                <span class="section-name" title="学生不可见">
                                     {{ element.name }}
                                     <svg-icon v-if="!element.visible" icon-class="invisible" />
                                 </span>
