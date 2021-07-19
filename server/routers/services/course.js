@@ -5,6 +5,10 @@ import { UploadImg } from "#services/tools.js"
 import { InsertUsersReturnIDs } from "#services/tools.js"
 var router = Router()
 
+import view from "#root/routers/services/courseView.js"
+
+router.use("/view", view)
+
 var findCourseQuery = uid => {
     let query = {
         $and: [

@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { getCourseView } from "@/api/course-view"
+import { getCourseView } from "@/api/course"
 import SectionList from "./components/SectionList.vue"
 import InfoCard from "./components/info-card"
 import NoSectionCard from "./components/NoSectionCard.vue"

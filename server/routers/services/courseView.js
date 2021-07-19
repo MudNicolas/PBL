@@ -7,7 +7,7 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 var router = Router()
 
-router.all("*", (req, res, next) => {
+router.use((req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
 
     CheckCourseAvailableAndReqUserHasPermission(courseID, 0, req)

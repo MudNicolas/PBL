@@ -1,9 +1,11 @@
 import Router from "express"
-import Course from "#models/Course.js"
 import Section from "#models/Section.js"
+import sectionView from "#services/sectionView.js"
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 let router = Router()
+
+router.use("/view", sectionView)
 
 //教师api
 router.use((req, res, next) => {

@@ -17,10 +17,19 @@
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
                             <div class="header">
-                                <span class="section-name" title="学生不可见">
-                                    {{ element.name }}
-                                    <svg-icon v-if="!element.visible" icon-class="invisible" />
-                                </span>
+                                <router-link :to="'/course/section/view/' + element._id">
+                                    <span class="section-name">
+                                        <div>
+                                            {{ element.name }}
+                                        </div>
+                                        <div title="学生不可见">
+                                            <svg-icon
+                                                v-if="!element.visible"
+                                                icon-class="invisible"
+                                            />
+                                        </div>
+                                    </span>
+                                </router-link>
 
                                 <div class="right-panel" v-show="editable">
                                     <i class="el-icon-rank move-handle" />
@@ -138,6 +147,11 @@ export default {
     .section-name {
         font-size: 18px;
         line-height: 22px;
+        display: flex;
+
+        div {
+            margin-right: 8px;
+        }
     }
     .section-info {
         font-size: 14px;

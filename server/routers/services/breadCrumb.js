@@ -1,6 +1,7 @@
 import Router from "express"
 var router = Router()
 import Course from "#models/Course.js"
+import Section from "#models/Section.js"
 
 class routeTree {
     tree = {
@@ -56,6 +57,26 @@ class routeTree {
             path: "/course/section/create",
             parent: "CourseView",
             meta: { title: "新建节" },
+        },
+        SectionView: {
+            path: "/course/section/view",
+            parent: "CourseView",
+            meta: {
+                title: async function (id) {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        let title = await Section.findById(id)
+                            .select("name courseID")
+                            .then(e => {
+                                //console.log(e)
+                                return {
+                                    name: e.name,
+                                    parentID: e.courseID,
+                                }
+                            })
+                        return title
+                    }
+                },
+            },
         },
     }
 
