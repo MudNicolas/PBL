@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="section-info">{{ element.info }}</div>
+                        <div class="section-info">{{ element.info | noInfo }}</div>
                     </el-card>
                 </div>
             </transition-group>
@@ -73,6 +73,14 @@ export default {
     name: "SectionList",
     components: { draggable },
     props: ["sections", "editable", "courseId"],
+    filters: {
+        noInfo: function (val) {
+            if (!val) {
+                return "暂无简介"
+            }
+            return val
+        },
+    },
     computed: {
         dragOptions() {
             return {

@@ -40,7 +40,7 @@
                             </div>
                             <div class="course-bio-section-body">
                                 <div class="text-muted">
-                                    {{ course.introduction }}
+                                    {{ course.introduction | noIntro }}
                                 </div>
                             </div>
                         </div>
@@ -54,6 +54,14 @@
 <script>
 export default {
     name: "InfoCard",
+    filters: {
+        noIntro: function (val) {
+            if (!val) {
+                return "暂无简介"
+            }
+            return val
+        },
+    },
     props: {
         course: {
             type: Object,

@@ -17,7 +17,12 @@ var sectionSchema = new mongoose.Schema({
         ref: "Course",
     },
     index: Number,
-    files: Array,
+    files: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "File",
+        },
+    ],
     urls: Array,
 })
 

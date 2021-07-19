@@ -43,7 +43,7 @@
         </div>
         <div ref="intro" class="intro">
             <div style="padding: 0 14px 14px 14px">
-                {{ course.introduction }}
+                {{ course.introduction | noIntro }}
             </div>
         </div>
     </el-card>
@@ -53,6 +53,14 @@
 export default {
     name: "card-absolute",
     props: ["course", "clickedItemID"],
+    filters: {
+        noIntro: function (val) {
+            if (!val) {
+                return "暂无简介"
+            }
+            return val
+        },
+    },
     data() {
         return {
             isActive: false,

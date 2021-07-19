@@ -1,18 +1,19 @@
 <template>
     <div class="container">
         <el-tabs type="border-card" v-model="activeName">
-            <el-tab-pane
-                v-for="component of components"
-                :key="'CourseManageTab' + component.name"
-                :label="component.label"
-                lazy
-                :name="component.name"
-            >
-                <component
-                    v-if="activeName === component.name"
-                    :is="component.name"
-                    :section-id="sectionID"
-                />
+            <el-tab-pane label="详情" name="SectionContent">
+                <span slot="label">
+                    <i class="el-icon-tickets"></i>
+                    详情
+                </span>
+                <section-content v-if="activeName === 'SectionContent'" :section-id="sectionID" />
+            </el-tab-pane>
+            <el-tab-pane v-if="checkPermission(['teacher'])" label="设置" name="SectionSetting">
+                <span slot="label">
+                    <i class="el-icon-setting"></i>
+                    设置
+                </span>
+                <section-setting v-if="activeName === 'SectionSetting'" :section-id="sectionID" />
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -21,9 +22,19 @@
 <script>
 import SectionContent from "./components/section.vue"
 import SectionSetting from "./components/setting.vue"
+import checkPermission from "@/utils/permission" // 权限判断函数
+
 export default {
     name: "SectionView",
     components: { SectionContent, SectionSetting },
+    created() {
+        this.sectionID = this.$route.params.id
+        // init the default selected tab
+        const tab = this.$route.query.tab
+        if (tab) {
+            this.activeName = tab
+        }
+    },
     data() {
         return {
             sectionID: "",
@@ -34,14 +45,7 @@ export default {
             ],
         }
     },
-    created() {
-        this.sectionID = this.$route.params.id
-        // init the default selected tab
-        const tab = this.$route.query.tab
-        if (tab) {
-            this.activeName = tab
-        }
-    },
+
     watch: {
         activeName(val) {
             this.$router.push(`${this.$route.path}?tab=${val}`)
@@ -56,6 +60,9 @@ export default {
                 this.activeName = val
             }
         },
+    },
+    methods: {
+        checkPermission,
     },
 }
 </script>
