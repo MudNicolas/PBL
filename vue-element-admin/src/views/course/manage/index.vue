@@ -44,7 +44,16 @@ export default {
     },
     watch: {
         activeName(val) {
-            this.$router.push(`${this.$route.path}?tab=${val}`)
+            if (
+                val &&
+                this.components.some(e => {
+                    return e.name === val
+                })
+            ) {
+                this.$router.push(`${this.$route.path}?tab=${val}`)
+            } else {
+                this.activeName = "info"
+            }
         },
         "$route.query.tab"(val) {
             if (

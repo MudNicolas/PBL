@@ -4,65 +4,44 @@
             <div class="title">{{ section.name }}</div>
             <div class="info">{{ section.info | noInfo }}</div>
         </div>
-        <div>
-            <el-table :data="tableData" border style="width: 100%">
-                <el-table-column prop="name" label="内容">
-                    <template slot-scope="scope">
-                        <svg-icon
-                            v-if="scope.row.type === 'file'"
-                            :icon-class="scope.row.name | fileType"
-                        />
-
-                        <i v-if="scope.row.type === 'url'" class="el-icon-link" />
-                        <i v-if="scope.row.type === 'assignment'" class="el-icon-s-cooperation" />
-                        {{ scope.row.name }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="type" label="类型">
-                    <template slot-scope="scope">
-                        {{ scope.row.type | type }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="operation" label="操作">
-                    <template slot-scope="scope">
-                        <el-button
-                            v-if="scope.row.type === 'url'"
-                            type="primary"
-                            icon="el-icon-view"
-                            @click="openLink(scope.row.url)"
-                        >
-                            查看
-                        </el-button>
-                        <el-button
-                            v-if="scope.row.type === 'file'"
-                            type="primary"
-                            icon="el-icon-download"
-                            @click="download(scope.row._id)"
-                        >
-                            下载
-                        </el-button>
-                        <el-button
-                            v-if="scope.row.type === 'assignment'"
-                            type="primary"
-                            icon="el-icon-top-right"
-                        >
-                            进入
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div>
+        <section-content-list :table-data="tableData">
+            <template v-slot:opeationButton="scope">
+                <el-button
+                    v-if="scope.row.type === 'url'"
+                    type="primary"
+                    icon="el-icon-view"
+                    @click="openLink(scope.row.url)"
+                >
+                    查看
+                </el-button>
+                <el-button
+                    v-if="scope.row.type === 'file'"
+                    type="primary"
+                    icon="el-icon-download"
+                    @click="download(scope.row._id)"
+                >
+                    下载
+                </el-button>
+                <el-button
+                    v-if="scope.row.type === 'assignment'"
+                    type="primary"
+                    icon="el-icon-top-right"
+                >
+                    进入
+                </el-button>
+            </template>
+        </section-content-list>
     </div>
 </template>
 
 <script>
+import SectionContentList from "./components/contentList.vue"
 import { getSectionView } from "@/api/section"
-import includeFileType from "@/utils/fileType"
-import download from "@/utils/download"
 
 export default {
     name: "SectionContent",
     props: ["sectionId"],
+    components: { SectionContentList },
     filters: {
         noInfo: function (val) {
             if (!val) {
@@ -70,28 +49,15 @@ export default {
             }
             return val
         },
-        type: function (val) {
-            let map = {
-                file: "文件",
-                url: "链接",
-                assignment: "活动",
-            }
-            return map[val]
-        },
-        fileType: function (val) {
-            let type = includeFileType(val)
-            if (type) {
-                return type
-            }
-            return "blank"
-        },
     },
     data() {
         return {
-            sectionID: this.sectionId,
-            loading: true,
-            section: {},
             tableData: [],
+            sectionID: this.sectionId,
+            section: {
+                name: "",
+                info: "",
+            },
         }
     },
     created() {
@@ -120,8 +86,7 @@ export default {
     },
 }
 </script>
-
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .container {
     padding: 30px;
     color: #606266;
@@ -138,16 +103,6 @@ export default {
         }
     }
 }
-
-.text {
-    font-size: 14px;
-}
-
-.item {
-    margin-bottom: 18px;
-}
-
-.box-card {
-    margin-bottom: 10px;
-}
 </style>
+
+
