@@ -50,12 +50,17 @@ export default {
                 method: "post",
                 data: this.params,
             })
-                .then(() => {
+                .then(res => {
                     this.$message({
                         message: "操作成功",
                         type: "success",
                     })
-                    this.$router.go(-1)
+                    let toPath = res.toPath
+                    if (!toPath) {
+                        this.$router.replace(-1)
+                    } else {
+                        this.$router.replace(toPath)
+                    }
                 })
                 .catch(() => {
                     this.loading = false
