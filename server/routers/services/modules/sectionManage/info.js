@@ -2,19 +2,31 @@ import Router from "express"
 let router = Router()
 
 let section
-
 router.use((req, res, next) => {
     section = req.section
     next()
 })
 
-import info from "./modules/sectionManage/info.js"
-import content from "./modules/sectionManage/content.js"
-router.use("/info", info)
-router.use("/content", content)
+router.get("/get", (req, res) => {
+    let data = {
+        _id: section._id,
+        name: section.name,
+        info: section.info,
+        visible: section.visible,
+    }
+    res.json({
+        code: 20000,
+        data: data,
+    })
+})
 
-router.post("/delete", (req, res) => {
-    section.isUsed = false
+router.post("/set", (req, res) => {
+    let sectionKey = Object.keys(req.body.section)
+
+    for (let k of sectionKey) {
+        section[k] = req.body.section[k]
+    }
+
     section.save(err => {
         if (err) {
             res.json({
@@ -25,7 +37,6 @@ router.post("/delete", (req, res) => {
         }
         res.json({
             code: 20000,
-            toPath: `/course/view/${section.courseID}`,
         })
     })
 })

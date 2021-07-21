@@ -55,3 +55,11 @@ export function getFileAndUrl(query) {
         params: query,
     })
 }
+
+export function submitNewLinks(data) {
+    return request({
+        url: "/section/view/manage/content/link/new",
+        method: "post",
+        data,
+    })
+}
