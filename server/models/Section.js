@@ -23,7 +23,12 @@ var sectionSchema = new mongoose.Schema({
             ref: "File",
         },
     ],
-    urls: Array,
+    urls: [
+        {
+            name: String,
+            url: String,
+        },
+    ],
 })
 
 export default mongoose.model("Section", sectionSchema)

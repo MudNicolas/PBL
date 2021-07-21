@@ -101,7 +101,7 @@ export default {
                 })
                 .catch(() => {
                     this.$message({
-                        message: "请将信息填写完整",
+                        message: "链接不能为空",
                         type: "warning",
                     })
                 })

@@ -68,7 +68,7 @@ router.all("*", (req, res, next) => {
         })
         return
     }
-    validate = course.commentTemplate.some(c => c._id.toString() === templateID)
+    validate = course.commentTemplate.some(c => c._id.toString() === templateID && c.isUsed)
     if (!validate) {
         res.json({
             code: 30404,

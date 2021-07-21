@@ -57,7 +57,7 @@ export default {
                     })
                     let toPath = res.toPath
                     if (!toPath) {
-                        this.$router.replace(-1)
+                        this.$router.go(-1)
                     } else {
                         this.$router.replace(toPath)
                     }

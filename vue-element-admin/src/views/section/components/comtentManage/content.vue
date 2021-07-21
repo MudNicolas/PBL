@@ -14,35 +14,61 @@
         </div>
         <section-content-list :table-data="tableData">
             <template v-slot:opeationButton="scope">
-                <span v-if="scope.row.type === 'url'">
-                    <el-button icon="el-icon-view" type="primary" @click="openLink(scope.row.url)">
-                        查看
-                    </el-button>
-                    <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
-                    <el-button v-show="editable" type="danger" icon="el-icon-delete">
-                        删除
-                    </el-button>
-                </span>
-                <span v-if="scope.row.type === 'file'">
-                    <el-button
-                        icon="el-icon-download"
-                        type="primary"
-                        @click="download(scope.row._id)"
-                    >
-                        下载
-                    </el-button>
-                    <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
-                    <el-button v-show="editable" type="danger" icon="el-icon-delete">
-                        删除
-                    </el-button>
-                </span>
-                <span v-if="scope.row.type === 'assignment'">
-                    <el-button icon="el-icon-top-right" type="primary">进入</el-button>
+                <span style="margin-left: 10px">
+                    <span v-if="scope.row.type === 'url'">
+                        <el-button
+                            v-show="editable"
+                            icon="el-icon-edit"
+                            @click="editUrl(scope.row._id)"
+                        >
+                            编辑
+                        </el-button>
+                        <el-button
+                            v-show="editable"
+                            type="danger"
+                            icon="el-icon-delete"
+                            @click="deleteBaseContent(scope.row._id)"
+                        >
+                            删除
+                        </el-button>
+                    </span>
+                    <span v-if="scope.row.type === 'file'">
+                        <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
+                        <el-button v-show="editable" type="danger" icon="el-icon-delete">
+                            删除
+                        </el-button>
+                    </span>
                 </span>
             </template>
         </section-content-list>
         <el-dialog title="添加链接" :visible.sync="newLinkDialogVisible">
             <new-link :section-id="sectionID" @success="newLinkSubmitted" />
+        </el-dialog>
+        <el-dialog title="编辑链接" :visible.sync="editDialogVisible" :close-on-click-modal="false">
+            <el-form label-position="right" label-width="80px" :model="editUrlData" ref="editUrl">
+                <el-form-item label="名称">
+                    <el-input v-model="editUrlData.name" placeholder="名称"></el-input>
+                </el-form-item>
+                <el-form-item
+                    label="链接"
+                    prop="url"
+                    :rules="{
+                        required: true,
+                        message: '链接不能为空',
+                        trigger: 'blur',
+                    }"
+                >
+                    <el-input v-model="editUrlData.url" placeholder="链接">
+                        <template slot="prepend">Http://</template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="editDialogVisible = false">取消</el-button>
+                    <el-button @click="submitEditUrl" type="primary" :loading="editUrlSubmitting">
+                        确认
+                    </el-button>
+                </el-form-item>
+            </el-form>
         </el-dialog>
     </div>
 </template>
@@ -51,7 +77,7 @@
 import newLink from "./components/newLink.vue"
 import uploadFile from "./components/uploadFile.vue"
 import SectionContentList from "../components/contentList.vue"
-import { getFileAndUrl } from "@/api/section"
+import { getFileAndUrl, submitEditUrl, deleteBaseContent } from "@/api/section"
 
 export default {
     name: "SectionContentManage",
@@ -64,6 +90,13 @@ export default {
             sectionID: this.sectionId,
             tableData: [],
             newLinkDialogVisible: false,
+            editUrlData: {
+                _id: "",
+                name: "",
+                url: "",
+            },
+            editDialogVisible: false,
+            editUrlSubmitting: false,
         }
     },
     created() {
@@ -83,12 +116,80 @@ export default {
             this.newLinkDialogVisible = false
             this.getFileAndUrl()
         },
-        openLink(url) {
-            console.log(url)
-            window.open(url)
+
+        editUrl(_id) {
+            this.editDialogVisible = true
+            let e = this.tableData.find(e => e._id === _id)
+            if (e) {
+                this.editUrlData = {
+                    _id: _id,
+                    name: e.name,
+                    url: e.url,
+                }
+            }
         },
-        download(_id) {
-            download(_id)
+        submitEditUrl() {
+            this.editUrlData.url = this.editUrlData.url.trim()
+
+            this.$refs.editUrl.validate(valid => {
+                if (!valid) {
+                    this.$message.warning("链接不能为空")
+                    return
+                }
+
+                this.editUrlData.name = this.editUrlData.name.trim()
+                if (!this.editUrlData.name) {
+                    this.editUrlData.name = this.editUrlData.url
+                }
+                this.editUrlSubmitting = true
+                submitEditUrl({ sectionID: this.sectionID, urlData: this.editUrlData })
+                    .then(() => {
+                        this.$message.success("链接编辑成功")
+                        this.editUrlSubmitting = false
+                        this.editDialogVisible = false
+                        this.editUrlData = {
+                            name: "",
+                            url: "",
+                        }
+                        this.getFileAndUrl()
+                    })
+                    .catch(() => {
+                        this.editUrlSubmitting = false
+                    })
+            })
+        },
+        deleteBaseContent(_id) {
+            this.$confirm("确认删除此url？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        deleteBaseContent({
+                            sectionID: this.sectionID,
+                            _id: _id,
+                        })
+                            .then(() => {
+                                instance.confirmButtonLoading = false
+                                this.$message({
+                                    type: "success",
+                                    message: "删除成功!",
+                                })
+                                this.getFileAndUrl()
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            }).catch(() => {
+                instance.confirmButtonLoading = false
+            })
         },
     },
 }

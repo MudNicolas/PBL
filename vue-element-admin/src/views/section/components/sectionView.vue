@@ -4,33 +4,7 @@
             <div class="title">{{ section.name }}</div>
             <div class="info">{{ section.info | noInfo }}</div>
         </div>
-        <section-content-list :table-data="tableData">
-            <template v-slot:opeationButton="scope">
-                <el-button
-                    v-if="scope.row.type === 'url'"
-                    type="primary"
-                    icon="el-icon-view"
-                    @click="openLink(scope.row.url)"
-                >
-                    查看
-                </el-button>
-                <el-button
-                    v-if="scope.row.type === 'file'"
-                    type="primary"
-                    icon="el-icon-download"
-                    @click="download(scope.row._id)"
-                >
-                    下载
-                </el-button>
-                <el-button
-                    v-if="scope.row.type === 'assignment'"
-                    type="primary"
-                    icon="el-icon-top-right"
-                >
-                    进入
-                </el-button>
-            </template>
-        </section-content-list>
+        <section-content-list :table-data="tableData"></section-content-list>
     </div>
 </template>
 
@@ -75,13 +49,6 @@ export default {
                     this.loading = false
                 })
                 .catch()
-        },
-        openLink(url) {
-            console.log(url)
-            window.open(url)
-        },
-        download(_id) {
-            download(_id)
         },
     },
 }

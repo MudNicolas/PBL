@@ -14,6 +14,7 @@ router.get("/get", (req, res) => {
     let { urls, files } = section
     let formatUrls = urls.map(e => {
         return {
+            _id: e._id,
             name: e.name,
             type: "url",
             url: e.url,
@@ -29,11 +30,71 @@ router.get("/get", (req, res) => {
 
 router.post("/link/new", (req, res) => {
     let { links } = req.body
-    let formatLinks = links.map(e => {
-        e.url = "http://" + e.url
-        return e
+
+    section.urls = section.urls.concat(links)
+    section.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
     })
-    section.urls = section.urls.concat(formatLinks)
+})
+
+router.use((req, res, next) => {
+    let { _id } = req.body.urlData || req.body
+    let range = [...section.urls, ...section.files]
+    let validate = range.some(e => e._id.toString() === _id)
+    if (!validate) {
+        res.json({
+            code: 31005,
+            message: "该内容不存在",
+        })
+        return
+    }
+    next()
+})
+
+router.post("/link/edit", (req, res) => {
+    let { urlData } = req.body
+
+    for (let i of section.urls) {
+        if (i._id.toString() === urlData._id) {
+            i.name = urlData.name
+            i.url = urlData.url
+            break
+        }
+    }
+    section.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
+router.post("/delete", (req, res) => {
+    let { _id } = req.body
+    let urlIndex = section.urls.findIndex(e => e._id.toString() === _id)
+    let fileIndex = section.urls.findIndex(e => e._id.toString() === _id)
+
+    if (urlIndex > -1) {
+        section.urls.splice(urlIndex, 1)
+    } else {
+        section.files.splice(fileIndex, 1)
+    }
+
     section.save(err => {
         if (err) {
             res.json({

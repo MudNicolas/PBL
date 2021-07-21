@@ -63,3 +63,19 @@ export function submitNewLinks(data) {
         data,
     })
 }
+
+export function submitEditUrl(data) {
+    return request({
+        url: "/section/view/manage/content/link/edit",
+        method: "post",
+        data,
+    })
+}
+
+export function deleteBaseContent(data) {
+    return request({
+        url: "/section/view/manage/content/delete",
+        method: "post",
+        data,
+    })
+}

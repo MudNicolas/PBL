@@ -4,10 +4,15 @@
             <el-table-column prop="name" label="内容">
                 <template slot-scope="scope">
                     <div class="content">
-                        <a :href="scope.row.url" target="_blank" v-if="scope.row.type === 'url'">
+                        <el-link
+                            @click="openLink(scope.row.url)"
+                            target="_blank"
+                            v-if="scope.row.type === 'url'"
+                            :underline="false"
+                        >
                             <i class="el-icon-link" />
                             {{ scope.row.name }}
-                        </a>
+                        </el-link>
                         <span v-if="scope.row.type === 'file'" @click="download(scope.row._id)">
                             <svg-icon :icon-class="scope.row.name | fileType" />
                             {{ scope.row.name }}
@@ -28,6 +33,29 @@
             </el-table-column>
             <el-table-column prop="operation" label="操作">
                 <template slot-scope="scope">
+                    <el-button
+                        v-if="scope.row.type === 'url'"
+                        icon="el-icon-view"
+                        type="primary"
+                        @click="openLink(scope.row.url)"
+                    >
+                        查看
+                    </el-button>
+                    <el-button
+                        v-if="scope.row.type === 'file'"
+                        type="primary"
+                        icon="el-icon-download"
+                        @click="download(scope.row._id)"
+                    >
+                        下载
+                    </el-button>
+                    <el-button
+                        v-if="scope.row.type === 'assignment'"
+                        type="primary"
+                        icon="el-icon-top-right"
+                    >
+                        进入
+                    </el-button>
                     <slot name="opeationButton" :row="scope.row"></slot>
                 </template>
             </el-table-column>
@@ -76,8 +104,7 @@ export default {
 
     methods: {
         openLink(url) {
-            console.log(url)
-            window.open(url)
+            window.open(`http://${url}`)
         },
         download(_id) {
             download(_id)
