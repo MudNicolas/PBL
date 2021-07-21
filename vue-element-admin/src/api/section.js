@@ -8,6 +8,14 @@ export function getSectionView(query) {
     })
 }
 
+export function getFileAndUrl(query) {
+    return request({
+        url: "/section/view/setting/baseContent/get",
+        method: "get",
+        params: query,
+    })
+}
+
 export function createSection(data) {
     return request({
         url: "/section/create",
@@ -26,7 +34,7 @@ export function sectionSort(data) {
 
 export function sectionSet(data) {
     return request({
-        url: "/section/set",
+        url: "/section/view/set",
         method: "post",
         data,
     })
@@ -34,7 +42,7 @@ export function sectionSet(data) {
 
 export function deleteSection(data) {
     return request({
-        url: "/section/delete",
+        url: "/section/view/delete",
         method: "post",
         data,
     })

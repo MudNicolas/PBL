@@ -5,8 +5,10 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 let router = Router()
 
+//给单个确定section的api
 router.use("/view", sectionView)
 
+//给多个sectin和无sectionID情况下的api
 //教师api
 router.use((req, res, next) => {
     let { courseID } = req.body
@@ -97,70 +99,6 @@ router.post("/sort", (req, res) => {
             })
         })
     }
-})
-
-router.use((req, res, next) => {
-    let { _id } = req.body.section
-    let validate = /^[a-fA-F0-9]{24}$/.test(_id)
-    if (!validate) {
-        res.json({
-            code: 404,
-            message: "error",
-        })
-        return
-    }
-    Section.findById(_id)
-        .select("name info visible")
-        .then((section, err) => {
-            if (err) {
-                res.json({
-                    code: 30001,
-                    message: "DataBase Error",
-                })
-                return
-            }
-            req.section = section
-            next()
-        })
-})
-
-router.post("/set", (req, res) => {
-    let sectionKey = Object.keys(req.body.section)
-    let section = req.section
-
-    for (let k of sectionKey) {
-        section[k] = req.body.section[k]
-    }
-
-    section.save(err => {
-        if (err) {
-            res.json({
-                code: 30001,
-                message: "DataBase Error",
-            })
-            return
-        }
-        res.json({
-            code: 20000,
-        })
-    })
-})
-
-router.post("/delete", (req, res) => {
-    let section = req.section
-    section.isUsed = false
-    section.save(err => {
-        if (err) {
-            res.json({
-                code: 30001,
-                message: "DataBase Error",
-            })
-            return
-        }
-        res.json({
-            code: 20000,
-        })
-    })
 })
 
 export default router

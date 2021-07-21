@@ -6,7 +6,10 @@
                     <i class="el-icon-tickets"></i>
                     详情
                 </span>
-                <section-content v-if="activeName === 'SectionContent'" :section-id="sectionID" />
+                <section-content-view
+                    v-if="activeName === 'SectionContent'"
+                    :section-id="sectionID"
+                />
             </el-tab-pane>
             <el-tab-pane v-if="checkPermission(['teacher'])" label="设置" name="SectionSetting">
                 <span slot="label">
@@ -20,13 +23,13 @@
 </template>
 
 <script>
-import SectionContent from "./components/section.vue"
-import SectionSetting from "./components/setting.vue"
+import SectionContentView from "./components/sectionView.vue"
+import SectionSetting from "./components/sectionSetting.vue"
 import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     name: "SectionView",
-    components: { SectionContent, SectionSetting },
+    components: { SectionContentView, SectionSetting },
     created() {
         this.sectionID = this.$route.params.id
         // init the default selected tab

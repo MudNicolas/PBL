@@ -131,7 +131,7 @@ export default {
             this.visibleSetting = true
             let section = this.sectionInfomation
             sectionSet({
-                courseID: this.courseId,
+                sectionID: section._id,
                 section: section,
             })
                 .then(() => {

@@ -39,7 +39,7 @@ import SectionContentList from "./components/contentList.vue"
 import { getSectionView } from "@/api/section"
 
 export default {
-    name: "SectionContent",
+    name: "SectionContentView",
     props: ["sectionId"],
     components: { SectionContentList },
     filters: {

@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-loading="loading">
         <div class="tools-wrapper">
             <div class="right-wrapper">
                 <el-switch v-model="editable" active-text="启用编辑"></el-switch>
@@ -31,10 +31,6 @@
                 </span>
                 <span v-if="scope.row.type === 'assignment'">
                     <el-button icon="el-icon-top-right" type="primary">进入</el-button>
-                    <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
-                    <el-button v-show="editable" type="danger" icon="el-icon-delete">
-                        删除
-                    </el-button>
                 </span>
             </template>
         </section-content-list>
@@ -45,15 +41,33 @@
 import newLink from "./components/newLink.vue"
 import uploadFile from "./components/uploadFile.vue"
 import SectionContentList from "../components/contentList.vue"
+import { getFileAndUrl } from "@/api/section"
 
 export default {
     name: "SectionContentManage",
     components: { newLink, uploadFile, SectionContentList },
-    props: ["tableData"],
+    props: ["sectionId"],
     data() {
         return {
             editable: false,
+            loading: true,
+            sectionID: this.sectionId,
+            tableData: [],
         }
+    },
+    created() {
+        this.getFileAndUrl()
+    },
+    methods: {
+        getFileAndUrl() {
+            this.loading = true
+            getFileAndUrl({ sectionID: this.sectionID })
+                .then(res => {
+                    this.tableData = res.data
+                    this.loading = false
+                })
+                .catch()
+        },
     },
 }
 </script>

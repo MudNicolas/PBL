@@ -37,6 +37,44 @@ router.use((req, res, next) => {
     })
 })
 
+router.post("/set", (req, res) => {
+    let sectionKey = Object.keys(req.body.section)
+
+    for (let k of sectionKey) {
+        section[k] = req.body.section[k]
+    }
+
+    section.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
+router.post("/delete", (req, res) => {
+    let section = req.section
+    section.isUsed = false
+    section.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
 import Mock from "mockjs"
 
 router.get("/get", (req, res) => {
@@ -81,6 +119,42 @@ router.get("/get", (req, res) => {
     res.json({
         code: 20000,
         data: data,
+    })
+})
+
+router.get("/setting/baseContent/get", (req, res) => {
+    let content = []
+    for (let i = 0; i < 3; i++) {
+        content.push(
+            Mock.mock({
+                url: "http://www.baidu.com",
+                name: "@ctitle",
+                type: "url",
+            })
+        )
+    }
+    for (let i = 0; i < 3; i++) {
+        content.push(
+            Mock.mock({
+                _id: "@id",
+                name: "文件.pptx",
+                type: "file",
+            })
+        )
+    }
+    for (let i = 0; i < 3; i++) {
+        content.push(
+            Mock.mock({
+                _id: "@id",
+                name: "@ctitle",
+                type: "assignment",
+            })
+        )
+    }
+
+    res.json({
+        code: 20000,
+        data: content,
     })
 })
 
