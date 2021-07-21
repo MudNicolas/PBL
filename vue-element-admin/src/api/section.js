@@ -24,9 +24,10 @@ export function sectionSort(data) {
     })
 }
 
+//manage
 export function getSectionInfo(query) {
     return request({
-        url: "/section/view/manage/info/get",
+        url: "/section/manage/info/get",
         method: "get",
         params: query,
     })
@@ -34,7 +35,7 @@ export function getSectionInfo(query) {
 
 export function sectionSet(data) {
     return request({
-        url: "/section/view/manage/info/set",
+        url: "/section/manage/info/set",
         method: "post",
         data,
     })
@@ -42,7 +43,7 @@ export function sectionSet(data) {
 
 export function deleteSection(data) {
     return request({
-        url: "/section/view/manage/delete",
+        url: "/section/manage/delete",
         method: "post",
         data,
     })
@@ -50,7 +51,7 @@ export function deleteSection(data) {
 
 export function getFileAndUrl(query) {
     return request({
-        url: "/section/view/manage/content/get",
+        url: "/section/manage/content/get",
         method: "get",
         params: query,
     })
@@ -58,7 +59,7 @@ export function getFileAndUrl(query) {
 
 export function submitNewLinks(data) {
     return request({
-        url: "/section/view/manage/content/link/new",
+        url: "/section/manage/content/link/new",
         method: "post",
         data,
     })
@@ -66,7 +67,7 @@ export function submitNewLinks(data) {
 
 export function submitEditUrl(data) {
     return request({
-        url: "/section/view/manage/content/link/edit",
+        url: "/section/manage/content/link/edit",
         method: "post",
         data,
     })
@@ -74,7 +75,7 @@ export function submitEditUrl(data) {
 
 export function deleteBaseContent(data) {
     return request({
-        url: "/section/view/manage/content/delete",
+        url: "/section/manage/content/delete",
         method: "post",
         data,
     })

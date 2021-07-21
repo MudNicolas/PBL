@@ -94,7 +94,4 @@ router.get("/get", (req, res) => {
     })
 })
 
-import manage from "./sectionManage.js"
-router.use("/manage", manage)
-
 export default router

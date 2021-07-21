@@ -5,11 +5,15 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 let router = Router()
 
-//给单个确定section的api
 router.use("/view", sectionView)
 
-//给多个sectin和无sectionID情况下的api
 //教师api
+
+//确定section的Api
+import manage from "./sectionManage.js"
+router.use("/manage", manage)
+
+//给多个sectin和无sectionID情况下的api
 router.use((req, res, next) => {
     let { courseID } = req.body
     CheckCourseAvailableAndReqUserHasPermission(courseID, 1, req)
