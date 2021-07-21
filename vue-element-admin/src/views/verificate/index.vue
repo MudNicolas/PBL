@@ -3,18 +3,24 @@
         <img :src="img" />
         <div class="content">
             <div class="info">
-                <div>你正在进行一个敏感操作</div>
+                <div>你似乎正在进行一个敏感操作</div>
                 <div>请在框内输入密码来验证你的身份</div>
             </div>
-            <el-input type="password" v-model="password" />
-            <el-button
-                @click="submit"
-                :loading="loading"
-                style="width: 100%; margin-top: 12px"
-                type="primary"
-            >
-                确认
-            </el-button>
+            <el-form>
+                <el-form-item>
+                    <el-input type="password" v-model="password" />
+                </el-form-item>
+                <el-form-item>
+                    <el-button
+                        @click="submit"
+                        :loading="loading"
+                        style="width: 100%"
+                        type="primary"
+                    >
+                        确认
+                    </el-button>
+                </el-form-item>
+            </el-form>
         </div>
     </div>
 </template>

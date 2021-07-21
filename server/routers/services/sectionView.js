@@ -61,14 +61,6 @@ router.get("/get", (req, res) => {
     }
 
     for (let i = 0; i < 3; i++) {
-        data.content.urls.push(
-            Mock.mock({
-                url: "http://www.baidu.com",
-                name: "@ctitle",
-            })
-        )
-    }
-    for (let i = 0; i < 3; i++) {
         data.content.files.push(
             Mock.mock({
                 _id: "@id",
