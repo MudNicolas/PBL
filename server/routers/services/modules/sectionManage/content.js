@@ -20,7 +20,9 @@ router.get("/get", (req, res) => {
             url: e.url,
         }
     })
-    content = [...content, ...formatUrls]
+    content = {
+        urls: formatUrls,
+    }
 
     res.json({
         code: 20000,

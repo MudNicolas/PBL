@@ -53,40 +53,38 @@ router.get("/get", (req, res) => {
     let data = {
         name: section.name,
         info: section.info,
-        /* files:section.files,
-		urls:section.urls */
+        content: {
+            files: [],
+            urls: section.urls,
+            activities: [],
+        },
     }
 
-    let content = []
     for (let i = 0; i < 3; i++) {
-        content.push(
+        data.content.urls.push(
             Mock.mock({
                 url: "http://www.baidu.com",
                 name: "@ctitle",
-                type: "url",
             })
         )
     }
     for (let i = 0; i < 3; i++) {
-        content.push(
+        data.content.files.push(
             Mock.mock({
                 _id: "@id",
                 name: "文件.pptx",
-                type: "file",
             })
         )
     }
 
     for (let i = 0; i < 3; i++) {
-        content.push(
+        data.content.activities.push(
             Mock.mock({
                 _id: "@id",
                 name: "@ctitle",
-                type: "assignment",
             })
         )
     }
-    data.content = content
 
     res.json({
         code: 20000,

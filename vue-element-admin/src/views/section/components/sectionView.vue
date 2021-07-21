@@ -26,7 +26,11 @@ export default {
     },
     data() {
         return {
-            tableData: [],
+            tableData: {
+                urls: [],
+                files: [],
+                activities: [],
+            },
             sectionID: this.sectionId,
             section: {
                 name: "",
