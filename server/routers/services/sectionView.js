@@ -50,37 +50,44 @@ router.use((req, res, next) => {
 import Mock from "mockjs"
 
 router.get("/get", (req, res) => {
-    let data = {
-        name: section.name,
-        info: section.info,
-        content: {
-            files: [],
-            urls: section.urls,
-            activities: [],
-        },
-    }
-
-    for (let i = 0; i < 3; i++) {
-        data.content.files.push(
-            Mock.mock({
-                _id: "@id",
-                name: "文件.pptx",
+    section.execPopulate("files").then((s, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
             })
-        )
-    }
+            return
+        }
 
-    for (let i = 0; i < 3; i++) {
-        data.content.activities.push(
-            Mock.mock({
-                _id: "@id",
-                name: "@ctitle",
-            })
-        )
-    }
+        let data = {
+            name: s.name,
+            info: s.info,
+            content: {
+                files: s.files.map(e => {
+                    return {
+                        name: e.originalFilename,
+                        size: e.size,
+                        _id: e._id,
+                    }
+                }),
+                urls: s.urls,
+                activities: [],
+            },
+        }
 
-    res.json({
-        code: 20000,
-        data: data,
+        for (let i = 0; i < 3; i++) {
+            data.content.activities.push(
+                Mock.mock({
+                    _id: "@id",
+                    name: "@ctitle",
+                })
+            )
+        }
+
+        res.json({
+            code: 20000,
+            data: data,
+        })
     })
 })
 

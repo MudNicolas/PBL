@@ -1,6 +1,8 @@
 import Router from "express"
+import File from "#models/File.js"
 let router = Router()
 import Mock from "mockjs"
+import fs from "fs"
 
 let section
 
@@ -10,23 +12,42 @@ router.use((req, res, next) => {
 })
 
 router.get("/get", (req, res) => {
-    let content = []
-    let { urls, files } = section
-    let formatUrls = urls.map(e => {
-        return {
-            _id: e._id,
-            name: e.name,
-            type: "url",
-            url: e.url,
+    section.execPopulate("files").then((s, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
         }
-    })
-    content = {
-        urls: formatUrls,
-    }
 
-    res.json({
-        code: 20000,
-        data: content,
+        let data = {
+            content: {
+                files: s.files.map(e => {
+                    return {
+                        name: e.originalFilename,
+                        size: e.size,
+                        _id: e._id,
+                    }
+                }),
+                urls: s.urls,
+                activities: [],
+            },
+        }
+
+        for (let i = 0; i < 3; i++) {
+            data.content.activities.push(
+                Mock.mock({
+                    _id: "@id",
+                    name: "@ctitle",
+                })
+            )
+        }
+
+        res.json({
+            code: 20000,
+            data: data,
+        })
     })
 })
 
@@ -45,6 +66,77 @@ router.post("/link/new", (req, res) => {
         res.json({
             code: 20000,
         })
+    })
+})
+
+router.post("/file/submit", (req, res) => {
+    let { filesID } = req.body
+    let validate = filesID.every(e => {
+        return /^[a-fA-F0-9]{24}$/.test(e)
+    })
+    if (!validate) {
+        res.json({
+            code: 32001,
+            message: "文件ID错误",
+        })
+        return
+    }
+    File.find({
+        _id: { $in: filesID },
+    }).then((files, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        let allSave = []
+        files.forEach(f => {
+            f.isSubmitted = true
+            allSave.push(
+                new Promise((resolve, reject) => {
+                    fs.rename(
+                        `public/files/temp/${f.serverFilename}`,
+                        `public/files/${f.serverFilename}`,
+                        err => {
+                            if (err) {
+                                console.log(err)
+                                return reject()
+                            }
+                            f.save(err => {
+                                if (err) {
+                                    return reject()
+                                }
+                                resolve()
+                            })
+                        }
+                    )
+                })
+            )
+        })
+        Promise.all(allSave)
+            .then(() => {
+                section.files = [...section.files, ...filesID]
+                section.save(err => {
+                    if (err) {
+                        res.json({
+                            code: 30001,
+                            message: "DataBase Error",
+                        })
+                        return
+                    }
+                    res.json({
+                        code: 20000,
+                    })
+                })
+            })
+            .catch(() => {
+                res.json({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+            })
     })
 })
 

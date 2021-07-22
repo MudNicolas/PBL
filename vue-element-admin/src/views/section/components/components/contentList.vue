@@ -1,7 +1,7 @@
 <template>
     <div v-if="tableData">
         <el-table
-            v-if="tableData.urls"
+            v-if="tableData.urls.length > 0"
             :data="tableData.urls"
             border
             style="width: 100%; margin-bottom: 30px"
@@ -40,7 +40,7 @@
                         <el-tag type="info">链接</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="operation" label="操作">
+                <el-table-column prop="operation" label="操作" width="330px">
                     <template slot-scope="scope">
                         <el-button
                             icon="el-icon-view"
@@ -50,13 +50,13 @@
                             查看
                         </el-button>
 
-                        <slot name="opeationButton" :row="scope.row"></slot>
+                        <slot name="urlOperation" :row="scope.row"></slot>
                     </template>
                 </el-table-column>
             </el-table-column>
         </el-table>
         <el-table
-            v-if="tableData.files"
+            v-if="tableData.files.length > 0"
             :data="tableData.files"
             border
             style="width: 100%; margin-bottom: 30px"
@@ -85,7 +85,7 @@
                         <el-tag>文件</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="operation" label="操作">
+                <el-table-column prop="operation" label="操作" width="330px">
                     <template slot-scope="scope">
                         <el-button
                             type="primary"
@@ -95,13 +95,13 @@
                             下载
                         </el-button>
 
-                        <slot name="opeationButton" :row="scope.row"></slot>
+                        <slot name="fileOperation" :row="scope.row"></slot>
                     </template>
                 </el-table-column>
             </el-table-column>
         </el-table>
         <el-table
-            v-if="tableData.activities"
+            v-if="tableData.activities.length > 0"
             :data="tableData.activities"
             border
             style="width: 100%"
@@ -127,10 +127,10 @@
                         <el-tag type="success">活动</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="operation" label="操作">
+                <el-table-column prop="operation" label="操作" width="330px">
                     <template slot-scope="scope">
                         <el-button type="primary" icon="el-icon-top-right">进入</el-button>
-                        <slot name="opeationButton" :row="scope.row"></slot>
+                        <slot name="activityOperation" :row="scope.row"></slot>
                     </template>
                 </el-table-column>
             </el-table-column>
@@ -146,7 +146,16 @@ import newLink from "../comtentManage/components/newLink.vue"
 export default {
     components: { newLink },
     name: "SectionContentList",
-    props: ["tableData"],
+    props: {
+        tableData: {
+            type: Object,
+            default: {
+                urls: [],
+                files: [],
+                activities: [],
+            },
+        },
+    },
     filters: {
         type: function (val) {
             let map = {
@@ -171,12 +180,6 @@ export default {
             }
             return map[val]
         },
-    },
-    data() {
-        return {
-            loading: true,
-            section: {},
-        }
     },
 
     methods: {

@@ -74,8 +74,17 @@ export function submitEditUrl(data) {
 }
 
 export function deleteBaseContent(data) {
+    //只能删除url和file
     return request({
         url: "/section/manage/content/delete",
+        method: "post",
+        data,
+    })
+}
+
+export function submitNewFile(data) {
+    return request({
+        url: "/section/manage/content/file/submit",
         method: "post",
         data,
     })

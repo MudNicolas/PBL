@@ -5,7 +5,7 @@
                 <el-button type="primary" @click="newLinkDialogVisible = true" icon="el-icon-link">
                     添加链接
                 </el-button>
-                <el-button type="primary" icon="el-icon-document">添加文件</el-button>
+                <el-button type="primary" icon="el-icon-document" @click='newFileDialogVisible=true'>添加文件</el-button>
                 <el-button type="primary" icon="el-icon-s-cooperation">添加活动</el-button>
             </div>
             <div class="right-wrapper">
@@ -13,9 +13,9 @@
             </div>
         </div>
         <section-content-list :table-data="tableData">
-            <template v-slot:opeationButton="scope">
-                <span style="margin-left: 10px">
-                    <span v-if="scope.row.type === 'url'">
+            <template v-slot:urlOperation="scope" >
+                <span style="margin-left: 10px;">
+
                         <el-button
                             v-show="editable"
                             icon="el-icon-edit"
@@ -40,9 +40,20 @@
                     </span>
                 </span>
             </template>
+			<template v-slot:fileOperation="scope">
+                <span style="margin-left: 10px">
+                        <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
+                        <el-button v-show="editable" type="danger" icon="el-icon-delete">
+                            删除
+                        </el-button>
+                </span>
+            </template>
         </section-content-list>
         <el-dialog title="添加链接" :visible.sync="newLinkDialogVisible">
             <new-link :section-id="sectionID" @success="newLinkSubmitted" />
+        </el-dialog>
+		<el-dialog title="添加文件" :visible.sync="newFileDialogVisible">
+			<upload-file :section-id="sectionID" @success='newFileSubmitted' />
         </el-dialog>
         <el-dialog title="编辑链接" :visible.sync="editDialogVisible" :close-on-click-modal="false">
             <el-form label-position="right" label-width="80px" :model="editUrlData" ref="editUrl">
@@ -88,7 +99,11 @@ export default {
             editable: false,
             loading: true,
             sectionID: this.sectionId,
-            tableData: [],
+            tableData: {
+                urls: [],
+                files: [],
+                activities: [],
+            },
             newLinkDialogVisible: false,
             editUrlData: {
                 _id: "",
@@ -97,6 +112,7 @@ export default {
             },
             editDialogVisible: false,
             editUrlSubmitting: false,
+            newFileDialogVisible: false,
         }
     },
     created() {
@@ -107,7 +123,7 @@ export default {
             this.loading = true
             getFileAndUrl({ sectionID: this.sectionID })
                 .then(res => {
-                    this.tableData = res.data
+                    this.tableData = res.data.content
                     this.loading = false
                 })
                 .catch()
@@ -116,10 +132,14 @@ export default {
             this.newLinkDialogVisible = false
             this.getFileAndUrl()
         },
+        newFileSubmitted() {
+            this.newFileDialogVisible = false
+            this.getFileAndUrl()
+        },
 
         editUrl(_id) {
             this.editDialogVisible = true
-            let e = this.tableData.find(e => e._id === _id)
+            let e = this.tableData.url.find(e => e._id === _id)
             if (e) {
                 this.editUrlData = {
                     _id: _id,

@@ -69,7 +69,7 @@ service.interceptors.response.use(
                 // to re-login
                 MessageBox.confirm(
                     res.message || "你可能在此前已经退出登录、凭证过期或在其他地方登录，请重新登陆",
-                    "Confirm logout",
+                    "Relogin",
                     {
                         confirmButtonText: "重新登录",
                         cancelButtonText: "取消",
