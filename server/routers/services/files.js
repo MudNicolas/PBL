@@ -81,7 +81,10 @@ function fileCheck(req) {
                 message: "该文件不存在",
             })
         }
-        File.findById(_id).then((file, err) => {
+        File.findOne({
+            _id: _id,
+            isUsed: true,
+        }).then((file, err) => {
             if (err) {
                 return reject({
                     code: 30001,
@@ -94,7 +97,23 @@ function fileCheck(req) {
                     message: "该文件不存在",
                 })
             }
-            resolve(file)
+
+            let path
+            if (file.isSubmitted) {
+                path = `public/files/${file.serverFilename}`
+            } else {
+                path = `public/files/temp/${file.serverFilename}`
+            }
+
+            fs.access(path, err => {
+                if (err) {
+                    return reject({
+                        code: 30002,
+                        message: "服务器发生错误，该文件不存在",
+                    })
+                }
+                resolve(file)
+            })
         })
     })
 }
