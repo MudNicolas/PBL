@@ -98,7 +98,7 @@ router.post("/file/submit", (req, res) => {
                 new Promise((resolve, reject) => {
                     fs.rename(
                         `public/files/temp/${f.serverFilename}`,
-                        `public/files/${f.serverFilename}`,
+                        `public/files/custom/${f.serverFilename}`,
                         err => {
                             if (err) {
                                 console.log(err)
@@ -216,7 +216,7 @@ router.post("/file/delete", (req, res) => {
             return
         }
 
-        fs.unlink(`public/files/${file.serverFilename}`, err => {
+        fs.unlink(`public/files/custom/${file.serverFilename}`, err => {
             if (err) {
                 res.json({
                     code: 30001,

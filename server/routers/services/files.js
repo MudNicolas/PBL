@@ -42,7 +42,7 @@ router.get("/download", (req, res) => {
         .then(file => {
             let path
             if (file.isSubmitted) {
-                path = "public/files/"
+                path = "public/files/custom"
             } else {
                 path = "public/files/temp/"
             }
@@ -100,7 +100,7 @@ function fileCheck(req) {
 
             let path
             if (file.isSubmitted) {
-                path = `public/files/${file.serverFilename}`
+                path = `public/files/custom/${file.serverFilename}`
             } else {
                 path = `public/files/temp/${file.serverFilename}`
             }
