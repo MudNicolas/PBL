@@ -178,17 +178,13 @@ router.post("/link/edit", (req, res) => {
     })
 })
 
-router.post("/delete", (req, res) => {
+router.post("/link/delete", (req, res) => {
     let { _id } = req.body
     let urlIndex = section.urls.findIndex(e => e._id.toString() === _id)
-    let fileIndex = section.urls.findIndex(e => e._id.toString() === _id)
 
     if (urlIndex > -1) {
         section.urls.splice(urlIndex, 1)
-    } else {
-        section.files.splice(fileIndex, 1)
     }
-
     section.save(err => {
         if (err) {
             res.json({
@@ -199,6 +195,58 @@ router.post("/delete", (req, res) => {
         }
         res.json({
             code: 20000,
+        })
+    })
+})
+
+router.post("/file/delete", (req, res) => {
+    let { _id } = req.body
+    let fileIndex = section.files.findIndex(e => e._id.toString() === _id)
+
+    if (fileIndex > -1) {
+        section.files.splice(fileIndex, 1)
+    }
+
+    File.findById(_id).then((file, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+
+        fs.unlink(`public/files/${file.serverFilename}`, err => {
+            if (err) {
+                res.json({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+                return
+            }
+            section.save(err => {
+                if (err) {
+                    res.json({
+                        code: 30001,
+                        message: "DataBase Error",
+                    })
+                    return
+                }
+
+                file.isUsed = false
+                file.save(err => {
+                    if (err) {
+                        res.json({
+                            code: 30001,
+                            message: "DataBase Error",
+                        })
+                        return
+                    }
+                    res.json({
+                        code: 20000,
+                    })
+                })
+            })
         })
     })
 })

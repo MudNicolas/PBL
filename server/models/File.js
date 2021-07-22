@@ -13,6 +13,10 @@ var fileSchema = new mongoose.Schema({
     },
     size: Number,
     uploadTime: Date,
+    isUsed: {
+        type: Boolean,
+        default: true,
+    },
 })
 
 export default mongoose.model("File", fileSchema)

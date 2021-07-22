@@ -73,10 +73,10 @@ export function submitEditUrl(data) {
     })
 }
 
-export function deleteBaseContent(data) {
+export function deleteUrl(data) {
     //只能删除url和file
     return request({
-        url: "/section/manage/content/delete",
+        url: "/section/manage/content/link/delete",
         method: "post",
         data,
     })
@@ -85,6 +85,14 @@ export function deleteBaseContent(data) {
 export function submitNewFile(data) {
     return request({
         url: "/section/manage/content/file/submit",
+        method: "post",
+        data,
+    })
+}
+
+export function deleteFile(data) {
+    return request({
+        url: "/section/manage/content/file/delete",
         method: "post",
         data,
     })

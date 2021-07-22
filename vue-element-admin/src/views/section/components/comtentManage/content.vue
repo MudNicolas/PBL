@@ -5,7 +5,13 @@
                 <el-button type="primary" @click="newLinkDialogVisible = true" icon="el-icon-link">
                     添加链接
                 </el-button>
-                <el-button type="primary" icon="el-icon-document" @click='newFileDialogVisible=true'>添加文件</el-button>
+                <el-button
+                    type="primary"
+                    icon="el-icon-document"
+                    @click="newFileDialogVisible = true"
+                >
+                    添加文件
+                </el-button>
                 <el-button type="primary" icon="el-icon-s-cooperation">添加活动</el-button>
             </div>
             <div class="right-wrapper">
@@ -13,47 +19,43 @@
             </div>
         </div>
         <section-content-list :table-data="tableData">
-            <template v-slot:urlOperation="scope" >
-                <span style="margin-left: 10px;">
-
-                        <el-button
-                            v-show="editable"
-                            icon="el-icon-edit"
-                            @click="editUrl(scope.row._id)"
-                        >
-                            编辑
-                        </el-button>
-                        <el-button
-                            v-show="editable"
-                            type="danger"
-                            icon="el-icon-delete"
-                            @click="deleteBaseContent(scope.row._id)"
-                        >
-                            删除
-                        </el-button>
-                    </span>
-                    <span v-if="scope.row.type === 'file'">
-                        <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
-                        <el-button v-show="editable" type="danger" icon="el-icon-delete">
-                            删除
-                        </el-button>
-                    </span>
+            <template v-slot:urlOperation="scope">
+                <span style="margin-left: 10px">
+                    <el-button
+                        v-show="editable"
+                        icon="el-icon-edit"
+                        @click="editUrl(scope.row._id)"
+                    >
+                        编辑
+                    </el-button>
+                    <el-button
+                        v-show="editable"
+                        type="danger"
+                        icon="el-icon-delete"
+                        @click="deleteUrl(scope.row._id)"
+                    >
+                        删除
+                    </el-button>
                 </span>
             </template>
-			<template v-slot:fileOperation="scope">
+            <template v-slot:fileOperation="scope">
                 <span style="margin-left: 10px">
-                        <el-button v-show="editable" icon="el-icon-edit">编辑</el-button>
-                        <el-button v-show="editable" type="danger" icon="el-icon-delete">
-                            删除
-                        </el-button>
+                    <el-button
+                        v-show="editable"
+                        type="danger"
+                        icon="el-icon-delete"
+                        @click="deleteFile(scope.row._id)"
+                    >
+                        删除
+                    </el-button>
                 </span>
             </template>
         </section-content-list>
         <el-dialog title="添加链接" :visible.sync="newLinkDialogVisible">
             <new-link :section-id="sectionID" @success="newLinkSubmitted" />
         </el-dialog>
-		<el-dialog title="添加文件" :visible.sync="newFileDialogVisible">
-			<upload-file :section-id="sectionID" @success='newFileSubmitted' />
+        <el-dialog title="添加文件" :visible.sync="newFileDialogVisible">
+            <upload-file :section-id="sectionID" @success="newFileSubmitted" />
         </el-dialog>
         <el-dialog title="编辑链接" :visible.sync="editDialogVisible" :close-on-click-modal="false">
             <el-form label-position="right" label-width="80px" :model="editUrlData" ref="editUrl">
@@ -88,7 +90,7 @@
 import newLink from "./components/newLink.vue"
 import uploadFile from "./components/uploadFile.vue"
 import SectionContentList from "../components/contentList.vue"
-import { getFileAndUrl, submitEditUrl, deleteBaseContent } from "@/api/section"
+import { getFileAndUrl, submitEditUrl, deleteUrl, deleteFile } from "@/api/section"
 
 export default {
     name: "SectionContentManage",
@@ -178,7 +180,7 @@ export default {
                     })
             })
         },
-        deleteBaseContent(_id) {
+        deleteUrl(_id) {
             this.$confirm("确认删除此url？", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
@@ -186,7 +188,7 @@ export default {
                 beforeClose: (action, instance, done) => {
                     if (action === "confirm") {
                         instance.confirmButtonLoading = true
-                        deleteBaseContent({
+                        deleteUrl({
                             sectionID: this.sectionID,
                             _id: _id,
                         })
@@ -207,9 +209,38 @@ export default {
                         done()
                     }
                 },
-            }).catch(() => {
-                instance.confirmButtonLoading = false
-            })
+            }).catch(() => {})
+        },
+        deleteFile(_id) {
+            this.$confirm("确认删除此文件？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        deleteFile({
+                            sectionID: this.sectionID,
+                            _id: _id,
+                        })
+                            .then(() => {
+                                instance.confirmButtonLoading = false
+                                this.$message({
+                                    type: "success",
+                                    message: "删除成功!",
+                                })
+                                this.getFileAndUrl()
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            }).catch(() => {})
         },
     },
 }
