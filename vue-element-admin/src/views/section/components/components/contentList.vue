@@ -80,6 +80,14 @@
                     </template>
                 </el-table-column>
 
+                <el-table-column prop="size" label="大小">
+                    <template slot-scope="scope">
+                        <div class="content">
+                            {{ scope.row.size | fileSize }}
+                        </div>
+                    </template>
+                </el-table-column>
+
                 <el-table-column prop="type" label="类型">
                     <template slot-scope="scope">
                         <el-tag>文件</el-tag>
@@ -157,14 +165,6 @@ export default {
         },
     },
     filters: {
-        type: function (val) {
-            let map = {
-                file: "文件",
-                url: "链接",
-                assignment: "活动",
-            }
-            return map[val]
-        },
         fileType: function (val) {
             let type = includeFileType(val)
             if (type) {
@@ -172,13 +172,17 @@ export default {
             }
             return "blank"
         },
-        tagType: function (val) {
-            let map = {
-                file: "",
-                url: "info",
-                assignment: "success",
+        fileSize: function (val) {
+            if (val < 1024) {
+                return `${Math.round(val)}B`
             }
-            return map[val]
+            if (val < 1024 * 1024) {
+                return `${Math.round(val / 1024)}KB`
+            }
+            if (val < 1024 * 1024 * 1024) {
+                return `${Math.round(val / 1024 / 1024)}MB`
+            }
+            return `${Math.round(val / 1024 / 1024 / 1024)}GB`
         },
     },
 
