@@ -43,6 +43,9 @@ export default {
     },
     methods: {
         submit() {
+            if (this.loading) {
+                return
+            }
             this.loading = true
             this.params.password = md5(this.password)
             verification(this.url, this.params)
