@@ -19,32 +19,39 @@
                             ></el-option>
                         </el-select>
                     </el-form-item>
+                    <!--时间线选项-->
                     <span v-if="type === 'TimeLineProject'"></span>
 
-                    <el-form-item label="限时">
-                        <el-radio-group v-model="settings.isTimeLimited">
-                            <el-radio-button :label="true">是</el-radio-button>
-                            <el-radio-button :label="false">否</el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item v-if="settings.isTimeLimited" label="起止时间">
-                        <el-date-picker
-                            v-model="settings.limitTime"
-                            type="datetimerange"
-                            :picker-options="pickerOptions"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            align="left"
-                        ></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="发言模板">
-                        <el-radio-group v-model="settings.isUseCommentTemplate">
-                            <el-radio-button :label="true">使用</el-radio-button>
-                            <el-radio-button :label="false">不使用</el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item v-if="settings.isUseCommentTemplate"></el-form-item>
+                    <!--论坛选项-->
+                    <span v-if="type === 'Forum'">
+                        <el-form-item label="限时">
+                            <el-radio-group v-model="settings.isTimeLimited">
+                                <el-radio-button :label="true">是</el-radio-button>
+                                <el-radio-button :label="false">否</el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item v-if="settings.isTimeLimited" label="起止时间">
+                            <el-date-picker
+                                v-model="settings.limitTime"
+                                type="datetimerange"
+                                :picker-options="pickerOptions"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                align="left"
+                                :default-time="['00:00:00', '23:59:59']"
+                            >
+                                >
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="发言模板">
+                            <el-radio-group v-model="settings.isUseCommentTemplate">
+                                <el-radio-button :label="true">使用</el-radio-button>
+                                <el-radio-button :label="false">不使用</el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item v-if="settings.isUseCommentTemplate"></el-form-item>
+                    </span>
                 </el-col>
             </el-row>
         </el-form>
@@ -77,47 +84,67 @@ export default {
             pickerOptions: {
                 shortcuts: [
                     {
-                        text: "一周内",
+                        text: "一周内(7)",
                         onClick(picker) {
                             const end = new Date()
-                            const start = new Date()
-                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 7)
+                            const start = new Date(
+                                new Date().getFullYear(),
+                                new Date().getMonth(),
+                                new Date().getDate()
+                            )
+                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 7 - 1)
                             picker.$emit("pick", [start, end])
                         },
                     },
                     {
-                        text: "一个月内",
+                        text: "一个月内(30)",
                         onClick(picker) {
                             const end = new Date()
-                            const start = new Date()
-                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 30)
+                            const start = new Date(
+                                new Date().getFullYear(),
+                                new Date().getMonth(),
+                                new Date().getDate()
+                            )
+                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 30 - 1)
                             picker.$emit("pick", [start, end])
                         },
                     },
                     {
-                        text: "一季度内",
+                        text: "一季度内(90)",
                         onClick(picker) {
                             const end = new Date()
-                            const start = new Date()
-                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90)
+                            const start = new Date(
+                                new Date().getFullYear(),
+                                new Date().getMonth(),
+                                new Date().getDate()
+                            )
+                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90 - 1)
                             picker.$emit("pick", [start, end])
                         },
                     },
                     {
-                        text: "半年内",
+                        text: "半年内(180)",
                         onClick(picker) {
                             const end = new Date()
-                            const start = new Date()
-                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90 * 2)
+                            const start = new Date(
+                                new Date().getFullYear(),
+                                new Date().getMonth(),
+                                new Date().getDate()
+                            )
+                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90 * 2 - 1)
                             picker.$emit("pick", [start, end])
                         },
                     },
                     {
-                        text: "一年内",
+                        text: "一年内(360)",
                         onClick(picker) {
                             const end = new Date()
-                            const start = new Date()
-                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90 * 2 * 2)
+                            const start = new Date(
+                                new Date().getFullYear(),
+                                new Date().getMonth(),
+                                new Date().getDate()
+                            )
+                            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90 * 2 * 2 - 1)
                             picker.$emit("pick", [start, end])
                         },
                     },
