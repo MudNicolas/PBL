@@ -6,7 +6,7 @@
                 icon="el-icon-plus"
                 @click="createTeamplateDialogVisible = !createTeamplateDialogVisible"
             >
-                创建评论模板
+                创建发言模板
             </el-button>
             <div class="right-panel">
                 <el-switch v-model="editAndDeleteActive" active-text="启用编辑"></el-switch>
@@ -125,7 +125,7 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
-        <el-dialog title="创建评论模板" :visible.sync="createTeamplateDialogVisible">
+        <el-dialog title="创建发言模板" :visible.sync="createTeamplateDialogVisible">
             <el-form
                 :model="newCommentTemplate"
                 ref="newCommentTemplate"
@@ -414,7 +414,7 @@ export default {
         },
         deleteCommentTemplate(_id) {
             this.$confirm(
-                "确认删除此评论模板？删除后将无法再使用此模板，但已有的使用此模板的评论将继续显示",
+                "确认删除此发言模板？删除后将无法再使用此模板，但已有的使用此模板的评论将继续显示",
                 "提示",
                 {
                     confirmButtonText: "确定",

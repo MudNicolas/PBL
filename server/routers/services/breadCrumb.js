@@ -59,7 +59,7 @@ class routeTree {
             meta: { title: "新建节" },
         },
         SectionView: {
-            path: "/course/section/view",
+            path: "/course/section/view/",
             parent: "CourseView",
             meta: {
                 title: async function (id) {
@@ -76,6 +76,13 @@ class routeTree {
                         return title
                     }
                 },
+            },
+        },
+        CreateActivity: {
+            path: "/course/section/activity/create",
+            parent: "SectionView",
+            meta: {
+                title: "创建活动",
             },
         },
     }

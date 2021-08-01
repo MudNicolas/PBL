@@ -34,7 +34,7 @@
                                 v-if="!editable"
                                 key="profile-to-edit-buttom"
                             >
-                                更新信息
+                                编辑
                             </el-button>
                             <el-button
                                 class="right-wrapper"

@@ -12,7 +12,12 @@
                 >
                     添加文件
                 </el-button>
-                <el-button type="primary" icon="el-icon-s-cooperation">添加活动</el-button>
+                <router-link
+                    :to="'/course/section/activity/create/' + sectionId"
+                    style="margin-left: 10px"
+                >
+                    <el-button type="primary" icon="el-icon-s-cooperation">添加活动</el-button>
+                </router-link>
             </div>
             <div class="right-wrapper">
                 <el-switch v-model="editable" active-text="启用编辑"></el-switch>
@@ -57,6 +62,7 @@
         <el-dialog title="添加文件" :visible.sync="newFileDialogVisible">
             <upload-file :section-id="sectionID" @success="newFileSubmitted" />
         </el-dialog>
+
         <el-dialog title="编辑链接" :visible.sync="editDialogVisible" :close-on-click-modal="false">
             <el-form label-position="right" label-width="80px" :model="editUrlData" ref="editUrl">
                 <el-form-item label="名称">
@@ -87,6 +93,7 @@
 </template>
 
 <script>
+import NewActivity from "./components/newActivity.vue"
 import newLink from "./components/newLink.vue"
 import uploadFile from "./components/uploadFile.vue"
 import SectionContentList from "../components/contentList.vue"
@@ -94,7 +101,7 @@ import { getFileAndUrl, submitEditUrl, deleteUrl, deleteFile } from "@/api/secti
 
 export default {
     name: "SectionContentManage",
-    components: { newLink, uploadFile, SectionContentList },
+    components: { newLink, uploadFile, SectionContentList, NewActivity },
     props: ["sectionId"],
     data() {
         return {

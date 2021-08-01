@@ -38,7 +38,7 @@ export default {
                 { name: "student", label: "学生管理" },
                 { name: "group", label: "分组管理" },
                 { name: "partner", label: "协作教师管理" },
-                { name: "commentTemplate", label: "评论模板管理" },
+                { name: "commentTemplate", label: "发言模板管理" },
             ],
         }
     },

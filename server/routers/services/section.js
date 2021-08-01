@@ -39,7 +39,7 @@ router.post("/create", async (req, res) => {
         courseID: courseID,
         index: index,
     })
-    s.save((err, sec) => {
+    s.save(err => {
         if (err) {
             res.json({
                 code: 30001,

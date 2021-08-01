@@ -205,6 +205,16 @@ export const asyncRoutes = [
                     roles: ["teacher", "student"],
                 },
             },
+            {
+                path: "section/activity/create/:id([a-f0-9]{24})",
+                component: () =>
+                    import("@/views/section/components/comtentManage/components/newActivity"),
+                name: "CreateActivity",
+                hidden: true,
+                meta: {
+                    roles: ["teacher", "student"],
+                },
+            },
         ],
     },
     {
