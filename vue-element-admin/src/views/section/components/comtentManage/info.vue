@@ -59,7 +59,7 @@
                     </p>
                 </span>
                 <span style="margin-left: 36px">
-                    <el-input v-model="deleteConfirm.input" />
+                    <el-input v-model="deleteConfirm.input" @keyup.enter.native="submitDelete" />
                 </span>
             </span>
             <span slot="footer" class="dialog-footer">
@@ -124,6 +124,9 @@ export default {
             this.deleteComfirmVisible = true
         },
         submitDelete() {
+            if (this.deleteConfirm.source !== this.deleteConfirm.input || this.deleteSubmitting) {
+                return
+            }
             this.deleteSubmitting = true
             deleteSection({ sectionID: this.sectionID })
                 .then(res => {

@@ -90,6 +90,11 @@ export default {
             }
         },
     },
+    watch: {
+        sections(nv) {
+            this.sectionList = nv
+        },
+    },
     data() {
         return {
             drag: true,

@@ -49,9 +49,6 @@ router.post("/create", async (req, res) => {
         }
         res.json({
             code: 20000,
-            data: {
-                sectionID: sec._id,
-            },
         })
     })
 })

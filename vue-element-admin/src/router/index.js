@@ -195,16 +195,7 @@ export const asyncRoutes = [
                     roles: ["teacher"],
                 },
             },
-            {
-                path: "section/create/:id([a-f0-9]{24})",
-                component: () => import("@/views/course/view/components/CreateSection"),
-                name: "CreateSection",
-                hidden: true,
-                meta: {
-                    title: "新建节",
-                    roles: ["teacher"],
-                },
-            },
+
             {
                 path: "section/view/:id([a-f0-9]{24})",
                 component: () => import("@/views/section"),

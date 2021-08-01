@@ -12,15 +12,15 @@
                         </router-link>
                         <div class="right-wrapper">
                             <el-switch v-model="editable" active-text="启用编辑"></el-switch>
-                            <router-link :to="'/course/section/create/' + courseID">
-                                <el-button
-                                    type="primary"
-                                    icon="el-icon-plus"
-                                    style="margin-left: 16px"
-                                >
-                                    新建节
-                                </el-button>
-                            </router-link>
+
+                            <el-button
+                                type="primary"
+                                icon="el-icon-plus"
+                                style="margin-left: 16px"
+                                @click="createNewSectionDialogVisible = true"
+                            >
+                                新建节
+                            </el-button>
                         </div>
                     </div>
                 </el-col>
@@ -42,6 +42,9 @@
                 </el-col>
             </el-row>
         </div>
+        <el-dialog title="新建节" :visible.sync="createNewSectionDialogVisible">
+            <create-section :course-id="courseID" @success="newSectionSuccess" />
+        </el-dialog>
     </div>
 </template>
 
@@ -51,10 +54,11 @@ import SectionList from "./components/SectionList.vue"
 import InfoCard from "./components/info-card"
 import NoSectionCard from "./components/NoSectionCard.vue"
 import checkPermission from "@/utils/permission"
+import CreateSection from "./components/CreateSection.vue"
 
 export default {
     name: "CourseView",
-    components: { InfoCard, SectionList, NoSectionCard },
+    components: { InfoCard, SectionList, NoSectionCard, CreateSection },
     data() {
         return {
             courseID: "",
@@ -62,6 +66,7 @@ export default {
             sections: [],
             loading: true,
             editable: false,
+            createNewSectionDialogVisible: false,
         }
     },
     created() {
@@ -86,6 +91,10 @@ export default {
                     break
                 }
             }
+        },
+        newSectionSuccess() {
+            this.createNewSectionDialogVisible = false
+            this.getCourseView()
         },
     },
 }

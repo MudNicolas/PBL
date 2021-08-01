@@ -53,7 +53,7 @@ import content from "./modules/sectionManage/content.js"
 router.use("/info", info)
 router.use("/content", content)
 
-router.post("/delete", (req, res) => {
+router.delete("/delete", (req, res) => {
     section.isUsed = false
     section.save(err => {
         if (err) {
