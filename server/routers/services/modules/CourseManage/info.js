@@ -8,7 +8,7 @@ router.use((req, res, next) => {
     next()
 })
 
-router.post("/get", (req, res, next) => {
+router.get("/get", (req, res, next) => {
     let courseInfo = {
         name: course.name,
         introduction: course.introduction,

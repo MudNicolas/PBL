@@ -117,13 +117,13 @@ async function generateBreadCrumb(name, id) {
     return gen
 }
 
-router.post("/get", async (req, res, next) => {
-    let params = req.body.params
-    let name = req.body.name
+router.get("/get", async (req, res, next) => {
+    let _id = req.query._id
+    let name = req.query.name
     //console.log(params)
     let breadCrumb = []
 
-    breadCrumb = await generateBreadCrumb(name, params.id)
+    breadCrumb = await generateBreadCrumb(name, _id)
 
     //console.log(breadCrumb)
     res.json({

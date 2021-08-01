@@ -10,7 +10,7 @@ router.use((req, res, next) => {
     next()
 })
 
-router.post("/getAllTeacher", (req, res) => {
+router.get("/getAllTeacher", (req, res) => {
     course
         .execPopulate([
             { path: "chiefTeacher", select: "name avatar" },

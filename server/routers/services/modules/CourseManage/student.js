@@ -9,7 +9,7 @@ router.use((req, res, next) => {
     next()
 })
 
-router.post("/get", (req, res) => {
+router.get("/get", (req, res) => {
     course
         .execPopulate({
             path: "studentList",

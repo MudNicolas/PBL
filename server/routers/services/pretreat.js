@@ -156,7 +156,7 @@ router.all("/logout", (req, res, next) => {
 })
 
 //对delete操作进行密码验证
-router.all("*/delete", async (req, res, next) => {
+router.delete("*", async (req, res, next) => {
     let { password } = req.body
 
     let v = req.loginInfo

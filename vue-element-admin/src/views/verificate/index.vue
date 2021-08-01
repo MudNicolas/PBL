@@ -21,7 +21,7 @@
 
 <script>
 import img from "@/assets/verificate_images/verificate.webp"
-import request from "@/utils/request"
+import { verification } from "@/api/verificate"
 import md5 from "js-md5"
 export default {
     name: "Verificate",
@@ -45,11 +45,7 @@ export default {
         submit() {
             this.loading = true
             this.params.password = md5(this.password)
-            request({
-                url: this.url,
-                method: "post",
-                data: this.params,
-            })
+            verification(this.url, this.params)
                 .then(res => {
                     this.$message({
                         message: "操作成功",

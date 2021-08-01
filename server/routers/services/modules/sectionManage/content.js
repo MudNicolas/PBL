@@ -178,7 +178,7 @@ router.post("/link/edit", (req, res) => {
     })
 })
 
-router.post("/link/delete", (req, res) => {
+router.delete("/link/delete", (req, res) => {
     let { _id } = req.body
     let urlIndex = section.urls.findIndex(e => e._id.toString() === _id)
 
@@ -199,7 +199,7 @@ router.post("/link/delete", (req, res) => {
     })
 })
 
-router.post("/file/delete", (req, res) => {
+router.delete("/file/delete", (req, res) => {
     let { _id } = req.body
     let fileIndex = section.files.findIndex(e => e._id.toString() === _id)
 

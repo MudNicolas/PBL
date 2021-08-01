@@ -273,7 +273,7 @@ router.post("/edit", (req, res) => {
     })
 })
 
-router.post("/delete", (req, res) => {
+router.delete("/delete", (req, res) => {
     let { courseID, groupID } = req.body
     Course.updateOne({ _id: courseID }, { $pull: { group: { _id: groupID } } }).then((c, err) => {
         if (err) {

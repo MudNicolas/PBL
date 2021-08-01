@@ -40,12 +40,12 @@ export default {
         getBreadcrumb() {
             // only show routes with meta.title
 
-            let matched = this.$route.matched.map(e => e.path)
+            //let matched = this.$route.matched.map(e => e.path)
             let params = this.$route.params
             let name = this.$route.name
 
             getBreadCrumb({
-                params: params,
+                _id: params.id,
                 name: name,
             }).then(res => {
                 this.levelList = res.data.breadCrumb

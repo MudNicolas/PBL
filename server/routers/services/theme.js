@@ -29,9 +29,9 @@ router.post("/set", (req, res, next) => {
     })
 })
 
-router.post("/get", async (req, res, next) => {
+router.get("/get", async (req, res, next) => {
     var uid = req.uid
-    var key = req.body.key
+    var key = req.query.key
     var query = {}
     query["uid"] = uid
     query[key] = {

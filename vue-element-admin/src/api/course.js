@@ -8,11 +8,11 @@ export function searchTeacher(data) {
     })
 }
 
-export function getCourseList(data) {
+export function getCourseList(query) {
     return request({
         url: "/course/getList",
-        method: "post",
-        data,
+        method: "get",
+        params: query,
     })
 }
 
@@ -31,11 +31,11 @@ export function getCourseRoute() {
     })
 }
 
-export function getInfo(data) {
+export function getInfo(query) {
     return request({
         url: "/course/manage/info/get",
-        method: "post",
-        data,
+        method: "get",
+        params: query,
     })
 }
 
@@ -47,11 +47,11 @@ export function submitEdit(data) {
     })
 }
 
-export function getStudentList(data) {
+export function getStudentList(query) {
     return request({
         url: "/course/manage/student/get",
-        method: "post",
-        data,
+        method: "get",
+        params: query,
     })
 }
 
@@ -63,11 +63,11 @@ export function submitStudentList(data) {
     })
 }
 
-export function getAllTeacher(data) {
+export function getAllTeacher(query) {
     return request({
         url: "/course/manage/partner/getAllTeacher",
-        method: "post",
-        data,
+        method: "get",
+        params: query,
     })
 }
 
@@ -87,11 +87,11 @@ export function addPartnerTeacher(data) {
     })
 }
 
-export function getAllCommentTemplate(data) {
+export function getAllCommentTemplate(query) {
     return request({
         url: "/course/manage/commentTemplate/get",
-        method: "post",
-        data,
+        method: "get",
+        params: query,
     })
 }
 
@@ -114,7 +114,7 @@ export function editCommentTemplate(data) {
 export function deleteCommentTemplate(data) {
     return request({
         url: "/course/manage/commentTemplate/delete",
-        method: "post",
+        method: "delete",
         data,
     })
 }
@@ -162,7 +162,7 @@ export function submitEditGroup(data) {
 export function deleteGroup(data) {
     return request({
         url: "/course/manage/group/delete",
-        method: "post",
+        method: "delete",
         data,
     })
 }

@@ -1,5 +1,4 @@
 import request from "@/utils/request"
-import { uploadImg } from "./img"
 
 export function login(data) {
     return request({
@@ -39,10 +38,10 @@ export function sendPWD(data) {
     })
 }
 
-export function getProfilePopoverInfo(data) {
+export function getProfilePopoverInfo(query) {
     return request({
         url: "/user/getProfilePopoverInfo",
-        method: "post",
-        data,
+        method: "get",
+        params: query,
     })
 }

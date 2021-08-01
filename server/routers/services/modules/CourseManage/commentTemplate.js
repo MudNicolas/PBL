@@ -7,7 +7,7 @@ router.use((req, res, next) => {
     next()
 })
 
-router.post("/get", (req, res) => {
+router.get("/get", (req, res) => {
     let { commentTemplate } = course.toJSON()
 
     let t = commentTemplate.filter(e => {
@@ -113,7 +113,7 @@ router.post("/edit", (req, res) => {
     })
 })
 
-router.post("/delete", (req, res) => {
+router.delete("/delete", (req, res) => {
     let { templateID } = req.body
     for (let i of course.commentTemplate) {
         if (i._id.toString() === templateID) {

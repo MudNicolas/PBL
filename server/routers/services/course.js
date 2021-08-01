@@ -33,9 +33,11 @@ var findCourseQuery = uid => {
     return query
 }
 
-router.post("/getList", (req, res, next) => {
-    let limit = req.body.limit
-    let page = req.body.page
+router.get("/getList", (req, res, next) => {
+    const DEFAULT_LIMIT = 12
+    const DEFAULT_PAGE = 1
+    let limit = Number(req.query.limit) || DEFAULT_LIMIT
+    let page = Number(req.query.page) || DEFAULT_PAGE
 
     Course.find(findCourseQuery(req.uid))
         .skip((page - 1) * limit)

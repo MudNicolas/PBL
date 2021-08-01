@@ -146,8 +146,16 @@ router.post("/updatePWD", async (req, res, next) => {
     )
 })
 
-router.post("/getProfilePopoverInfo", (req, res, next) => {
-    let { uid } = req.body
+router.get("/getProfilePopoverInfo", (req, res, next) => {
+    let { uid } = req.query
+    let validate = /^[a-fA-F0-9]{24}$/.test(uid)
+    if (!validate) {
+        res.json({
+            code: 30002,
+            message: "该用户不存在",
+        })
+        return
+    }
     User.findById(uid)
         .select("name introduction avatar")
         .then((user, err) => {
@@ -155,6 +163,13 @@ router.post("/getProfilePopoverInfo", (req, res, next) => {
                 res.json({
                     code: 30001,
                     message: "DataBase Error!",
+                })
+                return
+            }
+            if (!user) {
+                res.json({
+                    code: 30002,
+                    message: "该用户不存在",
                 })
                 return
             }
