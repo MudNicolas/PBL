@@ -106,3 +106,11 @@ export function newActivityGetCommentTemplate(query) {
         params: query,
     })
 }
+
+export function newActivitySubmitNewCommentTemplate(data) {
+    return request({
+        url: "/section/manage/activity/commentTemplate/new",
+        method: "post",
+        data,
+    })
+}

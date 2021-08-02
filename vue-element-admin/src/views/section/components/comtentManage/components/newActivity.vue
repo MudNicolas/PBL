@@ -78,15 +78,95 @@
                                 </span>
                             </el-option>
                         </el-select>
+                        <el-button
+                            style="margin-left: 10px"
+                            icon="el-icon-plus"
+                            @click="newCommentTemplateDialogVisible = true"
+                        >
+                            添加发言模板
+                        </el-button>
                     </el-form-item>
                 </el-col>
             </el-row>
         </el-form>
+        <el-dialog title="新建发言模板" :visible.sync="newCommentTemplateDialogVisible">
+            <el-form
+                :model="newCommentTemplate"
+                ref="newCommentTemplate"
+                label-position="right"
+                label-width="80px"
+            >
+                <el-form-item
+                    prop="name"
+                    label="模板名"
+                    :rules="{
+                        required: true,
+                        message: '模板名不能为空',
+                        trigger: 'blur',
+                    }"
+                >
+                    <el-row>
+                        <el-col :span="16">
+                            <el-input v-model="newCommentTemplate.name"></el-input>
+                        </el-col>
+                    </el-row>
+                </el-form-item>
+                <el-form-item
+                    v-for="(entry, index) of newCommentTemplate.entry"
+                    :label="'条目' + index"
+                    :key="entry.key"
+                    :prop="'entry.' + index + '.value'"
+                    :rules="{
+                        required: true,
+                        message: '条目不能为空',
+                        trigger: 'blur',
+                    }"
+                >
+                    <el-row>
+                        <el-col :span="16">
+                            <el-input v-model="entry.value" style="margin-right: 10px"></el-input>
+                        </el-col>
+
+                        <el-button
+                            v-if="newCommentTemplate.entry.length > 1"
+                            @click.prevent="removeEntry(entry)"
+                            style="margin-left: 12px"
+                            type="danger"
+                        >
+                            删除
+                        </el-button>
+                    </el-row>
+                </el-form-item>
+                <el-form-item>
+                    <el-row>
+                        <el-col :span="16">
+                            <div class="new-template-footbar">
+                                <el-button @click="addEntry">新增条目</el-button>
+                                <el-button
+                                    type="primary"
+                                    :loading="newTemplateSubmitting"
+                                    @click="submitTemplate('newCommentTemplate')"
+                                >
+                                    提交
+                                </el-button>
+                                <el-popconfirm
+                                    title="确定将输入的信息重置吗？"
+                                    style="margin-left: auto"
+                                    @confirm="resetTemplate('newCommentTemplate')"
+                                >
+                                    <el-button slot="reference" type="danger">重置</el-button>
+                                </el-popconfirm>
+                            </div>
+                        </el-col>
+                    </el-row>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { newActivityGetCommentTemplate } from "@/api/section"
+import { newActivityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
 export default {
     name: "CreateActivity",
     created() {
@@ -95,6 +175,10 @@ export default {
     data() {
         return {
             sectionID: "",
+            newCommentTemplate: {
+                name: "",
+                entry: [{ value: "" }],
+            },
             options: [
                 {
                     value: "TimeLineProject",
@@ -114,7 +198,7 @@ export default {
                 commentTemplate: [],
             },
             templateGetting: false,
-
+            newCommentTemplateDialogVisible: false,
             commentTemplates: [],
             pickerOptions: {
                 shortcuts: [
@@ -185,6 +269,7 @@ export default {
                     },
                 ],
             },
+            newTemplateSubmitting: false,
         }
     },
     watch: {
@@ -204,6 +289,76 @@ export default {
                 })
                 .catch()
         },
+        resetTemplate(formName) {
+            this.$refs[formName].resetFields()
+            this.newCommentTemplate = {
+                name: "",
+                entry: [{ value: "" }],
+            }
+        },
+        removeEntry(item) {
+            let index = this.newCommentTemplate.entry.indexOf(item)
+            if (index !== -1) {
+                this.newCommentTemplate.entry.splice(index, 1)
+            }
+        },
+        formValidate(formName) {
+            return new Promise((resolve, reject) => {
+                this[formName].name = this[formName].name.trim()
+                this[formName].entry.forEach(e => {
+                    e.value = e.value.trim()
+                })
+                this.$refs[formName].validate(valid => {
+                    if (valid) {
+                        let temp = Object.assign({}, this[formName])
+                        let entry = temp.entry.map(e => {
+                            return e.value
+                        })
+                        temp.entry = entry
+                        //console.log(temp)
+                        resolve(temp)
+                        return
+                    } else {
+                        this.$message({
+                            message: "请将信息填写完整",
+                            type: "warning",
+                        })
+                        reject()
+                        return
+                    }
+                })
+            })
+        },
+        submitTemplate(formName) {
+            this.formValidate(formName)
+                .then(temp => {
+                    this.newTemplateSubmitting = true
+                    newActivitySubmitNewCommentTemplate({
+                        sectionID: this.sectionID,
+                        template: temp,
+                    })
+                        .then(() => {
+                            this.$message({
+                                type: "success",
+                                message: "添加模板成功",
+                            })
+                            this.newTemplateSubmitting = false
+                            this.getCommentTemplate()
+                            this.resetTemplate("newCommentTemplate")
+                            this.newCommentTemplateDialogVisible = false
+                        })
+                        .catch(() => {
+                            this.newTemplateSubmitting = false
+                        })
+                })
+                .catch()
+        },
+        addEntry() {
+            this.newCommentTemplate.entry.push({
+                value: "",
+                key: Date.now(),
+            })
+        },
     },
 }
 </script>
@@ -211,5 +366,8 @@ export default {
 <style lang="scss" scoped>
 .container {
     padding: 50px 60px 0px;
+}
+.new-template-footbar {
+    display: flex;
 }
 </style>
