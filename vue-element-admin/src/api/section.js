@@ -1,4 +1,5 @@
 import request from "@/utils/request"
+import { connect } from "echarts"
 
 export function getSectionView(query) {
     return request({
@@ -95,5 +96,13 @@ export function deleteFile(data) {
         url: "/section/manage/content/file/delete",
         method: "delete",
         data,
+    })
+}
+
+export function newActivityGetCommentTemplate(query) {
+    return request({
+        url: "/section/manage/activity/commentTemplate/get",
+        method: "get",
+        params: query,
     })
 }

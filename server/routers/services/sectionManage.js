@@ -6,6 +6,11 @@ let router = Router()
 
 let section
 
+/**
+ * @req.section section
+ * @req.course course
+ */
+
 router.use((req, res, next) => {
     let sectionID = req.body.sectionID || req.query.sectionID || req.body.section._id
 
@@ -36,9 +41,10 @@ router.use((req, res, next) => {
             return
         }
         CheckCourseAvailableAndReqUserHasPermission(s.courseID, 1, req)
-            .then(() => {
+            .then(course => {
                 section = s
                 req.section = s
+                req.course = course
 
                 next()
             })
@@ -67,6 +73,23 @@ router.delete("/delete", (req, res) => {
             code: 20000,
             toPath: `/course/view/${section.courseID}`,
         })
+    })
+})
+
+router.get("/activity/commentTemplate/get", (req, res) => {
+    let { commentTemplate } = req.course
+    let filterTemplate = commentTemplate.filter(e => {
+        if (e.isUsed) {
+            return {
+                _id: e._id,
+                name: e.name,
+                template: e.template,
+            }
+        }
+    })
+    res.json({
+        code: 20000,
+        data: filterTemplate,
     })
 })
 

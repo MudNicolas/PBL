@@ -19,39 +19,66 @@
                             ></el-option>
                         </el-select>
                     </el-form-item>
-                    <!--时间线选项-->
-                    <span v-if="type === 'TimeLineProject'"></span>
 
-                    <!--论坛选项-->
-                    <span v-if="type === 'Forum'">
-                        <el-form-item label="限时">
-                            <el-radio-group v-model="settings.isTimeLimited">
-                                <el-radio-button :label="true">是</el-radio-button>
-                                <el-radio-button :label="false">否</el-radio-button>
-                            </el-radio-group>
-                        </el-form-item>
-                        <el-form-item v-if="settings.isTimeLimited" label="起止时间">
-                            <el-date-picker
-                                v-model="settings.limitTime"
-                                type="datetimerange"
-                                :picker-options="pickerOptions"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                align="left"
-                                :default-time="['00:00:00', '23:59:59']"
+                    <el-form-item label="限时">
+                        <el-radio-group v-model="settings.isTimeLimited">
+                            <el-radio-button :label="true">是</el-radio-button>
+                            <el-radio-button :label="false">否</el-radio-button>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item v-if="settings.isTimeLimited" label="起止时间">
+                        <el-date-picker
+                            v-model="settings.limitTime"
+                            type="datetimerange"
+                            :picker-options="pickerOptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            align="left"
+                            :default-time="['00:00:00', '23:59:59']"
+                        >
                             >
-                                >
-                            </el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="发言模板">
-                            <el-radio-group v-model="settings.isUseCommentTemplate">
-                                <el-radio-button :label="true">使用</el-radio-button>
-                                <el-radio-button :label="false">不使用</el-radio-button>
-                            </el-radio-group>
-                        </el-form-item>
-                        <el-form-item v-if="settings.isUseCommentTemplate"></el-form-item>
-                    </span>
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="发言模板">
+                        <el-radio-group v-model="settings.isUseCommentTemplate">
+                            <el-radio-button :label="true">使用</el-radio-button>
+                            <el-radio-button :label="false">不使用</el-radio-button>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item v-if="settings.isUseCommentTemplate" label="模板">
+                        <el-select
+                            v-model="settings.commentTemplate"
+                            placeholder="请选择"
+                            :loading="templateGetting"
+                        >
+                            <el-option
+                                v-for="item in commentTemplates"
+                                :key="item._id"
+                                :label="item.name"
+                                :value="item._id"
+                            >
+                                <span style="float: left">{{ item.name }}</span>
+                                <span style="float: right; color: #8492a6">
+                                    <el-popover placement="right" trigger="hover">
+                                        <el-form style="padding-top: 16px">
+                                            <el-form-item
+                                                v-for="entry of item.template"
+                                                :key="'perview' + entry"
+                                            >
+                                                <el-input placeholder="具体评论...">
+                                                    <template slot="prepend">
+                                                        {{ entry }}
+                                                    </template>
+                                                </el-input>
+                                            </el-form-item>
+                                        </el-form>
+                                        <i slot="reference" class="el-icon-view" />
+                                    </el-popover>
+                                </span>
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
                 </el-col>
             </el-row>
         </el-form>
@@ -59,11 +86,15 @@
 </template>
 
 <script>
+import { newActivityGetCommentTemplate } from "@/api/section"
 export default {
     name: "CreateActivity",
-    props: ["sectionId"],
+    created() {
+        this.sectionID = this.$route.params.id
+    },
     data() {
         return {
+            sectionID: "",
             options: [
                 {
                     value: "TimeLineProject",
@@ -80,7 +111,11 @@ export default {
                 limitTime: "",
                 isUseCommentTemplate: false,
                 template: [],
+                commentTemplate: [],
             },
+            templateGetting: false,
+
+            commentTemplates: [],
             pickerOptions: {
                 shortcuts: [
                     {
@@ -151,6 +186,24 @@ export default {
                 ],
             },
         }
+    },
+    watch: {
+        "settings.isUseCommentTemplate"(v) {
+            if (v) {
+                this.getCommentTemplate()
+            }
+        },
+    },
+    methods: {
+        getCommentTemplate() {
+            this.templateGetting = true
+            newActivityGetCommentTemplate({ sectionID: this.sectionID })
+                .then(res => {
+                    this.templateGetting = false
+                    this.commentTemplates = res.data
+                })
+                .catch()
+        },
     },
 }
 </script>
