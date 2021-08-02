@@ -28,6 +28,12 @@
                         </el-select>
                     </el-form-item>
 
+                    <el-form-item label="作者类型">
+                        <el-radio-group v-model="activity.authorType">
+                            <el-radio-button label="personal">个人</el-radio-button>
+                            <el-radio-button label="group">小组</el-radio-button>
+                        </el-radio-group>
+                    </el-form-item>
                     <el-form-item label="限时">
                         <el-radio-group v-model="activity.isTimeLimited">
                             <el-radio-button :label="true">是</el-radio-button>
@@ -283,15 +289,27 @@ export default {
                 },
             ],
             type: "",
+            /**
+             * @	* -> must
+             * @ 	+ -> conditionally
+             * @name *all
+             * @intro all
+             * @isTimeLimited *timeline *forum *work
+             * @limitTime +timeline +forum +work
+             * @isUseComtemplate *timeline *forum *evaluation
+             * @commentTemplate +timeline +forum +evaluation
+             * @isNeedApprove *timeline
+             * @author	*timeline *evaluation *work
+             */
             activity: {
                 name: "",
                 intro: "",
                 isTimeLimited: false,
                 limitTime: "",
                 isUseCommentTemplate: false,
-                template: [],
                 commentTemplate: [],
                 isNeedApprove: false,
+                authorType: "personal",
                 evaluation: {
                     phaseSwitchMethod: "auto",
                     submitLimitTime: "",
