@@ -251,7 +251,9 @@
                         />
                     </el-form-item>
                     <el-form-item v-if="activity.type">
-                        <el-button type="primary" @click="handleSubmit">提交</el-button>
+                        <el-button type="primary" @click="handleSubmit" :loading="submitting">
+                            提交
+                        </el-button>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -334,6 +336,7 @@
 
 <script>
 import { newActivityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
+import { submitCreateActivity } from "@/api/activity"
 export default {
     name: "CreateActivity",
     created() {
@@ -341,6 +344,7 @@ export default {
     },
     data() {
         return {
+            submitting: false,
             sectionID: "",
             newCommentTemplate: {
                 name: "",
@@ -565,7 +569,19 @@ export default {
             }
             let type = this.activity.type
             let data = this.transformData(type)
-            console.log(data)
+            this.submit(data)
+        },
+        submit(data) {
+            let sectionID = this.sectionID
+            let activity = data
+            this.submitting = true
+            submitCreateActivity({ sectionID, activity })
+                .then(() => {
+                    this.submitting = false
+                })
+                .catch(() => {
+                    this.submitting = false
+                })
         },
         formValidate() {
             this.activity.name = this.activity.name.trim()
