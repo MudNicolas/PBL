@@ -1,5 +1,6 @@
 import Router from "express"
 import Section from "#models/Section.js"
+import Activity from "#models/Activity.js"
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 let router = Router()
 
@@ -47,10 +48,8 @@ router.use((req, res, next) => {
     })
 })
 
-import Mock from "mockjs"
-
 router.get("/get", (req, res) => {
-    section.execPopulate("files").then((s, err) => {
+    section.execPopulate("files").then(async (s, err) => {
         if (err) {
             res.json({
                 code: 30001,
@@ -71,17 +70,12 @@ router.get("/get", (req, res) => {
                     }
                 }),
                 urls: s.urls,
-                activities: [],
-            },
-        }
-
-        for (let i = 0; i < 3; i++) {
-            data.content.activities.push(
-                Mock.mock({
-                    _id: "@id",
-                    name: "@ctitle",
+                activities: await Activity.find({
+                    sectionID: s._id,
                 })
-            )
+                    .select(["_id", "name", "type"])
+                    .exec(),
+            },
         }
 
         res.json({

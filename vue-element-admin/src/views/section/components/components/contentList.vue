@@ -115,7 +115,7 @@
             style="width: 100%"
         >
             <el-table-column prop="name" label="活动">
-                <el-table-column prop="name" label="内容">
+                <el-table-column prop="name" label="名称">
                     <template slot-scope="scope">
                         <div class="content">
                             <i class="el-icon-s-cooperation" />
@@ -124,9 +124,9 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="具体活动">
+                <el-table-column label="类别">
                     <template slot-scope="scope">
-                        <div class="content">形成性活动</div>
+                        <div class="content">{{ scope.row.type | activityType }}</div>
                     </template>
                 </el-table-column>
 
@@ -183,6 +183,12 @@ export default {
                 return `${Math.round(val / 1024 / 1024)}MB`
             }
             return `${Math.round(val / 1024 / 1024 / 1024)}GB`
+        },
+        activityType: function (val) {
+            let map = {
+                TimeLineProject: "形成性项目",
+            }
+            return map[val]
         },
     },
 
