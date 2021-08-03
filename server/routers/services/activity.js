@@ -62,10 +62,13 @@ function validateActivity(activity) {
         if (!name.trim()) {
             return false
         }
-        if (isTimeLimited && !limitTime) {
+        if (![true, false].includes(isTimeLimited)) {
             return false
         }
 
+        if (![true, false].includes(isUseCommentTemplate)) {
+            return false
+        }
         if (isUseCommentTemplate && !commentTemplate) {
             return false
         }
@@ -73,14 +76,13 @@ function validateActivity(activity) {
             return false
         }
 
-        if (!limitTime[0] || !limitTime[1]) {
-            return false
-        }
-
         if (
-            new Date(limitTime[0]).toString() === "Invalid Date" ||
-            new Date(limitTime[1]).toString() === "Invalid Date" ||
-            new Date(limitTime[0]) > new Date(limitTime[1])
+            isTimeLimited &&
+            (!limitTime[0] ||
+                !limitTime[1] ||
+                new Date(limitTime[0]).toString() === "Invalid Date" ||
+                new Date(limitTime[1]).toString() === "Invalid Date" ||
+                new Date(limitTime[0]) > new Date(limitTime[1]))
         ) {
             return false
         }
