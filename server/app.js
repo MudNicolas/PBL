@@ -55,3 +55,22 @@ mongoose.connect(mongoUrl, options, function (err) {
         app.listen(PORT)
     }
 })
+
+//全局错误处理
+import fs from "fs"
+process
+    .on("unhandledRejection", reason => {
+        console.error(reason, "Unhandled Rejection at Promise")
+        let log = `>>> [${new Date()}]	<Unhandled Rejection at Promise>	${reason.stack}`
+        writeErrLog(log)
+    })
+    .on("uncaughtException", err => {
+        console.error(err, "Uncaught Exception thrown")
+        process.exit(1)
+    })
+
+function writeErrLog(log) {
+    fs.createWriteStream(path.join(__dirname, "logs", "error.log"), {
+        flags: "a", //'a'为追加，'w'为覆盖
+    }).write(log + "\n")
+}

@@ -19,9 +19,9 @@
 		"multiparty": "^4.2.2"
 	},
 	"type": "module",
-	"imports":{
-		"#root/*":"./*",
-		"#models/*":"./models/*",
-		"#services/*":"./routers/services/*"
+	"imports": {
+		"#root/*": "./*",
+		"#models/*": "./models/*",
+		"#services/*": "./routers/services/*"
 	}
 }
