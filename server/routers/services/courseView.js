@@ -61,7 +61,7 @@ router.get("/get", (req, res, next) => {
                 code: 20000,
                 data: {
                     course: theCourse,
-                    sections: sections,
+                    sections,
                 },
             })
         })

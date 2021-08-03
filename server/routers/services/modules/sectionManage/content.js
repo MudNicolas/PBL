@@ -46,7 +46,7 @@ router.get("/get", (req, res) => {
 
         res.json({
             code: 20000,
-            data: data,
+            data,
         })
     })
 })

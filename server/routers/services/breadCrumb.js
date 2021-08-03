@@ -136,7 +136,7 @@ router.get("/get", async (req, res, next) => {
     res.json({
         code: 20000,
         data: {
-            breadCrumb: breadCrumb,
+            breadCrumb,
         },
     })
 })

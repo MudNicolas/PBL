@@ -62,8 +62,8 @@ router.get("/getList", (req, res, next) => {
                 res.json({
                     code: 20000,
                     data: {
-                        courseList: courseList,
-                        courseNum: courseNum,
+                        courseList,
+                        courseNum,
                     },
                 })
             })
@@ -122,7 +122,7 @@ router.get("/route", (req, res, next) => {
             res.json({
                 code: 20000,
                 data: {
-                    courseRoute: courseRoute,
+                    courseRoute,
                 },
             })
         })
