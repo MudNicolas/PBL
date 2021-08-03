@@ -360,7 +360,7 @@
                 </el-dialog>
             </div>
 
-            <div class="suc-wrapper" v-else>
+            <div class="suc-wrapper" v-else key="nas2">
                 <div class="wrapper-col">
                     <i class="el-icon-success suc-icon suc-wrapper"></i>
                     <div class="suc-wrapper">
