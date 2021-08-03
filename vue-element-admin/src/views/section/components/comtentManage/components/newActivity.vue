@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <el-form label-position="right" label-width="120px" :model="activity">
+        <el-form label-position="right" label-width="120px" :model="activity" ref="activityForm">
             <el-row>
                 <el-col :span="16" :offset="4">
                     <el-form-item
@@ -14,11 +14,14 @@
                     >
                         <el-input v-model="activity.name" />
                     </el-form-item>
-                    <el-form-item label="描述">
-                        <el-input type="textarea" v-model="activity.intro" />
-                    </el-form-item>
-                    <el-form-item label="类型">
-                        <el-select v-model="type" placeholder="请选择">
+
+                    <el-form-item
+                        label="类型"
+                        :rules="{
+                            required: true,
+                        }"
+                    >
+                        <el-select v-model="activity.type" placeholder="请选择">
                             <el-option
                                 v-for="item in options"
                                 :key="item.value"
@@ -28,19 +31,37 @@
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="作者类型">
+                    <el-form-item
+                        label="作者类型"
+                        :rules="{
+                            required: true,
+                        }"
+                        v-if="['TimeLineProject', 'Evaluation', 'Work'].includes(activity.type)"
+                    >
                         <el-radio-group v-model="activity.authorType">
                             <el-radio-button label="personal">个人</el-radio-button>
                             <el-radio-button label="group">小组</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="限时">
+                    <el-form-item
+                        label="限时"
+                        :rules="{
+                            required: true,
+                        }"
+                        v-if="['TimeLineProject', 'Forum', 'Work'].includes(activity.type)"
+                    >
                         <el-radio-group v-model="activity.isTimeLimited">
                             <el-radio-button :label="true">是</el-radio-button>
                             <el-radio-button :label="false">否</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item v-if="activity.isTimeLimited" label="起止时间">
+                    <el-form-item
+                        v-if="activity.isTimeLimited"
+                        label="起止时间"
+                        :rules="{
+                            required: true,
+                        }"
+                    >
                         <el-date-picker
                             v-model="activity.limitTime"
                             type="datetimerange"
@@ -54,13 +75,25 @@
                             >
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item label="发言模板">
+                    <el-form-item
+                        label="发言模板"
+                        :rules="{
+                            required: true,
+                        }"
+                        v-if="['TimeLineProject', 'Forum', 'Evaluation'].includes(activity.type)"
+                    >
                         <el-radio-group v-model="activity.isUseCommentTemplate">
                             <el-radio-button :label="true">使用</el-radio-button>
                             <el-radio-button :label="false">不使用</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item v-if="activity.isUseCommentTemplate" label="模板">
+                    <el-form-item
+                        v-if="activity.isUseCommentTemplate"
+                        label="模板"
+                        :rules="{
+                            required: true,
+                        }"
+                    >
                         <el-select
                             v-model="activity.commentTemplate"
                             placeholder="请选择"
@@ -100,83 +133,126 @@
                             添加发言模板
                         </el-button>
                     </el-form-item>
-                    <el-form-item label="项目审批">
+                    <el-form-item
+                        label="项目审批"
+                        :rules="{
+                            required: true,
+                        }"
+                        v-if="['TimeLineProject'].includes(activity.type)"
+                    >
                         <el-radio-group v-model="activity.isNeedApprove">
                             <el-radio-button :label="true">需要</el-radio-button>
                             <el-radio-button :label="false">不需要</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="阶段切换方式">
-                        <el-radio-group v-model="activity.evaluation.phaseSwitchMethod">
-                            <el-radio-button label="auto">自动</el-radio-button>
-                            <el-radio-button label="manual">手动</el-radio-button>
-                        </el-radio-group>
-
-                        <el-tooltip
-                            content="互评分为三个阶段，分别是作品提交阶段、评价阶段、讨论阶段"
-                            placement="right"
-                            effect="light"
+                    <span v-if="['Evaluation'].includes(activity.type)">
+                        <el-form-item
+                            label="阶段切换方式"
+                            :rules="{
+                                required: true,
+                            }"
                         >
-                            <i class="el-icon-question" style="color: #606266; margin-left: 10px" />
-                        </el-tooltip>
-                    </el-form-item>
-                    <el-form-item
-                        label="讨论阶段限时"
-                        v-if="activity.evaluation.phaseSwitchMethod === 'auto'"
-                    >
-                        <el-radio-group v-model="activity.evaluation.isDiscussionTimeLimited">
-                            <el-radio-button :label="true">是</el-radio-button>
-                            <el-radio-button :label="false">否</el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <span v-if="activity.evaluation.phaseSwitchMethod === 'auto'">
-                        <el-form-item label="作品提交时间">
-                            <el-date-picker
-                                v-model="activity.evaluation.submitLimitTime"
-                                type="datetimerange"
-                                :picker-options="pickerOptions"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                align="left"
-                                :default-time="['00:00:00', '23:59:59']"
+                            <el-radio-group v-model="activity.evaluation.phaseSwitchMethod">
+                                <el-radio-button label="auto">自动</el-radio-button>
+                                <el-radio-button label="manual">手动</el-radio-button>
+                            </el-radio-group>
+
+                            <el-tooltip
+                                content="互评分为三个阶段，分别是作品提交阶段、评价阶段、讨论阶段。自动适用于长时间大型项目，手动适用于短时间课堂活动"
+                                placement="right"
+                                effect="light"
                             >
-                                >
-                            </el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="评价时间">
-                            <el-date-picker
-                                v-model="activity.evaluation.evaluationLimitTime"
-                                type="datetimerange"
-                                :picker-options="pickerOptions"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                align="left"
-                                :default-time="['00:00:00', '23:59:59']"
-                            >
-                                >
-                            </el-date-picker>
+                                <i
+                                    class="el-icon-question"
+                                    style="color: #606266; margin-left: 10px"
+                                />
+                            </el-tooltip>
                         </el-form-item>
 
                         <el-form-item
-                            label="讨论时间"
-                            v-if="activity.evaluation.isDiscussionTimeLimited"
+                            label="讨论阶段限时"
+                            v-if="activity.evaluation.phaseSwitchMethod === 'auto'"
+                            :rules="{
+                                required: true,
+                            }"
                         >
-                            <el-date-picker
-                                v-model="activity.evaluation.discussionLimitTime"
-                                type="datetimerange"
-                                :picker-options="pickerOptions"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                align="left"
-                                :default-time="['00:00:00', '23:59:59']"
-                            >
-                                >
-                            </el-date-picker>
+                            <el-radio-group v-model="activity.evaluation.isDiscussionTimeLimited">
+                                <el-radio-button :label="true">是</el-radio-button>
+                                <el-radio-button :label="false">否</el-radio-button>
+                            </el-radio-group>
                         </el-form-item>
+                        <span v-if="activity.evaluation.phaseSwitchMethod === 'auto'">
+                            <el-form-item
+                                label="作品提交时间"
+                                :rules="{
+                                    required: true,
+                                }"
+                            >
+                                <el-date-picker
+                                    v-model="activity.evaluation.submitLimitTime"
+                                    type="datetimerange"
+                                    :picker-options="pickerOptions"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    align="left"
+                                    :default-time="['00:00:00', '23:59:59']"
+                                >
+                                    >
+                                </el-date-picker>
+                            </el-form-item>
+                            <el-form-item
+                                label="评价时间"
+                                :rules="{
+                                    required: true,
+                                }"
+                            >
+                                <el-date-picker
+                                    v-model="activity.evaluation.evaluationLimitTime"
+                                    type="datetimerange"
+                                    :picker-options="pickerOptions"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    align="left"
+                                    :default-time="['00:00:00', '23:59:59']"
+                                >
+                                    >
+                                </el-date-picker>
+                            </el-form-item>
+
+                            <el-form-item
+                                label="讨论时间"
+                                v-if="activity.evaluation.isDiscussionTimeLimited"
+                                :rules="{
+                                    required: true,
+                                }"
+                            >
+                                <el-date-picker
+                                    v-model="activity.evaluation.discussionLimitTime"
+                                    type="datetimerange"
+                                    :picker-options="pickerOptions"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    align="left"
+                                    :default-time="['00:00:00', '23:59:59']"
+                                >
+                                    >
+                                </el-date-picker>
+                            </el-form-item>
+                        </span>
                     </span>
+                    <el-form-item label="描述">
+                        <el-input
+                            type="textarea"
+                            v-model="activity.intro"
+                            :autosize="{ minRows: 3 }"
+                        />
+                    </el-form-item>
+                    <el-form-item v-if="activity.type">
+                        <el-button type="primary" @click="handleSubmit">提交</el-button>
+                    </el-form-item>
                 </el-col>
             </el-row>
         </el-form>
@@ -288,7 +364,7 @@ export default {
                     label: "作业提交",
                 },
             ],
-            type: "",
+
             /**
              * @	* -> must
              * @ 	+ -> conditionally
@@ -304,6 +380,7 @@ export default {
             activity: {
                 name: "",
                 intro: "",
+                type: "",
                 isTimeLimited: false,
                 limitTime: "",
                 isUseCommentTemplate: false,
@@ -479,6 +556,71 @@ export default {
                 value: "",
                 key: Date.now(),
             })
+        },
+        handleSubmit() {
+            let valid = this.formValidate()
+            if (!valid) {
+                this.$message.error("请完整填写表单必要内容")
+                return
+            }
+            let type = this.activity.type
+            let data = this.transformData(type)
+            console.log(data)
+        },
+        formValidate() {
+            this.activity.name = this.activity.name.trim()
+            if (!this.activity.name) {
+                return false
+            }
+            let type = this.activity.type
+            if (!type || !["TimeLineProject", "Forum", "Work", "Evaluation"].includes(type)) {
+                return false
+            }
+            if (type === "TimeLineProject") {
+                let { isTimeLimited, limitTime } = this.activity
+                if (isTimeLimited && !limitTime) {
+                    return false
+                }
+                let { isUseCommentTemplate, commentTemplate } = this.activity
+                if (isUseCommentTemplate && !commentTemplate) {
+                    return false
+                }
+            }
+            return true
+        },
+        transformData() {
+            let data = {}
+            let {
+                name,
+                intro,
+                type,
+                authorType,
+                isTimeLimited,
+                limitTime,
+                isUseCommentTemplate,
+                commentTemplate,
+                isNeedApprove,
+                evaluation,
+            } = this.activity
+            if (type === "TimeLineProject") {
+                data = {
+                    name,
+                    intro,
+                    type,
+                    authorType,
+                    isTimeLimited,
+                    isUseCommentTemplate,
+                    isNeedApprove,
+                }
+                if (isTimeLimited) {
+                    data.limitTime = limitTime
+                }
+                if (isUseCommentTemplate) {
+                    data.commentTemplate = commentTemplate
+                }
+            }
+
+            return data
         },
     },
 }
