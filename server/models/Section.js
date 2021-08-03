@@ -29,12 +29,6 @@ var sectionSchema = new mongoose.Schema({
             url: String,
         },
     ],
-    activity: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Activity",
-        },
-    ],
 })
 
 export default mongoose.model("Section", sectionSchema)
