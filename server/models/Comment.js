@@ -1,10 +1,15 @@
 import mongoose from "mongoose"
 
 let commentSchemas = new mongoose.Schema({
-    contentID: {
+    activityContentID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ActivityContent",
     },
+    comment: [
+        {
+            entry: String,
+            content: String,
+        },
+    ],
     time: Date,
     type: String, //private,public
     reply: [
