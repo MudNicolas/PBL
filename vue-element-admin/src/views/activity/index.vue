@@ -111,7 +111,7 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .container {
     padding: 40px;
     min-height: 80vh;
