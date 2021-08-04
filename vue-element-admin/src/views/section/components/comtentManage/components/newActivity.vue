@@ -367,7 +367,7 @@
                         <div class="suc-word">创建活动成功</div>
                     </div>
                     <div class="suc-wrapper">
-                        <router-link :to="'/course/view/'">
+                        <router-link :to="'/course/section/activity/view/' + activityID">
                             <el-button type="primary">进入活动</el-button>
                         </router-link>
                         <router-link :to="'/course/section/view/' + sectionID">
@@ -393,6 +393,7 @@ export default {
     },
     data() {
         return {
+            activityID: "",
             submitting: false,
             stage: 1,
             sectionID: "",
@@ -626,8 +627,9 @@ export default {
             let activity = data
             this.submitting = true
             submitCreateActivity({ sectionID, activity })
-                .then(() => {
+                .then(res => {
                     this.submitting = false
+                    this.activityID = res.data.activityID
                     this.stage = 2
                 })
                 .catch(() => {

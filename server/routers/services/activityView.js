@@ -50,10 +50,10 @@ router.use((req, res, next) => {
 
 router.get("/type/get", (req, res) => {
     let { activity } = req
-    let { type } = activity
+    let { type, name, intro, options } = activity
     res.json({
         code: 20000,
-        data: type,
+        data: { type, name, intro, options },
     })
 })
 

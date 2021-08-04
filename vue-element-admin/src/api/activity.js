@@ -15,3 +15,11 @@ export function getActivityInfo(query) {
         params: query,
     })
 }
+
+export function getPrivateTimeline(query) {
+    return request({
+        url: "/activity/view/timeline/private/get",
+        method: "get",
+        params: query,
+    })
+}
