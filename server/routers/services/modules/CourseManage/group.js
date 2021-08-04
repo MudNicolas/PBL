@@ -2,13 +2,8 @@ import Course from "#models/Course.js"
 import Router from "express"
 let router = Router()
 
-let course
-router.use((req, res, next) => {
-    course = req.course
-    next()
-})
-
 router.get("/get", (req, res) => {
+    let { course } = req
     course
         .execPopulate({ path: "group.groupMember", select: "name username" })
         .then((course, err) => {
@@ -45,6 +40,7 @@ function studentInGroup(group, sid) {
 }
 
 router.get("/unGroupedStudents/get", (req, res, next) => {
+    let { course } = req
     course
         .execPopulate({
             path: "studentList",
@@ -81,6 +77,7 @@ router.get("/unGroupedStudents/get", (req, res, next) => {
 })
 
 router.post("/create", (req, res) => {
+    let { course } = req
     let { targetGroup } = req.body
     if (targetGroup.groupMembersID.length === 0) {
         res.json({
@@ -139,6 +136,7 @@ router.post("/create", (req, res) => {
 })
 
 router.all("*", (req, res, next) => {
+    let { course } = req
     let groupID = req.query.groupID || req.body.groupID || req.body.targetGroup._id
 
     let validate = /^[a-fA-F0-9]{24}$/.test(groupID)
@@ -162,6 +160,7 @@ router.all("*", (req, res, next) => {
 })
 
 router.get("/editData/get", (req, res) => {
+    let { course } = req
     let { groupID } = req.query
     course
         .execPopulate({
@@ -212,6 +211,7 @@ router.get("/editData/get", (req, res) => {
 })
 
 router.post("/edit", (req, res) => {
+    let { course } = req
     let { targetGroup } = req.body
     if (targetGroup.groupMembersID.length === 0) {
         res.json({

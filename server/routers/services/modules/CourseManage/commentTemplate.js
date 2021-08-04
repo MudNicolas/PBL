@@ -1,13 +1,8 @@
 import Router from "express"
 let router = Router()
 
-let course
-router.use((req, res, next) => {
-    course = req.course
-    next()
-})
-
 router.get("/get", (req, res) => {
+    let { course } = req
     let { commentTemplate } = course.toJSON()
 
     let t = commentTemplate.filter(e => {
@@ -29,6 +24,7 @@ router.get("/get", (req, res) => {
 })
 
 router.post("/create", (req, res) => {
+    let { course } = req
     let { template } = req.body
     let temp = template.entry
     let uniqueTemp = new Set(temp)
@@ -59,6 +55,7 @@ router.post("/create", (req, res) => {
 })
 
 router.all("*", (req, res, next) => {
+    let { course } = req
     let templateID = req.body.templateID || req.body.template._id
     let validate = /^[a-fA-F0-9]{24}$/.test(templateID)
     if (!validate) {
@@ -80,6 +77,7 @@ router.all("*", (req, res, next) => {
 })
 
 router.post("/edit", (req, res) => {
+    let { course } = req
     let { template } = req.body
     let temp = template.entry
     let uniqueTemp = new Set(temp)
@@ -114,6 +112,7 @@ router.post("/edit", (req, res) => {
 })
 
 router.delete("/delete", (req, res) => {
+    let { course } = req
     let { templateID } = req.body
     for (let i of course.commentTemplate) {
         if (i._id.toString() === templateID) {

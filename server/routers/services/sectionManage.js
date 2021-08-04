@@ -4,8 +4,6 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 let router = Router()
 
-let section
-
 /**
  * @req.section section
  * @req.course course
@@ -42,7 +40,6 @@ router.use((req, res, next) => {
         }
         CheckCourseAvailableAndReqUserHasPermission(s.courseID, 1, req)
             .then(course => {
-                section = s
                 req.section = s
                 req.course = course
 
@@ -60,6 +57,7 @@ router.use("/info", info)
 router.use("/content", content)
 
 router.delete("/delete", (req, res) => {
+    let { section } = req
     section.isUsed = false
     section.save(err => {
         if (err) {

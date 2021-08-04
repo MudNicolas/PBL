@@ -1,15 +1,9 @@
 import Router from "express"
 var router = Router()
-import Course from "#models/Course.js"
 import { InsertUsersReturnIDs } from "#services/tools.js"
 
-let course
-router.use((req, res, next) => {
-    course = req.course
-    next()
-})
-
 router.get("/get", (req, res) => {
+    let { course } = req
     course
         .execPopulate({
             path: "studentList",
@@ -40,6 +34,7 @@ router.get("/get", (req, res) => {
 })
 
 router.post("/submit", async (req, res, next) => {
+    let { course } = req
     let studentList = req.body.studentList
 
     studentList = studentList.map(item => {

@@ -1,5 +1,4 @@
 import Router from "express"
-import Course from "#models/Course.js"
 import Section from "#models/Section.js"
 import { COVER_PATH } from "#root/settings.js"
 
@@ -7,13 +6,12 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 var router = Router()
 
-let course
 router.use((req, res, next) => {
     let courseID = req.body.courseID || req.query.courseID
 
     CheckCourseAvailableAndReqUserHasPermission(courseID, 0, req)
         .then(c => {
-            course = c
+            req.course = c
             next()
         })
         .catch(err => {
@@ -22,6 +20,7 @@ router.use((req, res, next) => {
 })
 
 router.get("/get", (req, res, next) => {
+    let { course } = req
     let courseID = req.query.courseID
 
     course

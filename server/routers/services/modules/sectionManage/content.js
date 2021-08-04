@@ -1,18 +1,12 @@
 import Router from "express"
 import File from "#models/File.js"
 let router = Router()
-import Mock from "mockjs"
 import fs from "fs"
-
-let section
-
-router.use((req, res, next) => {
-    section = req.section
-    next()
-})
+import Activity from "#models/Activity.js"
 
 router.get("/get", (req, res) => {
-    section.execPopulate("files").then((s, err) => {
+    let { section } = req
+    section.execPopulate("files").then(async (s, err) => {
         if (err) {
             res.json({
                 code: 30001,
@@ -22,6 +16,8 @@ router.get("/get", (req, res) => {
         }
 
         let data = {
+            name: s.name,
+            info: s.info,
             content: {
                 files: s.files.map(e => {
                     return {
@@ -31,17 +27,12 @@ router.get("/get", (req, res) => {
                     }
                 }),
                 urls: s.urls,
-                activities: [],
-            },
-        }
-
-        for (let i = 0; i < 3; i++) {
-            data.content.activities.push(
-                Mock.mock({
-                    _id: "@id",
-                    name: "@ctitle",
+                activities: await Activity.find({
+                    sectionID: s._id,
                 })
-            )
+                    .select(["_id", "name", "type"])
+                    .exec(),
+            },
         }
 
         res.json({
@@ -52,6 +43,7 @@ router.get("/get", (req, res) => {
 })
 
 router.post("/link/new", (req, res) => {
+    let { section } = req
     let { links } = req.body
 
     section.urls = section.urls.concat(links)
@@ -70,6 +62,7 @@ router.post("/link/new", (req, res) => {
 })
 
 router.post("/file/submit", (req, res) => {
+    let { section } = req
     let { filesID } = req.body
     let validate = filesID.every(e => {
         return /^[a-fA-F0-9]{24}$/.test(e)
@@ -141,6 +134,7 @@ router.post("/file/submit", (req, res) => {
 })
 
 router.use((req, res, next) => {
+    let { section } = req
     let { _id } = req.body.urlData || req.body
     let range = [...section.urls, ...section.files]
     let validate = range.some(e => e._id.toString() === _id)
@@ -155,6 +149,7 @@ router.use((req, res, next) => {
 })
 
 router.post("/link/edit", (req, res) => {
+    let { section } = req
     let { urlData } = req.body
 
     for (let i of section.urls) {
@@ -179,6 +174,7 @@ router.post("/link/edit", (req, res) => {
 })
 
 router.delete("/link/delete", (req, res) => {
+    let { section } = req
     let { _id } = req.body
     let urlIndex = section.urls.findIndex(e => e._id.toString() === _id)
 
@@ -200,6 +196,7 @@ router.delete("/link/delete", (req, res) => {
 })
 
 router.delete("/file/delete", (req, res) => {
+    let { section } = req
     let { _id } = req.body
     let fileIndex = section.files.findIndex(e => e._id.toString() === _id)
 

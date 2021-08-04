@@ -2,13 +2,8 @@ import Router from "express"
 let router = Router()
 import { COVER_PATH } from "#root/settings.js"
 
-let course
-router.use((req, res, next) => {
-    course = req.course
-    next()
-})
-
 router.get("/get", (req, res, next) => {
+    let { course } = req
     let courseInfo = {
         name: course.name,
         introduction: course.introduction,
@@ -25,6 +20,7 @@ router.get("/get", (req, res, next) => {
 })
 
 router.post("/edit", (req, res, next) => {
+    let { course } = req
     let { introduction, cover } = req.body.course
     course.introduction = introduction
     course.cover = cover

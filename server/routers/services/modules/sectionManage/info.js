@@ -1,13 +1,8 @@
 import Router from "express"
 let router = Router()
 
-let section
-router.use((req, res, next) => {
-    section = req.section
-    next()
-})
-
 router.get("/get", (req, res) => {
+    let { section } = req
     let data = {
         _id: section._id,
         name: section.name,
@@ -21,6 +16,7 @@ router.get("/get", (req, res) => {
 })
 
 router.post("/set", (req, res) => {
+    let { section } = req
     let sectionKey = Object.keys(req.body.section)
 
     for (let k of sectionKey) {

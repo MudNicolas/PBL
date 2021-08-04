@@ -1,16 +1,10 @@
 import Router from "express"
 var router = Router()
-import Course from "#models/Course.js"
 
 import User from "#models/User.js"
 
-let course
-router.use((req, res, next) => {
-    course = req.course
-    next()
-})
-
 router.get("/getAllTeacher", (req, res) => {
+    let { course } = req
     course
         .execPopulate([
             { path: "chiefTeacher", select: "name avatar" },
@@ -39,6 +33,7 @@ router.get("/getAllTeacher", (req, res) => {
 
 //搜索时不显示已有的教师
 router.post("/search/teacher", async (req, res, next) => {
+    let { course } = req
     var name = req.body.name
 
     let currentTeacher = [course.chiefTeacher, ...course.partnerTeacher]
@@ -66,6 +61,7 @@ router.post("/search/teacher", async (req, res, next) => {
 })
 
 router.post("/addTeacher", (req, res) => {
+    let { course } = req
     let { t_uids } = req.body
 
     course.partnerTeacher = [...course.partnerTeacher, ...t_uids]

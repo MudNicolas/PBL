@@ -137,7 +137,9 @@
                 </el-table-column>
                 <el-table-column prop="operation" label="操作" width="330px">
                     <template slot-scope="scope">
-                        <el-button type="primary" icon="el-icon-top-right">进入</el-button>
+                        <router-link :to="'/course/section/activity/view/' + scope.row._id">
+                            <el-button type="primary" icon="el-icon-top-right">进入</el-button>
+                        </router-link>
                         <slot name="activityOperation" :row="scope.row"></slot>
                     </template>
                 </el-table-column>

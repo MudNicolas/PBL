@@ -4,7 +4,6 @@ import Activity from "#models/Activity.js"
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 let router = Router()
 
-let section
 //验证此section的course是否具有访问权限
 router.use((req, res, next) => {
     let sectionID = req.body.sectionID || req.query.sectionID || req.body.section._id
@@ -37,7 +36,6 @@ router.use((req, res, next) => {
         }
         CheckCourseAvailableAndReqUserHasPermission(s.courseID, 0, req)
             .then(() => {
-                section = s
                 req.section = s
 
                 next()
@@ -49,6 +47,7 @@ router.use((req, res, next) => {
 })
 
 router.get("/get", (req, res) => {
+    let { section } = req
     section.execPopulate("files").then(async (s, err) => {
         if (err) {
             res.json({

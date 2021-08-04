@@ -103,6 +103,7 @@ export default {
 <style lang='scss' scoped>
 .view-container {
     padding: 20px;
+    min-height: 80vh;
 }
 
 .tools-wrapper {

@@ -30,7 +30,6 @@ var activitySchemas = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    content: {},
 })
 
 export default mongoose.model("Activity", activitySchemas)
