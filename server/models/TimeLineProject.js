@@ -9,6 +9,7 @@ var projectSchemas = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    status: String, //approve,normal。审批阶段，正式阶段
     authorType: String,
     authorID: mongoose.Schema.Types.ObjectId,
     timeline: [
@@ -20,6 +21,7 @@ var projectSchemas = new mongoose.Schema({
                 },
             ],
             content: String,
+            status: String, //approve,normal。审批阶段，正式阶段
             isUsed: {
                 type: Boolean,
                 default: true,
