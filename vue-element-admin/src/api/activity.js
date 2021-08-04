@@ -10,7 +10,7 @@ export function submitCreateActivity(data) {
 
 export function getActivityInfo(query) {
     return request({
-        url: "/activity/view/get",
+        url: "/activity/view/type/get",
         method: "get",
         params: query,
     })

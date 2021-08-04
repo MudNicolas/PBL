@@ -48,8 +48,13 @@ router.use((req, res, next) => {
         })
 })
 
-router.get("/get", (req, res) => {
+router.get("/type/get", (req, res) => {
     let { activity } = req
+    let { type } = activity
+    res.json({
+        code: 20000,
+        data: type,
+    })
 })
 
 export default router

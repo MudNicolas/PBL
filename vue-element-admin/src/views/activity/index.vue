@@ -1,6 +1,10 @@
 <template>
     <div class="container" v-loading="loading" element-loading-text="加载中">
-        <component :is="activeComponent" :activity-id="activityID"></component>
+        <component
+            :is="activeComponent"
+            :activity-id="activityID"
+            :type="activeComponent"
+        ></component>
     </div>
 </template>
 
@@ -25,7 +29,12 @@ export default {
         getInfo() {
             this.loading = true
             let activityID = this.activityID
-            getActivityInfo({ activityID }).then().catch()
+            getActivityInfo({ activityID })
+                .then(res => {
+                    this.loading = false
+                    this.activeComponent = res.data
+                })
+                .catch()
         },
     },
 }
