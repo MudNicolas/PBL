@@ -2,6 +2,10 @@ import mongoose from "mongoose"
 
 //[{timeline@name,@intro,@time,@isUsed,@content}]
 var projectSchemas = new mongoose.Schema({
+    activityID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Activity",
+    },
     name: String,
     intro: String,
     time: Date,
