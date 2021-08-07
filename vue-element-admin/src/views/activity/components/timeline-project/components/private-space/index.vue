@@ -22,7 +22,9 @@
 
             <!--正常显示项目-->
             <!--TODO: 时间线的显示与添加-->
-            <div v-if="status === 'Normal'"></div>
+            <div v-if="status === 'Normal'">
+                <workspace :project="project" @editIntroSuccess="handleEditIntroSuccess" />
+            </div>
         </div>
     </div>
 </template>
@@ -30,9 +32,10 @@
 <script>
 import { getPrivateTimeline } from "@/api/activity"
 import createProject from "./components/create-project.vue"
+import workspace from "./components/workspace.vue"
 export default {
     props: ["activityId"],
-    components: { createProject },
+    components: { createProject, workspace },
     data() {
         return {
             activityID: "",
@@ -69,6 +72,9 @@ export default {
         },
         handleCreateProject() {
             this.status = "CreateProject"
+        },
+        handleEditIntroSuccess(intro) {
+            this.project.intro = intro
         },
     },
 }

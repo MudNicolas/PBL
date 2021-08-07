@@ -213,6 +213,13 @@ router.delete("/file/delete", (req, res) => {
             return
         }
 
+        if (!file) {
+            res.json({
+                message: "不存在此文件",
+            })
+            return
+        }
+
         fs.unlink(`public/files/custom/${file.serverFilename}`, err => {
             if (err) {
                 res.json({

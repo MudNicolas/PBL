@@ -3,8 +3,45 @@ import Router from "express"
 let router = Router()
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
+import TimeLineProject from "#models/TimeLineProject.js"
+
+//验证带id的timeline的activity是否有权限访问
 router.use((req, res, next) => {
-    let activityID = req.body.activityID || req.query.activityID
+    let { projectID } = req.body || req.query
+    if (!projectID) {
+        return next()
+    }
+    let validate = /^[a-fA-F0-9]{24}$/.test(projectID)
+    if (!validate) {
+        res.json({
+            code: 404,
+            message: "error",
+        })
+        return
+    }
+    TimeLineProject.findById(projectID).then((proj, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        if (!proj) {
+            res.json({
+                message: "不存在此项目",
+            })
+            return
+        }
+
+        req.activityID = proj.activityID
+        req.project = proj
+        next()
+    })
+})
+
+router.use((req, res, next) => {
+    let activityID = req.body.activityID || req.query.activityID || req.activityID
 
     let validate = /^[a-fA-F0-9]{24}$/.test(activityID)
     if (!validate) {

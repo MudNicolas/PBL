@@ -102,4 +102,51 @@ router.post("/private/project/create", (req, res) => {
     })
 })
 
+//验权限
+router.use((req, res, next) => {
+    let { project } = req
+    //个人项目，作者id与uid不匹配
+    if (project.authorType === "personal" && project.authorID.toString() !== req.uid.toString()) {
+        res.json({
+            code: "401",
+        })
+        return
+    }
+    //小组项目，小组内无uid
+    if (project.authorType === "group") {
+        let groupID = project.authorID
+        let { group } = req.course
+        let valid = group.some(g => {
+            g._id.toString() === groupID.toString() &&
+                g.groupMember.some(m => {
+                    m.toString() === sid.toString()
+                })
+        })
+        if (!valid) {
+            res.json({
+                code: "401",
+            })
+            return
+        }
+    }
+    next()
+})
+router.post("/private/project/edit", (req, res) => {
+    let { project } = req
+    let { intro } = req.body
+    project.intro = intro
+    project.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "Database Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
 export default router

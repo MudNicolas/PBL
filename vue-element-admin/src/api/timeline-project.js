@@ -7,3 +7,11 @@ export function createProject(data) {
         data,
     })
 }
+
+export function submitEditIntro(data) {
+    return request({
+        url: "/activity/view/timeline/private/project/edit",
+        method: "post",
+        data,
+    })
+}
