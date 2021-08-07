@@ -16,7 +16,6 @@
             </div>
 
             <!--新建项目-->
-            <!--TODO: 加入创建project的form-->
             <div v-if="status === 'CreateProject'" style="padding-top: 8px">
                 <create-project :activity-id="activityId" @onSuccess="getPrivateTimeline" />
             </div>
