@@ -4,7 +4,16 @@
             <el-col :span="5">
                 <el-card>
                     <div slot="header" class="clearfix">
-                        <span>{{ project.name }}</span>
+                        <span>
+                            {{ project.name }}
+                            <el-tag
+                                size="mini"
+                                style="margin-left: 4px"
+                                :type="project.status | tagTypeFilter"
+                            >
+                                {{ project.status | statusFilter }}
+                            </el-tag>
+                        </span>
                         <el-button
                             style="margin-left: auto"
                             type="text"
@@ -44,12 +53,41 @@
                     </div>
                 </el-card>
             </el-col>
+            <el-col :span="19">
+                <el-timeline>
+                    <el-timeline-item
+                        :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
+                        placement="top"
+                    >
+                        <el-card>
+                            <div class="timeline-wrapper">
+                                <div class="create-timeline-item-wrapper">
+                                    <el-button type="text" icon="el-icon-plus">
+                                        建立新的阶段
+                                    </el-button>
+                                    <el-tooltip
+                                        content="注意：新建阶段或公开阶段后，已有阶段不可编辑"
+                                        placement="right"
+                                        effect="light"
+                                    >
+                                        <i
+                                            class="el-icon-warning-outline"
+                                            style="margin-left: 8px; color: #606266"
+                                        />
+                                    </el-tooltip>
+                                </div>
+                            </div>
+                        </el-card>
+                    </el-timeline-item>
+                </el-timeline>
+            </el-col>
         </el-row>
     </div>
 </template>
 
 <script>
 import { submitEditIntro } from "@/api/timeline-project"
+import { normalFormatTime } from "@/utils/index.js"
 export default {
     props: ["project"],
     filters: {
@@ -58,6 +96,22 @@ export default {
                 return "暂无简介"
             }
             return val
+        },
+        tagTypeFilter: function (val) {
+            let map = {
+                approve: "warning",
+                normal: "",
+                conclude: "success",
+            }
+            return map[val] || ""
+        },
+        statusFilter: val => {
+            let map = {
+                approve: "待审核",
+                normal: "行进中",
+                conclude: "结题",
+            }
+            return map[val] || ""
         },
     },
     data() {
@@ -87,6 +141,7 @@ export default {
                     this.introEditSubmitting = false
                 })
         },
+        normalFormatTime,
     },
 }
 </script>
@@ -104,6 +159,16 @@ export default {
 
     .text {
         line-height: 1.5;
+    }
+}
+.timeline-wrapper {
+    height: 86px;
+
+    .create-timeline-item-wrapper {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 </style>

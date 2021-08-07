@@ -34,7 +34,7 @@ router.get("/private/get", (req, res) => {
         authorID,
         activityID,
     })
-        .select("name intro time timeline")
+        .select("name intro time timeline status")
         .then((project, err) => {
             if (err) {
                 res.json({
@@ -87,6 +87,7 @@ router.post("/private/project/create", (req, res) => {
         time: new Date(),
         authorID,
         authorType,
+        status,
     })
     timelineProject.save(err => {
         if (err) {
