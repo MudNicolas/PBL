@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-row>
-            <el-col :span="6">
+            <el-col :span="5">
                 <el-card>
                     <div slot="header" class="clearfix">
                         <span>{{ project.name }}</span>
@@ -104,9 +104,6 @@ export default {
 
     .text {
         line-height: 1.5;
-        border: 1px solid #dcdfe6;
-        padding: 6px 15px;
-        border-radius: 4px;
     }
 }
 </style>

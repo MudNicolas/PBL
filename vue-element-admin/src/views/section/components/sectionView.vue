@@ -61,6 +61,7 @@ export default {
 .container {
     padding: 30px;
     color: #606266;
+    min-height: 80vh;
 
     .header {
         .title {
