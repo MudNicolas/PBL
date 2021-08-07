@@ -8,8 +8,17 @@ import { fileURLToPath } from "url"
 
 var app = express()
 
+let origin
+
+let env = process.argv[2]
+if (env === "dev") {
+    origin = "*"
+} else {
+    origin = "http://localhost:9527"
+}
+
 app.all("*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:9527")
+    res.header("Access-Control-Allow-Origin", origin)
     res.header("Access-Control-Allow-Headers", "X-Requested-With,content-type,token")
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS")
     res.header("X-Powered-By", " 3.2.1")
