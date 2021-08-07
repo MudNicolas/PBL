@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { createProject } from "@/api/timeline-project"
 export default {
     data() {
         return {
@@ -40,8 +41,10 @@ export default {
                 name: "",
                 intro: "",
             },
+            activityID: this.activityId,
         }
     },
+    props: ["activityId"],
     methods: {
         handleSubmit() {
             this.project.name = this.project.name.trim()
@@ -51,7 +54,19 @@ export default {
                 this.$message.warning("项目名不能为空")
                 return
             }
-            //TODO submit new project
+            this.handleCreate(project)
+        },
+        handleCreate(project) {
+            this.submitting = true
+            let activityID = this.activityID
+            createProject({ activityID, project })
+                .then(() => {
+                    this.submitting = false
+                    this.$emit("onSuccess")
+                })
+                .catch(() => {
+                    this.submitting = false
+                })
         },
     },
 }
