@@ -21,7 +21,7 @@
 <script>
 import checkPermission from "@/utils/permission" // 权限判断函数
 import { mapGetters } from "vuex"
-import privateSpace from "./components/private-space.vue"
+import privateSpace from "./components/private-space"
 import publicSpace from "./components/public-space.vue"
 import statistics from "./components/statistics.vue"
 import settings from "./components/settings.vue"

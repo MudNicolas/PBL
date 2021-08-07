@@ -9,6 +9,8 @@ const SECRET_KEY = "NicolasAirlineWH"
 //16位
 const IV = "WUHUWUHUWUHUWUHU"
 
+const PROD_ORIGIN = "http://localhost:9527"
+
 export {
     SERVER_IP,
     PORT,
@@ -18,4 +20,5 @@ export {
     DEFAULT_PASSWORD,
     SECRET_KEY,
     IV,
+    PROD_ORIGIN,
 }

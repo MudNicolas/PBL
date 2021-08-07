@@ -2,7 +2,7 @@ import express from "express"
 import mongoose from "mongoose"
 import path from "path"
 import api from "./routers/api.js"
-import { PORT } from "./settings.js"
+import { PORT, PROD_ORIGIN } from "./settings.js"
 import { dirname } from "path"
 import { fileURLToPath } from "url"
 
@@ -12,9 +12,10 @@ let origin
 
 let env = process.argv[2]
 if (env === "dev") {
+    console.log(env)
     origin = "*"
 } else {
-    origin = "http://localhost:9527"
+    origin = PROD_ORIGIN
 }
 
 app.all("*", function (req, res, next) {

@@ -2,7 +2,7 @@
     <div v-loading="loading">
         <div class="container">
             <!--无组时进入小组活动-->
-            <div v-if="status === 'NotInclude'">
+            <div v-if="status === 'Error'">
                 <el-result title="出现了错误" :subTitle="errSubtitle">
                     <template slot="icon"><span style="font-size: 54px">😢</span></template>
                 </el-result>
@@ -17,7 +17,9 @@
 
             <!--新建项目-->
             <!--TODO: 加入创建project的form-->
-            <div v-if="status === 'CreateProject'"></div>
+            <div v-if="status === 'CreateProject'" style="padding-top: 8px">
+                <create-project />
+            </div>
 
             <!--正常显示项目-->
             <!--TODO: 时间线的显示与添加-->
@@ -28,8 +30,10 @@
 
 <script>
 import { getPrivateTimeline } from "@/api/activity"
+import createProject from "./components/create-project.vue"
 export default {
     props: ["activityId"],
+    components: { createProject },
     data() {
         return {
             activityID: "",
@@ -50,7 +54,7 @@ export default {
             getPrivateTimeline({ activityID })
                 .then(res => {
                     this.loading = false
-                    let { project } = res.data
+                    let project = res.data
                     if (!project) {
                         this.status = "NoProject"
                     } else {
@@ -59,8 +63,8 @@ export default {
                     }
                 })
                 .catch(err => {
-                    this.status = "NotInclude"
-                    this.errSubtitle = err
+                    this.status = "Error"
+                    this.errSubtitle = "Error: " + err.message
                     this.loading = false
                 })
         },

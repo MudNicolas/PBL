@@ -1,5 +1,10 @@
-@host="http://127.0.0.1:14758/api"
+@host="127.0.0.1:14758/api"
+
 @token="123456789"
 
-POST  {{host}}/login
+POST  {{host}}/api/login
 token:{{token}}
+
+###
+
+ "https://zhuanlan.zhihu.com/p/54266685"
