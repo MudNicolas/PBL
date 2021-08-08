@@ -43,7 +43,7 @@ export default {
         keyFilter: function (val) {
             let map = {
                 authorType: "作者类型",
-                isTimeLimited: "是否限时",
+                isTimeLimited: "是否限时", //TODO: 限时功能的完善，限时外无法创建项目，编辑项目，建立阶段，编辑阶段，公布阶段，废弃阶段，讨论（均为前台限制）
                 limitTime: "限时",
                 isUseCommentTemplate: "是否使用发言模板",
                 commentTemplate: "发言模板",
