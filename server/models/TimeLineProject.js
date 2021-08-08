@@ -16,7 +16,7 @@ var projectSchemas = new mongoose.Schema({
     status: String, //approve,normal。审批阶段，正式阶段
     authorType: String,
     authorID: mongoose.Schema.Types.ObjectId,
-    timeline: [
+    stages: [
         {
             authorUID: [
                 {

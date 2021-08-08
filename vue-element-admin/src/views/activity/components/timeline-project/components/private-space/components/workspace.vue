@@ -64,11 +64,11 @@
             <el-col :span="19">
                 <el-timeline>
                     <el-timeline-item
-                        v-for="e of project.timeline"
+                        v-for="e of project.stages"
                         :timestamp="normalFormatTime(new Date(e.createTime), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
                         :key="e._id"
-                        :color="e.status | timelineColorFilter"
+                        :color="e.status | stageColorFilter"
                     >
                         <el-card>
                             <div class="subjuct-name" slot="header">
@@ -98,9 +98,13 @@
                         placement="top"
                     >
                         <el-card>
-                            <div class="timeline-wrapper">
-                                <div class="create-timeline-item-wrapper">
-                                    <el-button type="text" icon="el-icon-plus">
+                            <div class="stage-wrapper">
+                                <div class="create-stage-card-wrapper">
+                                    <el-button
+                                        type="text"
+                                        icon="el-icon-plus"
+                                        @click="newStageDialogVisible = true"
+                                    >
                                         <!--全新or选择已有阶段继承-->
                                         建立新的阶段
                                     </el-button>
@@ -121,6 +125,85 @@
                 </el-timeline>
             </el-col>
         </el-row>
+        <el-dialog title="建立新阶段" :visible.sync="newStageDialogVisible">
+            <div>
+                <el-form>
+                    <el-form-item>
+                        <el-row :gutter="12">
+                            <el-col :span="12">
+                                <span @click="chooseStageType('blank')" style="cursor: pointer">
+                                    <span
+                                        class="corner-mark"
+                                        v-if="newStageData.creatMethod === 'blank'"
+                                    ></span>
+                                    <el-card shadow="hover">
+                                        <div class="stage-choice-card">
+                                            <i
+                                                class="el-icon-circle-plus-outline"
+                                                :style="{
+                                                    color:
+                                                        newStageData.creatMethod === 'blank'
+                                                            ? '#67c23a'
+                                                            : '',
+                                                }"
+                                            />
+                                            <div class="tip">建立空白阶段</div>
+                                        </div>
+                                    </el-card>
+                                </span>
+                            </el-col>
+                            <el-col :span="12">
+                                <span
+                                    @click="chooseStageType('inheritance')"
+                                    style="cursor: pointer"
+                                >
+                                    <span
+                                        class="corner-mark"
+                                        v-if="newStageData.creatMethod === 'inheritance'"
+                                    ></span>
+                                    <el-card shadow="hover">
+                                        <div class="stage-choice-card">
+                                            <i
+                                                class="el-icon-document-copy"
+                                                :style="{
+                                                    color:
+                                                        newStageData.creatMethod === 'inheritance'
+                                                            ? '#67c23a'
+                                                            : '',
+                                                }"
+                                            />
+                                            <div class="tip">从已有阶段继承</div>
+                                        </div>
+                                    </el-card>
+                                </span>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item v-if="newStageData.creatMethod === 'inheritance'">
+                        <el-select
+                            v-model="newStageData.inhertStageID"
+                            placeholder="请选择将要继承的阶段"
+                        >
+                            <el-option
+                                v-for="item in project.stages"
+                                :key="item._id"
+                                :label="item.subjectName"
+                                :value="item._id"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            @click="handleCreateStage"
+                            :loading="newStageSubmitting"
+                        >
+                            提交
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -153,7 +236,7 @@ export default {
             }
             return map[val] || ""
         },
-        timelineColorFilter: val => {
+        stageColorFilter: val => {
             let map = {
                 approve: "#E6A23C",
                 normal: "#409EFF",
@@ -177,6 +260,12 @@ export default {
                 intro: "",
             },
             introEditSubmitting: false,
+            newStageDialogVisible: false,
+            newStageData: {
+                creatMethod: "",
+                inhertStageID: "",
+            },
+            newStageSubmitting: false,
         }
     },
     methods: {
@@ -206,6 +295,24 @@ export default {
                 })
         },
         normalFormatTime,
+        chooseStageType(method) {
+            this.newStageData.creatMethod = method
+        },
+        handleCreateStage() {
+            let data = this.newStageData
+            if (!data.creatMethod) {
+                this.$message.warning("请选择新建阶段的方式")
+                return
+            }
+            if (data.creatMethod === "inheritance" && !data.inhertStageID) {
+                this.$message.warning("请选择将要继承的阶段")
+                return
+            }
+            this.submitNewStage(data)
+        },
+        submitNewStage(stage) {
+            //TODO: new stage submit
+        },
     },
 }
 </script>
@@ -226,10 +333,10 @@ export default {
         line-height: 1.5;
     }
 }
-.timeline-wrapper {
+.stage-wrapper {
     height: 86px;
 
-    .create-timeline-item-wrapper {
+    .create-stage-card-wrapper {
         height: 100%;
         display: flex;
         justify-content: center;
@@ -259,5 +366,31 @@ export default {
     color: #303133;
     display: flex;
     align-items: center;
+}
+
+.stage-choice-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    i {
+        font-size: 48px;
+        margin-bottom: 8px;
+        color: #606266;
+        transition: all 0.3s;
+    }
+
+    .tip {
+        color: #606266;
+    }
+}
+
+.corner-mark {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 20px solid #67c23a;
+    border-right: 20px solid transparent;
 }
 </style>

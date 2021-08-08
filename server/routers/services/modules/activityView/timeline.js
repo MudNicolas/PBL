@@ -35,7 +35,7 @@ router.get("/private/get", (req, res) => {
         authorID,
         activityID,
     })
-        .select("name intro time timeline status")
+        .select("name intro time stages status")
         .then((project, err) => {
             if (err) {
                 res.json({
@@ -45,7 +45,7 @@ router.get("/private/get", (req, res) => {
                 return
             }
 
-            //mock start
+            /*  //mock start
 
             let list = []
             for (let i = 0; i < 10; i++) {
@@ -67,10 +67,9 @@ router.get("/private/get", (req, res) => {
                     })
                 )
             }
-            project.timeline = list
+            project.stages = list
 
-            console.log(project.timeline)
-            //mock end
+            //mock end */
 
             res.json({
                 code: 20000,
