@@ -28,7 +28,11 @@ var projectSchemas = new mongoose.Schema({
             sketch: String,
             createTime: Date,
             content: String,
-            status: String, //approve,normal,conclude,rejected,abandoned 审批阶段，正式阶段,结题，驳回，废弃
+            public: {
+                type: Boolean,
+                default: false,
+            },
+            status: String, //approvePending待审批,underApprove审批中,normal,conclude,rejected,abandoned 正式阶段,结题，驳回，废弃
             isUsed: {
                 type: Boolean,
                 default: true,
@@ -40,6 +44,7 @@ var projectSchemas = new mongoose.Schema({
                         ref: "User",
                     },
                     time: Date,
+                    operation: String,
                 },
             ],
         },

@@ -93,6 +93,7 @@
                             <div class="content-preview">{{ e.sketch | sketchFilter }}</div>
                         </el-card>
                     </el-timeline-item>
+
                     <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
@@ -100,24 +101,29 @@
                         <el-card>
                             <div class="stage-wrapper">
                                 <div class="create-stage-card-wrapper">
-                                    <el-button
-                                        type="text"
-                                        icon="el-icon-plus"
-                                        @click="newStageDialogVisible = true"
-                                    >
-                                        <!--全新or选择已有阶段继承-->
-                                        建立新的阶段
-                                    </el-button>
-                                    <el-tooltip
-                                        content="注意：新建阶段或公开阶段后，已有阶段不可编辑"
-                                        placement="right"
-                                        effect="light"
-                                    >
-                                        <i
-                                            class="el-icon-warning-outline"
-                                            style="margin-left: 8px; color: #606266"
-                                        />
-                                    </el-tooltip>
+                                    <span v-if="project.status !== 'underApprove'">
+                                        <el-button
+                                            type="text"
+                                            icon="el-icon-plus"
+                                            @click="newStageDialogVisible = true"
+                                        >
+                                            <!--全新or选择已有阶段继承-->
+                                            建立新的阶段
+                                        </el-button>
+                                        <el-tooltip
+                                            content="注意：新建阶段或公开阶段后，已有阶段不可编辑"
+                                            placement="right"
+                                            effect="light"
+                                        >
+                                            <i
+                                                class="el-icon-warning-outline"
+                                                style="margin-left: 8px; color: #606266"
+                                            />
+                                        </el-tooltip>
+                                    </span>
+                                    <span v-else style="color: #606266">
+                                        审批期间无法新建阶段，请等待审批完成
+                                    </span>
                                 </div>
                             </div>
                         </el-card>
@@ -187,7 +193,7 @@
                             <el-option
                                 v-for="item in project.stages"
                                 :key="item._id"
-                                :label="item.subjectName"
+                                :label="item.subjectName || '暂无阶段名'"
                                 :value="item._id"
                             ></el-option>
                         </el-select>
@@ -208,7 +214,7 @@
 </template>
 
 <script>
-import { submitEditIntro } from "@/api/timeline-project"
+import { submitEditIntro, newStageSubmit } from "@/api/timeline-project"
 import { normalFormatTime } from "@/utils/index.js"
 export default {
     props: ["project"],
@@ -221,7 +227,10 @@ export default {
         },
         tagTypeFilter: function (val) {
             let map = {
-                approve: "warning",
+                //审批中
+                underApprove: "warning",
+                //待审批
+                beforeApprove: "warning",
                 normal: "",
                 conclude: "success",
                 rejected: "danger",
@@ -230,7 +239,10 @@ export default {
         },
         statusFilter: val => {
             let map = {
-                approve: "待审核",
+                //审批中
+                underApprove: "审批中",
+                //待审批
+                beforeApprove: "待审批",
                 normal: "行进中",
                 conclude: "结题",
             }
@@ -238,7 +250,8 @@ export default {
         },
         stageColorFilter: val => {
             let map = {
-                approve: "#E6A23C",
+                underApprove: "#E6A23C",
+                beforeApprove: "#409EFF",
                 normal: "#409EFF",
                 conclude: "#67C23A",
                 rejected: "#F56C6C",
@@ -310,8 +323,17 @@ export default {
             }
             this.submitNewStage(data)
         },
-        submitNewStage(stage) {
-            //TODO: new stage submit
+        submitNewStage(stageOptions) {
+            this.newStageSubmitting = true
+            let projectID = this.project._id
+            newStageSubmit({ projectID, stageOptions })
+                .then(() => {
+                    this.$message.success("新建阶段成功")
+                    //TODO: 完成新建的页面跳转
+                })
+                .catch(() => {
+                    this.newStageSubmitting = false
+                })
         },
     },
 }

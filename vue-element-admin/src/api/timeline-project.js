@@ -15,3 +15,11 @@ export function submitEditIntro(data) {
         data,
     })
 }
+
+export function newStageSubmit(data) {
+    return request({
+        url: "/activity/view/timeline/private/project/stage/new",
+        method: "post",
+        data,
+    })
+}

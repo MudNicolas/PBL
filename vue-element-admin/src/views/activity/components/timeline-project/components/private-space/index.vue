@@ -21,7 +21,6 @@
             </div>
 
             <!--正常显示项目-->
-            <!--TODO: 时间线的显示与添加-->
             <div v-if="status === 'Normal'">
                 <workspace :project="project" @editIntroSuccess="handleEditIntroSuccess" />
             </div>
