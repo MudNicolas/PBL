@@ -73,8 +73,9 @@ export default {
         handleCreateProject() {
             this.status = "CreateProject"
         },
-        handleEditIntroSuccess(intro) {
-            this.project.intro = intro
+        handleEditIntroSuccess(project) {
+            this.project.name = project.name
+            this.project.intro = project.intro
         },
     },
 }

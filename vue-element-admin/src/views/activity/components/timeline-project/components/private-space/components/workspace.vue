@@ -4,7 +4,7 @@
             <el-col :span="5">
                 <el-card>
                     <div slot="header" class="clearfix">
-                        <span>
+                        <span v-if="!isIntroEdit">
                             {{ project.name }}
                             <el-tag
                                 size="mini"
@@ -13,6 +13,9 @@
                             >
                                 {{ project.status | statusFilter }}
                             </el-tag>
+                        </span>
+                        <span v-else key="editProjectName">
+                            <el-input v-model="editData.name" placeholder="项目名称" />
                         </span>
                         <el-button
                             style="margin-left: auto"
@@ -35,7 +38,12 @@
                         <div v-else>
                             <el-form>
                                 <el-form-item>
-                                    <el-input v-model="editIntro" type="textarea" autosize />
+                                    <el-input
+                                        v-model="editData.intro"
+                                        type="textarea"
+                                        autosize
+                                        placeholder="项目简述"
+                                    />
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button
@@ -117,25 +125,34 @@ export default {
     data() {
         return {
             isIntroEdit: false,
-            editIntro: "",
+            editData: {
+                name: "",
+                intro: "",
+            },
             introEditSubmitting: false,
         }
     },
     methods: {
         handleEditButtonClick() {
             this.isIntroEdit = !this.isIntroEdit
-            this.editIntro = this.project.intro
+            this.editData.intro = this.project.intro
+            this.editData.name = this.project.name
         },
         handleSubmitEditIntro() {
             let projectID = this.project._id
-            let intro = this.editIntro
+            this.editData.name = this.editData.name.trim()
+            let editData = this.editData
+            if (!editData.name) {
+                this.$message.warning("项目名称不能为空")
+                return
+            }
             this.introEditSubmitting = true
-            submitEditIntro({ projectID, intro })
+            submitEditIntro({ projectID, editData })
                 .then(() => {
                     this.introEditSubmitting = false
                     this.$message.success("修改成功")
                     this.isIntroEdit = false
-                    this.$emit("editIntroSuccess", intro)
+                    this.$emit("editIntroSuccess", editData)
                 })
                 .catch(() => {
                     this.introEditSubmitting = false

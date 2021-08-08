@@ -134,8 +134,10 @@ router.use((req, res, next) => {
 })
 router.post("/private/project/edit", (req, res) => {
     let { project } = req
-    let { intro } = req.body
+    let { editData } = req.body
+    let { name, intro } = editData
     project.intro = intro
+    project.name = name.trim()
     project.save(err => {
         if (err) {
             res.json({
