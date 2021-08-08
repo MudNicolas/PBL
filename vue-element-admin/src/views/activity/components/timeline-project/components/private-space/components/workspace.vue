@@ -89,6 +89,14 @@
                                 >
                                     审核驳回
                                 </el-tag>
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="warning"
+                                    v-if="e.status === 'underApprove'"
+                                >
+                                    审核中
+                                </el-tag>
                             </div>
                             <div class="content-preview">{{ e.sketch | sketchFilter }}</div>
                         </el-card>
