@@ -4,7 +4,7 @@
             <el-col :span="5">
                 <el-card>
                     <div slot="header" class="clearfix">
-                        <span v-if="!isIntroEdit">
+                        <span v-if="!isIntroEdit" style="display: flex; align-items: center">
                             {{ project.name }}
                             <el-tag
                                 size="mini"
@@ -64,6 +64,36 @@
             <el-col :span="19">
                 <el-timeline>
                     <el-timeline-item
+                        v-for="e of project.timeline"
+                        :timestamp="normalFormatTime(new Date(e.createTime), '{y}-{m}-{d} {h}:{i}')"
+                        placement="top"
+                        :key="e._id"
+                        :color="e.status | timelineColorFilter"
+                    >
+                        <el-card>
+                            <div class="subjuct-name" slot="header">
+                                {{ e.subjectName | subjectNameFilter }}
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="info"
+                                    v-if="e.status === 'abandoned'"
+                                >
+                                    已废弃
+                                </el-tag>
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="danger"
+                                    v-if="e.status === 'rejected'"
+                                >
+                                    审核驳回
+                                </el-tag>
+                            </div>
+                            <div class="content-preview">{{ e.sketch | sketchFilter }}</div>
+                        </el-card>
+                    </el-timeline-item>
+                    <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
                     >
@@ -71,6 +101,7 @@
                             <div class="timeline-wrapper">
                                 <div class="create-timeline-item-wrapper">
                                     <el-button type="text" icon="el-icon-plus">
+                                        <!--全新or选择已有阶段继承-->
                                         建立新的阶段
                                     </el-button>
                                     <el-tooltip
@@ -110,6 +141,7 @@ export default {
                 approve: "warning",
                 normal: "",
                 conclude: "success",
+                rejected: "danger",
             }
             return map[val] || ""
         },
@@ -120,6 +152,21 @@ export default {
                 conclude: "结题",
             }
             return map[val] || ""
+        },
+        timelineColorFilter: val => {
+            let map = {
+                approve: "#E6A23C",
+                normal: "#409EFF",
+                conclude: "#67C23A",
+                rejected: "#F56C6C",
+            }
+            return map[val] || ""
+        },
+        subjectNameFilter: val => {
+            return val || "暂无阶段名"
+        },
+        sketchFilter: val => {
+            return val || "暂无简述"
         },
     },
     data() {
@@ -168,6 +215,7 @@ export default {
     font-size: 20px;
     display: flex;
     align-items: center;
+    color: #303133;
 }
 .intro {
     font-size: 14px;
@@ -187,5 +235,29 @@ export default {
         justify-content: center;
         align-items: center;
     }
+}
+.content-preview {
+    color: #606266;
+    //文本超出部分以...形式展示
+    text-overflow: -o-ellipsis-lastline;
+    //整体超出部分隐藏
+    overflow: hidden;
+    //文本超出部分以...形式展示，同第一行样式代码
+    text-overflow: ellipsis;
+    //display 块级元素展示
+    display: -webkit-box;
+    //设置文本行数为2行
+    -webkit-line-clamp: 2;
+    //设置文本行数为2行
+    line-clamp: 2;
+    //从上到下垂直排列子元素（设置伸缩盒子的子元素排列方式）
+    -webkit-box-orient: vertical;
+}
+
+.subjuct-name {
+    font-size: 16px;
+    color: #303133;
+    display: flex;
+    align-items: center;
 }
 </style>

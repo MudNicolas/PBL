@@ -24,24 +24,24 @@ var projectSchemas = new mongoose.Schema({
                     ref: "User",
                 },
             ],
+            subjectName: String,
+            sketch: String,
+            createTime: Date,
             content: String,
-            status: String, //approve,normal。审批阶段，正式阶段
+            status: String, //approve,normal,conclude,rejected,abandoned 审批阶段，正式阶段,结题，驳回，废弃
             isUsed: {
                 type: Boolean,
                 default: true,
             },
-            editLog: {
-                uid: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "User",
+            editLog: [
+                {
+                    uid: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "User",
+                    },
+                    time: Date,
                 },
-                time: Date,
-            },
-            //手动保存一次，才正式在时间线上显示
-            isManualSave: {
-                type: Boolean,
-                default: false,
-            },
+            ],
         },
     ],
 })

@@ -1,6 +1,7 @@
 import Router from "express"
 let router = Router()
 import TimeLineProject from "#models/TimeLineProject.js"
+import Mock from "mockjs"
 
 function findStudentGroup(group, sid) {
     return group.find(g => {
@@ -43,6 +44,34 @@ router.get("/private/get", (req, res) => {
                 })
                 return
             }
+
+            //mock start
+
+            let list = []
+            for (let i = 0; i < 10; i++) {
+                let Random = Mock.Random
+                list.push(
+                    Mock.mock({
+                        subjectName: "@ctitle",
+                        authorUID: "@cname",
+                        sketch: "@cparagraph",
+                        status: Random.pick([
+                            "approve",
+                            "normal",
+                            "conclude",
+                            "rejected",
+                            "abandoned",
+                        ]), //approve,normal,conclude,rejected 审批阶段，正式阶段,结题
+                        isUsed: Random.pick([true, false]),
+                        createTime: new Date(),
+                    })
+                )
+            }
+            project.timeline = list
+
+            console.log(project.timeline)
+            //mock end
+
             res.json({
                 code: 20000,
                 data: project,
