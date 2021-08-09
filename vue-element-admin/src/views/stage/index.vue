@@ -21,7 +21,7 @@
                             :exist-content="stage.content"
                             ref="editor"
                             :min-height="480"
-                            :autosave="true"
+                            saveUrl=""
                         />
                     </el-form-item>
                     <el-form-item style="width: 100%">
@@ -44,6 +44,7 @@
                 </el-form>
             </el-col>
         </el-row>
+        <el-divider />
     </div>
 </template>
 
@@ -73,6 +74,7 @@ export default {
     created() {
         this.getStage()
     },
+    //提交时，等待0.8秒再发送，防止手太快内容没同步
     methods: {
         getStage() {
             let { stageID } = this

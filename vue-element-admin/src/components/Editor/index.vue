@@ -1,7 +1,7 @@
 <template>
     <div>
         <froala :tag="'div'" :config="config" v-model="content"></froala>
-        <!--  <froalaView v-model="content"></froalaView> -->
+        <froalaView v-model="content"></froalaView>
     </div>
 </template>
 
@@ -39,6 +39,9 @@ import "froala-editor/js/plugins/code_beautifier.min.js"
 import "froala-editor/js/plugins/char_counter.min.js"
 import "froala-editor/js/plugins/align.min.js"
 import "froala-editor/js/plugins/track_changes.min.js"
+
+import { getToken } from "@/utils/auth"
+
 export default {
     name: "Editor",
     props: {
@@ -50,14 +53,27 @@ export default {
             type: Number,
             default: 300,
         },
-        autosave: {
-            type: Boolean,
-            default: false,
+        saveUrl: String,
+    },
+    methods: {
+        handleErrorMessage(m) {
+            this.$message.error(m)
+        },
+        handlePushImageID(id) {
+            this.imagesID.push(id)
         },
     },
     //TODO: 图片视频的上传，前台通过uploaded event记录images:[],video:[],提交比对之后删除不用的文件
     data() {
+        let handleErrorMessage = message => {
+            this.handleErrorMessage(message)
+        }
+        let handlePushImageID = imageID => {
+            this.handlePushImageID(imageID)
+        }
+
         return {
+            imagesID: [],
             config: {
                 events: {
                     "froalaEditor.initialized": function () {
@@ -65,16 +81,11 @@ export default {
                     },
 
                     "image.error": function (error, response) {
-                        // Do something here.
-                        // this is the editor instance.
-                        this.$message.error(error.message)
-                        this.$message.error(response.message)
+                        handleErrorMessage(error.message)
                     },
 
                     "image.uploaded": function (response) {
-                        // Do something here.
-                        // this is the editor instance.
-                        console.log(response)
+                        handlePushImageID(response.imageID)
                     },
 
                     "image.removed": function ($img) {
@@ -83,10 +94,17 @@ export default {
                         console.log($img)
                     },
                 },
+                requestHeaders: {
+                    token: getToken(),
+                },
+                imageUploadURL: process.env.VUE_APP_BASE_API + "/files/editor/image/upload",
                 heightMin: this.minHeight,
                 language: "zh_cn", //中文
                 charCounterCount: true,
+                imageAllowedTypes: ["jpeg", "jpg", "png", "gif", "webp", "png;base64"],
                 linkAlwaysBlank: true,
+                imagePasteProcess: true,
+
                 quickInsertEnabled: false,
                 fontSizeDefaultSelection: "18",
                 toolbarButtons: {

@@ -17,6 +17,7 @@ var fileSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    type: String,
 })
 
 export default mongoose.model("File", fileSchema)
