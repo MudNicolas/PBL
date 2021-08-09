@@ -28,6 +28,18 @@ var projectSchemas = new mongoose.Schema({
             sketch: String,
             createTime: Date,
             content: String,
+            images: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "File",
+                },
+            ],
+            files: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "File",
+                },
+            ],
             public: {
                 type: Boolean,
                 default: false,

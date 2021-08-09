@@ -1,7 +1,7 @@
 <template>
     <div>
-        <froala :tag="'textarea'" :config="config" v-model="content"></froala>
-        <froalaView v-model="content"></froalaView>
+        <froala :tag="'div'" :config="config" v-model="content"></froala>
+        <!--  <froalaView v-model="content"></froalaView> -->
     </div>
 </template>
 
@@ -19,7 +19,6 @@ import "froala-editor/js/plugins/url.min.js"
 import "froala-editor/js/plugins/table.min.js"
 import "froala-editor/js/plugins/save.min.js"
 import "froala-editor/js/plugins/quote.min.js"
-import "froala-editor/js/plugins/quick_insert.min.js"
 import "froala-editor/js/plugins/paragraph_format.min.js"
 import "froala-editor/js/plugins/paragraph_style.min.js"
 import "froala-editor/js/plugins/lists.min.js"
@@ -31,8 +30,6 @@ import "froala-editor/js/plugins/line_breaker.min.js"
 import "froala-editor/js/plugins/help.min.js"
 import "froala-editor/js/plugins/fullscreen.min.js"
 import "froala-editor/js/plugins/font_size.min.js"
-import "froala-editor/js/plugins/file.min.js"
-import "froala-editor/js/plugins/files_manager.min.js"
 import "froala-editor/js/plugins/entities.min.js"
 import "froala-editor/js/plugins/edit_in_popup.min.js"
 import "froala-editor/js/plugins/draggable.min.js"
@@ -49,6 +46,10 @@ export default {
             type: String,
             default: "",
         },
+        minHeight: {
+            type: Number,
+            default: 300,
+        },
     },
 
     data() {
@@ -58,7 +59,27 @@ export default {
                     "froalaEditor.initialized": function () {
                         console.log("initialized")
                     },
+
+                    "image.error": function (error, response) {
+                        // Do something here.
+                        // this is the editor instance.
+                        this.$message.error(error.message)
+                        this.$message.error(response.message)
+                    },
+
+                    "image.uploaded": function (response) {
+                        // Do something here.
+                        // this is the editor instance.
+                        console.log(response)
+                    },
+
+                    "image.removed": function ($img) {
+                        // Do something here.
+                        // this is the editor instance.
+                        console.log($img)
+                    },
                 },
+                heightMin: this.minHeight,
                 language: "zh_cn", //中文
                 charCounterCount: true,
                 linkAlwaysBlank: true,
@@ -111,7 +132,9 @@ export default {
                             "embedly",
                             "insertFile",
                             "insertHR",
+                            "trackChanges",
                         ],
+                        buttonsVisible: 6,
                     },
                     moreMisc: {
                         buttons: [
