@@ -50,8 +50,12 @@ export default {
             type: Number,
             default: 300,
         },
+        autosave: {
+            type: Boolean,
+            default: false,
+        },
     },
-
+    //TODO: 图片视频的上传，前台通过uploaded event记录images:[],video:[],提交比对之后删除不用的文件
     data() {
         return {
             config: {

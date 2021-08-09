@@ -17,7 +17,12 @@
                     </el-form-item>
                     <el-form-item>
                         <!--frola-->
-                        <editor :exist-content="stage.content" ref="editor" :min-height="480" />
+                        <editor
+                            :exist-content="stage.content"
+                            ref="editor"
+                            :min-height="480"
+                            :autosave="true"
+                        />
                     </el-form-item>
                     <el-form-item style="width: 100%">
                         <upload-file
