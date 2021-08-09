@@ -23,3 +23,11 @@ export function newStageSubmit(data) {
         data,
     })
 }
+
+export function getStage(query) {
+    return request({
+        url: "/activity/view/timeline/stage/get",
+        method: "get",
+        params: query,
+    })
+}

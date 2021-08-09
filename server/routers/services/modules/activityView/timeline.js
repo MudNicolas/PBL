@@ -211,4 +211,7 @@ router.post("/private/project/stage/new", (req, res) => {
     })
 })
 
+import stage from "./stage.js"
+router.use("/stage", stage)
+
 export default router

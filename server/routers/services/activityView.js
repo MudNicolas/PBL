@@ -5,9 +5,56 @@ import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 import TimeLineProject from "#models/TimeLineProject.js"
 
+//验证带id的stage的timeline的activity是否有权限访问
+router.use((req, res, next) => {
+    let stageID = req.body.stageID || req.query.stageID
+
+    if (!stageID) {
+        return next()
+    }
+
+    let validate = /^[a-fA-F0-9]{24}$/.test(stageID)
+    if (!validate) {
+        res.json({
+            code: 404,
+            message: "stage不存在",
+        })
+        return
+    }
+    TimeLineProject.findOne(
+        {
+            "stages._id": stageID,
+        },
+        {
+            stages: { $elemMatch: { _id: stageID } },
+            activityID: 1,
+            authorType: 1,
+            authorID: 1,
+        }
+    ).then((project, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        if (!project) {
+            res.json({
+                message: "stage不存在",
+            })
+            return
+        }
+        req.activityID = project.activityID
+        req.stage = project.stages[0]
+        req.project = project
+        next()
+    })
+})
+
 //验证带id的timeline的activity是否有权限访问
 router.use((req, res, next) => {
-    let { projectID } = req.body || req.query
+    let projectID = req.body.projectID || req.query.projectID
     if (!projectID) {
         return next()
     }
@@ -15,7 +62,7 @@ router.use((req, res, next) => {
     if (!validate) {
         res.json({
             code: 404,
-            message: "error",
+            message: "不存在此项目",
         })
         return
     }
@@ -42,12 +89,11 @@ router.use((req, res, next) => {
 
 router.use((req, res, next) => {
     let activityID = req.body.activityID || req.query.activityID || req.activityID
-
     let validate = /^[a-fA-F0-9]{24}$/.test(activityID)
     if (!validate) {
         res.json({
             code: 404,
-            message: "error",
+            message: "不存在此活动",
         })
         return
     }
@@ -70,7 +116,7 @@ router.use((req, res, next) => {
             if (!acti) {
                 res.json({
                     code: 404,
-                    message: "error",
+                    message: "不存在此活动",
                 })
                 return
             }

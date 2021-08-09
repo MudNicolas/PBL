@@ -117,7 +117,10 @@ class routeTree {
                             {
                                 "stages._id": id,
                             },
-                            { stages: { $elemMatch: { _id: id } }, activityID: 1 }
+                            {
+                                stages: { $elemMatch: { _id: id } },
+                                activityID: 1,
+                            }
                         ).then(project => {
                             return {
                                 name: project.name || "暂无阶段名",

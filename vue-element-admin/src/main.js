@@ -29,6 +29,10 @@ Vue.use(Element, {
 
 Vue.use(vueResource)
 
+// Import and use Vue Froala lib.
+import VueFroala from "vue-froala-wysiwyg"
+Vue.use(VueFroala)
+
 // register global utility filters
 Object.keys(filters).forEach(key => {
     Vue.filter(key, filters[key])

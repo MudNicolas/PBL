@@ -226,7 +226,7 @@ export const asyncRoutes = [
             },
             {
                 path: "section/activity/timeline/private/view/:id([a-f0-9]{24})",
-                component: () => import("@/views/timeline-project"),
+                component: () => import("@/views/stage"),
                 name: "TimeLineStage",
                 hidden: true,
                 meta: {
