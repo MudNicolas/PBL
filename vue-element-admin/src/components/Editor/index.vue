@@ -1,7 +1,7 @@
 <template>
     <div>
         <froala :tag="'textarea'" :config="config" v-model="content"></froala>
-        <!-- <froalaView v-model="content"></froalaView> -->
+        <froalaView v-model="content"></froalaView>
     </div>
 </template>
 
@@ -41,6 +41,7 @@ import "froala-editor/js/plugins/code_view.min.js"
 import "froala-editor/js/plugins/code_beautifier.min.js"
 import "froala-editor/js/plugins/char_counter.min.js"
 import "froala-editor/js/plugins/align.min.js"
+import "froala-editor/js/plugins/track_changes.min.js"
 export default {
     name: "Editor",
     props: {
@@ -58,7 +59,6 @@ export default {
                         console.log("initialized")
                     },
                 },
-
                 language: "zh_cn", //中文
                 charCounterCount: true,
                 linkAlwaysBlank: true,
@@ -108,7 +108,7 @@ export default {
                             "emoticons",
                             "fontAwesome",
                             "specialCharacters",
-
+                            "embedly",
                             "insertFile",
                             "insertHR",
                         ],
