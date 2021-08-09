@@ -224,6 +224,24 @@ export const asyncRoutes = [
                     roles: ["teacher", "student"],
                 },
             },
+            {
+                path: "section/activity/timeline/private/view/:id([a-f0-9]{24})",
+                component: () => import("@/views/timeline-project"),
+                name: "TimeLineStage",
+                hidden: true,
+                meta: {
+                    roles: ["teacher", "student"],
+                },
+            },
+            {
+                path: "section/activity/timeline/public/:id([a-f0-9]{24})",
+                /*  component: () => import("@/views/timeline-project"),
+                name: "TimeLineStage",
+                hidden: true,
+                meta: {
+                    roles: ["teacher", "student"],
+                }, */
+            },
         ],
     },
     {

@@ -72,7 +72,13 @@
                     >
                         <el-card>
                             <div class="subjuct-name" slot="header">
-                                {{ e.subjectName | subjectNameFilter }}
+                                <router-link
+                                    :to="{
+                                        path: `/course/section/activity/timeline/private/view/${e._id}`,
+                                    }"
+                                >
+                                    {{ e.subjectName | subjectNameFilter }}
+                                </router-link>
                                 <el-tag
                                     size="mini"
                                     style="margin-left: 4px"
