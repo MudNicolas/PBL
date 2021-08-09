@@ -186,6 +186,7 @@ router.post("/private/project/stage/new", (req, res) => {
         }
         //继承内容
         stage.content = originStage.content
+        //TODO: 继承时，image和video复制一份储存返回的新id
     } else {
         stage.authorUID = [req.uid]
         if (project.authorType === "group") {
