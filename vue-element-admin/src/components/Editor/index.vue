@@ -1,7 +1,13 @@
 <template>
     <div>
         <froala :tag="'div'" :config="config" v-model="content" ref="editor"></froala>
-        <froalaView v-model="content"></froalaView>
+        <div class="view-wrapper">
+            <div class="fr-box fr-basic">
+                <div class="fr-element">
+                    <froalaView v-model="content"></froalaView>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -203,5 +209,12 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
+#fr-logo {
+    display: none;
+}
+.view-wrapper {
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+}
 </style>
