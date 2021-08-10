@@ -60,17 +60,11 @@ export default {
         handleErrorMessage(m) {
             this.$message.error(m)
         },
-        handlePushImageID(id) {
-            this.imagesID.push(id)
-        },
     },
     //TODO: 图片视频的上传，stage记录所有上传过的image和video，保存对比没用到的，标记isused为false，显示在管理员清理文件的七天外文件中
     data() {
         let handleErrorMessage = message => {
             this.handleErrorMessage(message)
-        }
-        let handlePushImageID = imageID => {
-            this.handlePushImageID(imageID)
         }
 
         let stageID = this.stageId
@@ -96,9 +90,7 @@ export default {
                         }
                     },
 
-                    "image.uploaded": function (response) {
-                        handlePushImageID(response.imageID)
-                    },
+                    "image.uploaded": function (response) {},
 
                     "image.removed": function ($img) {
                         // Do something here.

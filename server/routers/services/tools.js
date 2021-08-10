@@ -204,7 +204,6 @@ export function editorImageUpload(req) {
                     resolve({
                         code: 20000,
                         link: path,
-                        imageID: f._id,
                     })
                 })
             })
