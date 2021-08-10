@@ -40,8 +40,18 @@ var projectSchemas = new mongoose.Schema({
                     ref: "EditorImage",
                 },
             ],
-            videos: [{}],
-            allUploadedVideos: [{}],
+            videos: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "EditorVideo",
+                },
+            ],
+            allUploadedVideos: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "EditorVideo",
+                },
+            ],
             files: [
                 {
                     type: mongoose.Schema.Types.ObjectId,

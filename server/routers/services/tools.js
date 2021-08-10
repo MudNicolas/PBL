@@ -8,6 +8,7 @@ import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS } from "#root/settings
 import EditorImage from "#models/EditorImage.js"
 
 import cheerio from "cheerio"
+import EditorVideo from "#models/EditorVideo.js"
 
 const algorithm = "aes128"
 //aes加密解密
@@ -47,6 +48,24 @@ export function UploadImg(path, req) {
             const imgPath = files.img[0].path
             var imgFilename = imgPath.split("\\")[imgPath.split("\\").length - 1]
             resolve(imgFilename)
+            return
+        })
+    })
+}
+
+export function UploadEditorFile(path, req) {
+    var form = new multiparty.Form({
+        uploadDir: path,
+    })
+    return new Promise((resolve, reject) => {
+        form.parse(req, function (err, field, files) {
+            if (err) {
+                reject(err)
+                return
+            }
+            const videoPath = files.video[0].path
+            var videoFilename = videoPath.split("\\")[videoPath.split("\\").length - 1]
+            resolve(videoFilename)
             return
         })
     })
@@ -218,6 +237,47 @@ export function editorImageUpload(req) {
     })
 }
 
+//editor视频上传
+export function editorVideoUpload(req) {
+    return new Promise((resolve, reject) => {
+        UploadEditorFile("public/files/video/editor", req)
+            .then(videoFilename => {
+                let uploadedImage = new EditorVideo({
+                    serverFilename: videoFilename,
+                    submitUID: req.uid,
+                    uploadTime: Date.now(),
+                    type: "editorVideo",
+                    sectionID: req.sectionID,
+                    courseID: req.courseID,
+                })
+                uploadedImage.save((err, f) => {
+                    if (err) {
+                        console.log(err)
+                        reject({
+                            code: 30001,
+                            message: "DataBase Error",
+                        })
+                        return
+                    }
+                    let path =
+                        SERVER_ADDRESS +
+                        "/public/files/video/editor/" +
+                        f.serverFilename +
+                        "?_id=" +
+                        f._id
+                    resolve({
+                        link: path,
+                        videoID: f._id,
+                    })
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                reject(err)
+            })
+    })
+}
+
 export function contentImageResolution(htmlContent) {
     const $ = cheerio.load(htmlContent)
     let images = $("img")
@@ -229,4 +289,16 @@ export function contentImageResolution(htmlContent) {
         }
     }
     return imagesID
+}
+export function contentVideoResolution(htmlContent) {
+    const $ = cheerio.load(htmlContent)
+    let videos = $("video")
+    let videosID = []
+    for (let e of videos) {
+        let videoID = e.attribs["data-videoid"]
+        if (/^[a-fA-F0-9]{24}$/.test(videoID)) {
+            videosID.push(videoID)
+        }
+    }
+    return videosID
 }

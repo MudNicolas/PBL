@@ -1,6 +1,7 @@
 import express from "express"
 import mongoose from "mongoose"
 import path from "path"
+import cors from "cors"
 import api from "./routers/api.js"
 import { PORT, PROD_ORIGIN } from "./settings.js"
 import { dirname } from "path"
@@ -18,7 +19,7 @@ if (env === "dev") {
     origin = PROD_ORIGIN
 }
 
-app.all("*", function (req, res, next) {
+/* app.all("*", function (req, res, next) {
     res.header("Access-Control-Allow-Origin", origin)
     res.header("Access-Control-Allow-Headers", "X-Requested-With,content-type,token")
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS")
@@ -27,6 +28,14 @@ app.all("*", function (req, res, next) {
     res.header("Access-Control-Allow-Credentials", "true")
     next()
 })
+ */
+app.use(
+    cors({
+        allowedHeaders: ["X-Requested-With", "content-type", "token"],
+        origin: origin,
+        preflightContinue: false,
+    })
+)
 
 app.use(
     express.urlencoded({
@@ -37,11 +46,6 @@ app.use(express.json())
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 app.use("/public", express.static(path.join(__dirname, "public")))
-
-//拦截preflight的option请求
-app.options((req, res, next) => {
-    res.end()
-})
 
 app.use("/api", api)
 

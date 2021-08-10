@@ -80,10 +80,15 @@ export default {
 
         let stageID = this.stageId
         let imageUploadPath
+        let videoUploadPath
         if (stageID) {
             imageUploadPath =
                 process.env.VUE_APP_BASE_API +
                 "/activity/view/timeline/stage/editor/image/upload?stageID=" +
+                stageID
+            videoUploadPath =
+                process.env.VUE_APP_BASE_API +
+                "/activity/view/timeline/stage/editor/video/upload?stageID=" +
                 stageID
         }
 
@@ -132,6 +137,11 @@ export default {
                 ],
                 linkAlwaysBlank: true,
                 imagePasteProcess: true,
+
+                //500MB
+                videoMaxSize: 1024 * 1024 * 500,
+                videoUploadParam: "video",
+                videoUploadURL: videoUploadPath,
 
                 quickInsertEnabled: false,
                 fontSizeDefaultSelection: "18",
