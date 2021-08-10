@@ -31,3 +31,11 @@ export function getStage(query) {
         params: query,
     })
 }
+
+export function autosave(data){
+	return request({
+		url:"/activity/view/timeline/stage/editor/autosave",
+		method:"post",
+		data
+	})
+}

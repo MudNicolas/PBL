@@ -1,6 +1,6 @@
 <template>
     <div>
-        <froala :tag="'div'" :config="config" v-model="content"></froala>
+        <froala :tag="'div'" :config="config" v-model="content" ref="editor"></froala>
         <froalaView v-model="content"></froalaView>
     </div>
 </template>
@@ -38,9 +38,9 @@ import "froala-editor/js/plugins/code_view.min.js"
 import "froala-editor/js/plugins/code_beautifier.min.js"
 import "froala-editor/js/plugins/char_counter.min.js"
 import "froala-editor/js/plugins/align.min.js"
-import "froala-editor/js/plugins/track_changes.min.js"
 
 import { getToken } from "@/utils/auth"
+import { autosave } from "@/api/timeline-project"
 
 export default {
     name: "Editor",
@@ -53,61 +53,77 @@ export default {
             type: Number,
             default: 300,
         },
-        saveUrl: String,
         stageId: String,
     },
     methods: {
-        handleErrorMessage(m) {
-            this.$message.error(m)
+        autosave(content) {
+            let stageID = this.stageId
+
+            autosave({ stageID, content }).then().catch()
+        },
+        handleInit(editor) {
+            this.editor = editor
         },
     },
+
     //TODO: 图片视频的上传，stage记录所有上传过的image和video，保存对比没用到的，标记isused为false，显示在管理员清理文件的七天外文件中
     data() {
-        let handleErrorMessage = message => {
-            this.handleErrorMessage(message)
+        let handleInit = editor => {
+            this.handleInit(editor)
         }
 
         let stageID = this.stageId
-        let path
+        let imageUploadPath
         if (stageID) {
-            path =
+            imageUploadPath =
                 process.env.VUE_APP_BASE_API +
                 "/activity/view/timeline/stage/editor/image/upload?stageID=" +
                 stageID
         }
+
         return {
-            imagesID: [],
+            editor: null,
             config: {
                 events: {
-                    "froalaEditor.initialized": function () {
-                        console.log("initialized")
+                    initialized: function () {
+                        handleInit(this)
                     },
 
-                    "image.error": function (error, response) {
-                        handleErrorMessage(error.message)
+                    "image.error": (error, response) => {
+                        this.$message.error(error.message)
                         if (response) {
-                            handleErrorMessage(JSON.parse(response).message)
+                            this.$message.error(JSON.parse(response).message)
                         }
                     },
 
-                    "image.uploaded": function (response) {},
-
-                    "image.removed": function ($img) {
-                        // Do something here.
-                        // this is the editor instance.
-                        console.log($img)
+                    "save.before": html => {
+                        this.autosave(html)
+                        return false
                     },
                 },
                 requestHeaders: {
                     token: getToken(),
                 },
                 imageUploadParam: "img",
-                imageUploadURL: path,
+                imageUploadURL: imageUploadPath,
+
+                //自动保存
+                saveInterval: 1000 * 30,
 
                 heightMin: this.minHeight,
+                toolbarStickyOffset: 50,
                 language: "zh_cn", //中文
                 charCounterCount: true,
-                imageAllowedTypes: ["jpeg", "jpg", "png", "gif", "webp", "png;base64"],
+                imageAllowedTypes: [
+                    "jpeg",
+                    "jpg",
+                    "png",
+                    "gif",
+                    "webp",
+                    "png;base64",
+                    "svg+xml",
+                    "bmp",
+                ],
                 linkAlwaysBlank: true,
                 imagePasteProcess: true,
 
@@ -136,6 +152,7 @@ export default {
                             "alignLeft",
                             "alignCenter",
                             "formatOLSimple",
+
                             "alignRight",
                             "alignJustify",
                             "formatOL",
@@ -160,9 +177,8 @@ export default {
                             "embedly",
                             "insertFile",
                             "insertHR",
-                            "trackChanges",
                         ],
-                        buttonsVisible: 6,
+                        buttonsVisible: 5,
                     },
                     moreMisc: {
                         buttons: [

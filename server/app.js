@@ -39,12 +39,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 app.use("/public", express.static(path.join(__dirname, "public")))
 
 //拦截preflight的option请求
-app.use((req, res, next) => {
-    if (req.method == "OPTIONS") {
-        res.end()
-    } else {
-        next()
-    }
+app.options((req, res, next) => {
+    res.end()
 })
 
 app.use("/api", api)
