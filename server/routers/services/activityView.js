@@ -124,6 +124,8 @@ router.use((req, res, next) => {
                 .then(c => {
                     req.activity = acti
                     req.course = c
+                    req.courseID = c._id
+                    req.sectionID = acti.sectionID
                     next()
                 })
                 .catch(err => {

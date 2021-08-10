@@ -14,5 +14,13 @@ export default mongoose.model(
             default: true,
         },
         type: String,
+        sectionID: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Section",
+        },
+        courseID: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
+        },
     })
 )

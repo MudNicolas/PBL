@@ -191,6 +191,8 @@ export function editorImageUpload(req) {
                     submitUID: req.uid,
                     uploadTime: Date.now(),
                     type: "editorImage",
+                    sectionID: req.sectionID,
+                    courseID: req.courseID,
                 })
                 uploadedImage.save((err, f) => {
                     if (err) {
