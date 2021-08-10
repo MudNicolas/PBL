@@ -1,6 +1,7 @@
 import Router from "express"
 let router = Router()
-import { editorImageUpload } from "#services/tools.js"
+import { editorImageUpload, contentImageResolution } from "#services/tools.js"
+import EditorImage from "#models/EditorImage.js"
 
 router.get("/get", (req, res) => {
     let { project, stageID } = req
@@ -40,26 +41,64 @@ router.post("/editor/image/upload", (req, res) => {
 router.post("/editor/autosave", (req, res) => {
     let { content } = req.body
     let { project, stageID } = req
-    console.log(content)
     let index = project.stages.findIndex(s => s._id.toString() === stageID.toString())
+    //save content
     project.stages[index].content = content
+    //save log
     project.stages[index].editLog.push({
         uid: req.uid,
         time: new Date(),
         operation: "自动保存",
     })
-    project.save(err => {
-        if (err) {
+
+    //resolute images
+    let imagesID = contentImageResolution(content)
+    //对比allUploadedImages,将差集全部isusedFalse，imagesID isused true
+    let stage = project.stages[index]
+    let allUplodedImagesIDSet = stage.allUploadedImages.toString().split(",")
+    //未使用的images
+    let notUsedImagesID = allUplodedImagesIDSet.filter(e => imagesID.indexOf(e) === -1)
+
+    let arrayProcess = []
+    for (let e of notUsedImagesID) {
+        arrayProcess.push(turnImage(e, false))
+    }
+    for (let e of imagesID) {
+        arrayProcess.push(turnImage(e, true))
+    }
+    Promise.all(arrayProcess).then(() => {
+        project.save(err => {
+            if (err) {
+                res.json({
+                    code: 300001,
+                    message: "DataBase Error",
+                })
+                return
+            }
             res.json({
-                code: 300001,
-                message: "DataBase Error",
+                code: 20000,
             })
-            return
-        }
-        res.json({
-            code: 20000,
         })
     })
+
+    function turnImage(_id, status) {
+        return new Promise((resolve, reject) => {
+            EditorImage.findById(_id)
+                .select("isUsed")
+                .then((image, err) => {
+                    if (err || !image) {
+                        return reject(err)
+                    }
+                    image.isUsed = status
+                    image.save(err => {
+                        if (err) {
+                            return reject(err)
+                        }
+                        return resolve()
+                    })
+                })
+        })
+    }
 })
 
 export default router

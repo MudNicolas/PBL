@@ -7,6 +7,8 @@ import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS } from "#root/settings
 
 import EditorImage from "#models/EditorImage.js"
 
+import cheerio from "cheerio"
+
 const algorithm = "aes128"
 //aes加密解密
 export function AESEncode(e) {
@@ -212,4 +214,17 @@ export function editorImageUpload(req) {
                 reject(err)
             })
     })
+}
+
+export function contentImageResolution(htmlContent) {
+    const $ = cheerio.load(htmlContent)
+    let images = $("img")
+    let imagesID = []
+    for (let e of images) {
+        let imageID = e.attribs.imageid
+        if (/^[a-fA-F0-9]{24}$/.test(imageID)) {
+            imagesID.push(imageID)
+        }
+    }
+    return imagesID
 }
