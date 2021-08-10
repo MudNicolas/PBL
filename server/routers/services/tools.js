@@ -202,17 +202,14 @@ export function editorImageUpload(req) {
                     let path =
                         SERVER_ADDRESS + "/public/img/editor/" + f.serverFilename + "?_id=" + f._id
                     resolve({
-                        code: 20000,
                         link: path,
+                        imageID: f._id,
                     })
                 })
             })
             .catch(err => {
                 console.log(err)
-                reject({
-                    code: 30001,
-                    message: "MultiParty Error!",
-                })
+                reject(err)
             })
     })
 }

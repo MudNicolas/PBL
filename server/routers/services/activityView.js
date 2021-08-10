@@ -25,7 +25,7 @@ router.use((req, res, next) => {
             "stages._id": stageID,
         },
         {
-            stages: { $elemMatch: { _id: stageID } },
+            stages: 1,
             activityID: 1,
             authorType: 1,
             authorID: 1,
@@ -45,7 +45,7 @@ router.use((req, res, next) => {
             return
         }
         req.activityID = project.activityID
-        req.stage = project.stages[0]
+        req.stageID = stageID
         req.project = project
         next()
     })
