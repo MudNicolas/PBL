@@ -54,6 +54,7 @@ export default {
             default: 300,
         },
         saveUrl: String,
+        stageId: String,
     },
     methods: {
         handleErrorMessage(m) {
@@ -63,7 +64,7 @@ export default {
             this.imagesID.push(id)
         },
     },
-    //TODO: 图片视频的上传，前台通过uploaded event记录images:[],video:[],提交比对之后删除不用的文件
+    //TODO: 图片视频的上传，stage记录所有上传过的image和video，保存对比没用到的，标记isused为false，显示在管理员清理文件的七天外文件中
     data() {
         let handleErrorMessage = message => {
             this.handleErrorMessage(message)
@@ -72,6 +73,14 @@ export default {
             this.handlePushImageID(imageID)
         }
 
+        let stageID = this.stageId
+        let path
+        if (stageID) {
+            path =
+                process.env.VUE_APP_BASE_API +
+                "/activity/view/timeline/stage/editor/image/upload?stageID=" +
+                stageID
+        }
         return {
             imagesID: [],
             config: {
@@ -82,6 +91,9 @@ export default {
 
                     "image.error": function (error, response) {
                         handleErrorMessage(error.message)
+                        if (response) {
+                            handleErrorMessage(JSON.parse(response).message)
+                        }
                     },
 
                     "image.uploaded": function (response) {
@@ -97,7 +109,9 @@ export default {
                 requestHeaders: {
                     token: getToken(),
                 },
-                imageUploadURL: process.env.VUE_APP_BASE_API + "/files/editor/image/upload",
+                imageUploadParam: "img",
+                imageUploadURL: path,
+
                 heightMin: this.minHeight,
                 language: "zh_cn", //中文
                 charCounterCount: true,

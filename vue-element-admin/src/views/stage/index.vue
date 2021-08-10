@@ -22,6 +22,7 @@
                             ref="editor"
                             :min-height="480"
                             saveUrl=""
+                            :stage-id="stageID"
                         />
                     </el-form-item>
                     <el-form-item style="width: 100%">

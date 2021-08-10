@@ -8,7 +8,6 @@ import TimeLineProject from "#models/TimeLineProject.js"
 //验证带id的stage的timeline的activity是否有权限访问
 router.use((req, res, next) => {
     let stageID = req.body.stageID || req.query.stageID
-
     if (!stageID) {
         return next()
     }

@@ -3,7 +3,9 @@ import md5 from "js-md5"
 import multiparty from "multiparty"
 import User from "#models/User.js"
 import Course from "#models/Course.js"
-import { DEFAULT_PASSWORD, SECRET_KEY, IV } from "#root/settings.js"
+import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS } from "#root/settings.js"
+
+import EditorImage from "#models/EditorImage.js"
 
 const algorithm = "aes128"
 //aes加密解密
@@ -174,5 +176,44 @@ export function CheckCourseAvailableAndReqUserHasPermission(courseID, roles, req
 
             return resolve(course)
         })
+    })
+}
+
+//editor图片上传
+export function editorImageUpload(req) {
+    return new Promise((resolve, reject) => {
+        UploadImg("editor", req)
+            .then(imageFileName => {
+                let uploadedImage = new EditorImage({
+                    serverFilename: imageFileName,
+                    submitUID: req.uid,
+                    uploadTime: Date.now(),
+                    type: "editorImage",
+                })
+                uploadedImage.save((err, f) => {
+                    if (err) {
+                        console.log(err)
+                        reject({
+                            code: 30001,
+                            message: "DataBase Error",
+                        })
+                        return
+                    }
+                    let path =
+                        SERVER_ADDRESS + "/public/img/editor/" + f.serverFilename + "?_id=" + f._id
+                    resolve({
+                        code: 20000,
+                        link: path,
+                        imageID: f._id,
+                    })
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                reject({
+                    code: 30001,
+                    message: "MultiParty Error!",
+                })
+            })
     })
 }

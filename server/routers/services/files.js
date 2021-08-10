@@ -3,7 +3,6 @@ import File from "#models/File.js"
 let router = Router()
 import { UploadFiles } from "#services/tools.js"
 import fs from "fs"
-import { SERVER_ADDRESS } from "#root/settings.js"
 
 router.post("/upload", (req, res) => {
     UploadFiles(req)
@@ -28,43 +27,6 @@ router.post("/upload", (req, res) => {
                 res.json({
                     code: 20000,
                     _id: f._id,
-                })
-            })
-        })
-        .catch(err => {
-            res.json({
-                code: 30001,
-                message: "MultiParty Error!",
-            })
-        })
-})
-
-router.post("/editor/image/upload", (req, res) => {
-    UploadFiles(req)
-        .then(image => {
-            let file = new File({
-                originalFilename: image.originalFilename,
-                serverFilename: image.path.split("\\")[image.path.split("\\").length - 1],
-                submitUID: req.uid,
-                size: image.size,
-                uploadTime: Date.now(),
-                type: "editorImage",
-            })
-            file.save((err, f) => {
-                if (err) {
-                    console.log(err)
-                    res.json({
-                        code: 30001,
-                        message: "DataBase Error",
-                    })
-                    return
-                }
-                let path =
-                    SERVER_ADDRESS + "/public/files/temp/" + f.serverFilename + "?_id=" + f._id
-                res.json({
-                    code: 20000,
-                    link: path,
-                    imageID: f._id,
                 })
             })
         })
