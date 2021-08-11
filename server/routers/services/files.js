@@ -79,6 +79,7 @@ function fileCheck(req) {
         }
         File.findOne({
             _id: _id,
+            isUsed: true,
         }).then((file, err) => {
             if (err) {
                 return reject({
