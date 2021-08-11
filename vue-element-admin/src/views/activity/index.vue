@@ -126,6 +126,8 @@ export default {
         .info {
             font-size: 14px;
             margin-bottom: 12px;
+            border-left: 2px solid #cccccc;
+            padding-left: 8px;
         }
         .options {
             font-size: 15px;

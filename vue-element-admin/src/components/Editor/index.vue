@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="fr-element fr-view" :style="{ 'min-height': minHeight + 'px' }">
         <froala :tag="'div'" :config="config" v-model="content" ref="editor"></froala>
     </div>
 </template>
@@ -57,8 +57,10 @@ export default {
     methods: {
         autosave(content) {
             let stageID = this.stageId
-
-            autosave({ stageID, content }).then().catch()
+            //防止保存空值
+            if (content) {
+                autosave({ stageID, content }).then().catch()
+            }
         },
         handleInit(editor) {
             this.editor = editor
@@ -166,7 +168,6 @@ export default {
                             "alignLeft",
                             "alignCenter",
                             "formatOLSimple",
-
                             "alignRight",
                             "alignJustify",
                             "formatOL",

@@ -233,48 +233,14 @@
 <script>
 import { submitEditIntro, newStageSubmit } from "@/api/timeline-project"
 import { normalFormatTime } from "@/utils/index.js"
+import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
 export default {
     props: ["project"],
     filters: {
-        noIntro: function (val) {
-            if (!val) {
-                return "暂无简介"
-            }
-            return val
-        },
-        tagTypeFilter: function (val) {
-            let map = {
-                //审批中
-                underApprove: "warning",
-                //待审批
-                beforeApprove: "warning",
-                normal: "",
-                conclude: "success",
-                rejected: "danger",
-            }
-            return map[val] || ""
-        },
-        statusFilter: val => {
-            let map = {
-                //审批中
-                underApprove: "审批中",
-                //待审批
-                beforeApprove: "待审批",
-                normal: "行进中",
-                conclude: "结题",
-            }
-            return map[val] || ""
-        },
-        stageColorFilter: val => {
-            let map = {
-                underApprove: "#E6A23C",
-                beforeApprove: "#409EFF",
-                normal: "#409EFF",
-                conclude: "#67C23A",
-                rejected: "#F56C6C",
-            }
-            return map[val] || ""
-        },
+        noIntro,
+        tagTypeFilter,
+        statusFilter,
+        stageColorFilter,
         subjectNameFilter: val => {
             return val || "暂无阶段名"
         },

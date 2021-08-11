@@ -11,7 +11,14 @@ import EditorVideo from "#models/EditorVideo.js"
 
 router.get("/get", (req, res) => {
     let { project, stageID } = req
-    let stage = project.stages.find(s => s._id.toString() === stageID.toString())
+    let _stage = project.stages.find(s => s._id.toString() === stageID.toString())
+    let index = project.stages.findIndex(s => s._id.toString() === stageID.toString())
+    //stage是最新一条，并且是beforeApprove和normal才可编辑
+    let stage = _stage.toJSON()
+    stage.editable = false
+    if (index + 1 === project.stages.length && ["beforeApprove", "normal"].includes(stage.status)) {
+        stage.editable = true
+    }
 
     res.json({
         code: 20000,
@@ -75,12 +82,6 @@ router.post("/editor/autosave", (req, res) => {
     let index = project.stages.findIndex(s => s._id.toString() === stageID.toString())
     //save content
     project.stages[index].content = content
-    //save log
-    project.stages[index].editLog.push({
-        uid: req.uid,
-        time: new Date(),
-        operation: "自动保存",
-    })
 
     //resolute images
     let imagesID = contentImageResolution(content)
