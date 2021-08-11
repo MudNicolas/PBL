@@ -53,9 +53,9 @@ export function UploadImg(path, req) {
     })
 }
 
-export function UploadEditorFile(path, req) {
+export function UploadEditorVideo(req) {
     var form = new multiparty.Form({
-        uploadDir: path,
+        uploadDir: "public/files",
     })
     return new Promise((resolve, reject) => {
         form.parse(req, function (err, field, files) {
@@ -74,7 +74,7 @@ export function UploadEditorFile(path, req) {
 //统一文件上传中心，如果上传过程中用户断开连接了会自动删除正在上传的temp文件
 export function UploadFiles(req) {
     let form = new multiparty.Form({
-        uploadDir: "public/files/temp",
+        uploadDir: "public/files",
     })
     return new Promise((resolve, reject) => {
         form.parse(req, function (err, field, files) {
@@ -240,7 +240,7 @@ export function editorImageUpload(req) {
 //editor视频上传
 export function editorVideoUpload(req) {
     return new Promise((resolve, reject) => {
-        UploadEditorFile("public/files/video/editor", req)
+        UploadEditorVideo(req)
             .then(videoFilename => {
                 let uploadedImage = new EditorVideo({
                     serverFilename: videoFilename,
@@ -260,11 +260,7 @@ export function editorVideoUpload(req) {
                         return
                     }
                     let path =
-                        SERVER_ADDRESS +
-                        "/public/files/video/editor/" +
-                        f.serverFilename +
-                        "?_id=" +
-                        f._id
+                        SERVER_ADDRESS + "/public/files/" + f.serverFilename + "?_id=" + f._id
                     resolve({
                         link: path,
                         videoID: f._id,
@@ -283,7 +279,7 @@ export function contentImageResolution(htmlContent) {
     let images = $("img")
     let imagesID = []
     for (let e of images) {
-        let imageID = e.attribs.imageid
+        let imageID = e.attribs.src.split("?")[1].split("=")[1]
         if (/^[a-fA-F0-9]{24}$/.test(imageID)) {
             imagesID.push(imageID)
         }
@@ -295,7 +291,7 @@ export function contentVideoResolution(htmlContent) {
     let videos = $("video")
     let videosID = []
     for (let e of videos) {
-        let videoID = e.attribs["data-videoid"]
+        let videoID = e.attribs.src.split("?")[1].split("=")[1]
         if (/^[a-fA-F0-9]{24}$/.test(videoID)) {
             videosID.push(videoID)
         }

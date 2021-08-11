@@ -64,7 +64,7 @@
             <el-col :span="19">
                 <el-timeline>
                     <el-timeline-item
-                        v-for="e of project.stages"
+                        v-for="e of stages"
                         :timestamp="normalFormatTime(new Date(e.createTime), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
                         :key="e._id"
@@ -235,7 +235,7 @@ import { submitEditIntro, newStageSubmit } from "@/api/timeline-project"
 import { normalFormatTime } from "@/utils/index.js"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
 export default {
-    props: ["project"],
+    props: ["project", "stages"],
     filters: {
         noIntro,
         tagTypeFilter,
@@ -310,9 +310,9 @@ export default {
             this.newStageSubmitting = true
             let projectID = this.project._id
             newStageSubmit({ projectID, stageOptions })
-                .then(() => {
+                .then(res => {
                     this.$message.success("新建阶段成功")
-                    //TODO: 完成新建的页面跳转
+                    this.$router.push(`/course/section/activity/timeline/private/view/${res.data}`)
                 })
                 .catch(() => {
                     this.newStageSubmitting = false

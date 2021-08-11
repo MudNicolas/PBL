@@ -32,10 +32,18 @@ export function getStage(query) {
     })
 }
 
-export function autosave(data){
-	return request({
-		url:"/activity/view/timeline/stage/editor/autosave",
-		method:"post",
-		data
-	})
+export function autosave(data) {
+    return request({
+        url: "/activity/view/timeline/stage/editor/autosave",
+        method: "post",
+        data,
+    })
+}
+
+export function saveStage(data) {
+    return request({
+        url: "/activity/view/timeline/stage/save",
+        method: "post",
+        data,
+    })
 }

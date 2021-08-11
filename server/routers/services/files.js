@@ -41,12 +41,7 @@ router.post("/upload", (req, res) => {
 router.get("/download", (req, res) => {
     fileCheck(req)
         .then(file => {
-            let path
-            if (file.isSubmitted) {
-                path = "public/files/custom/"
-            } else {
-                path = "public/files/temp/"
-            }
+            let path = "public/files/"
 
             let downloadPath = path + file.serverFilename
             fs.access(downloadPath, err => {
@@ -84,7 +79,6 @@ function fileCheck(req) {
         }
         File.findOne({
             _id: _id,
-            isUsed: true,
         }).then((file, err) => {
             if (err) {
                 return reject({
@@ -99,12 +93,7 @@ function fileCheck(req) {
                 })
             }
 
-            let path
-            if (file.isSubmitted) {
-                path = `public/files/custom/${file.serverFilename}`
-            } else {
-                path = `public/files/temp/${file.serverFilename}`
-            }
+            let path = `public/files/${file.serverFilename}`
 
             fs.access(path, err => {
                 if (err) {

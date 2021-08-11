@@ -7,12 +7,13 @@ var fileSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    isSubmitted: {
+
+    size: Number,
+    uploadTime: Date,
+    isNeeded: {
         type: Boolean,
         default: false,
     },
-    size: Number,
-    uploadTime: Date,
     isUsed: {
         type: Boolean,
         default: true,

@@ -86,25 +86,15 @@ router.post("/file/submit", (req, res) => {
         }
         let allSave = []
         files.forEach(f => {
-            f.isSubmitted = true
+            f.isUsed = true
             allSave.push(
                 new Promise((resolve, reject) => {
-                    fs.rename(
-                        `public/files/temp/${f.serverFilename}`,
-                        `public/files/custom/${f.serverFilename}`,
-                        err => {
-                            if (err) {
-                                console.log(err)
-                                return reject()
-                            }
-                            f.save(err => {
-                                if (err) {
-                                    return reject()
-                                }
-                                resolve()
-                            })
+                    f.save(err => {
+                        if (err) {
+                            return reject()
                         }
-                    )
+                        resolve()
+                    })
                 })
             )
         })
@@ -237,7 +227,7 @@ router.delete("/file/delete", (req, res) => {
                     return
                 }
 
-                file.isUsed = false
+                file.isNeeded = false
                 file.save(err => {
                     if (err) {
                         res.json({

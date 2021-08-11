@@ -22,7 +22,11 @@
 
             <!--正常显示项目-->
             <div v-if="status === 'Normal'">
-                <workspace :project="project" @editIntroSuccess="handleEditIntroSuccess" />
+                <workspace
+                    :project="project"
+                    :stages="stages"
+                    @editIntroSuccess="handleEditIntroSuccess"
+                />
             </div>
         </div>
     </div>
@@ -42,6 +46,7 @@ export default {
             status: "",
             errSubtitle: "",
             project: {},
+            stages: [],
         }
     },
     created() {
@@ -55,11 +60,12 @@ export default {
             getPrivateTimeline({ activityID })
                 .then(res => {
                     this.loading = false
-                    let project = res.data
+                    let { project, stages } = res.data
                     if (!project) {
                         this.status = "NoProject"
                     } else {
                         this.project = project
+                        this.stages = stages
                         this.status = "Normal"
                     }
                 })

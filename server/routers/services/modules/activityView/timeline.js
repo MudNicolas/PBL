@@ -1,7 +1,7 @@
 import Router from "express"
 let router = Router()
 import TimeLineProject from "#models/TimeLineProject.js"
-import Mock from "mockjs"
+import Stage from "#models/Stage.js"
 
 function findStudentGroup(group, sid) {
     return group.find(g => {
@@ -43,7 +43,7 @@ router.get("/private/get", (req, res) => {
         authorID,
         activityID,
     })
-        .select("name intro time stages status")
+        .select("name intro time  status")
         .then((project, err) => {
             if (err) {
                 res.json({
@@ -53,10 +53,16 @@ router.get("/private/get", (req, res) => {
                 return
             }
 
-            res.json({
-                code: 20000,
-                data: project,
+            Stage.find({
+                timelineProjectID: project._id,
             })
+                .select("subjectName sketch createTime isPublic status isUsed")
+                .then(stages => {
+                    res.json({
+                        code: 20000,
+                        data: { project, stages },
+                    })
+                })
         })
 })
 
@@ -127,6 +133,7 @@ router.post("/private/project/create", (req, res) => {
             })
             return
         }
+
         res.json({
             code: 20000,
         })
@@ -153,7 +160,7 @@ router.post("/private/project/edit", (req, res) => {
     })
 })
 
-router.post("/private/project/stage/new", (req, res) => {
+router.post("/private/project/stage/new", async (req, res) => {
     let { stageOptions } = req.body
     let { project } = req
     console.log(stageOptions)
@@ -164,6 +171,7 @@ router.post("/private/project/stage/new", (req, res) => {
 
     let time = new Date()
     let stage = {
+        timelineProjectID: project._id,
         createTime: time,
         status,
         editLog: [
@@ -177,7 +185,7 @@ router.post("/private/project/stage/new", (req, res) => {
 
     if (stageOptions.creatMethod === "inheritance") {
         let stageID = stageOptions.inhertStageID
-        let originStage = project.stages.find(s => s._id.toString === stageID.toString())
+        let originStage = await Stage.findById(stageID).exec()
         if (!originStage) {
             res.json({
                 message: "该阶段不存在",
@@ -186,7 +194,7 @@ router.post("/private/project/stage/new", (req, res) => {
         }
         //继承内容
         stage.content = originStage.content
-        //TODO: 继承时，image和video复制一份储存返回的新id
+        //TODO: 继承时，image和video和file复制一份储存返回的新id
     } else {
         stage.authorUID = [req.uid]
         if (project.authorType === "group") {
@@ -195,21 +203,31 @@ router.post("/private/project/stage/new", (req, res) => {
         }
     }
 
-    project.stages.push(stage)
-    project.save((err, p) => {
-        if (err) {
-            res.json({
-                code: 30001,
-                message: "Database Error",
-            })
-            return
-        }
-        let _id = p.stages.slice(-1)._id
-        res.json({
-            code: 20000,
-            data: _id,
-        })
+    Stage.find({
+        timelineProjectID: project._id,
     })
+        .select("editable")
+        .then(stages => {
+            //新建阶段，之前阶段不可编辑
+            for (let e of stages) {
+                e.editable = false
+                e.save(err => {})
+            }
+
+            Stage(stage).save((err, s) => {
+                if (err) {
+                    res.json({
+                        code: 30001,
+                        message: "Database Error",
+                    })
+                    return
+                }
+                res.json({
+                    code: 20000,
+                    data: s._id,
+                })
+            })
+        })
 })
 
 import stage from "./stage.js"

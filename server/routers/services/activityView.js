@@ -4,8 +4,9 @@ let router = Router()
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 import TimeLineProject from "#models/TimeLineProject.js"
+import Stage from "#models/Stage.js"
 
-//验证带id的stage的timeline的activity是否有权限访问
+//验证stage的timeline的activity是否有权限访问
 router.use((req, res, next) => {
     let stageID = req.body.stageID || req.query.stageID
 
@@ -21,17 +22,7 @@ router.use((req, res, next) => {
         })
         return
     }
-    TimeLineProject.findOne(
-        {
-            "stages._id": stageID,
-        },
-        {
-            stages: 1,
-            activityID: 1,
-            authorType: 1,
-            authorID: 1,
-        }
-    ).then((project, err) => {
+    Stage.findById(stageID).then((stage, err) => {
         if (err) {
             res.json({
                 code: 30001,
@@ -39,22 +30,22 @@ router.use((req, res, next) => {
             })
             return
         }
-        if (!project) {
+        if (!stage) {
             res.json({
                 message: "stage不存在",
             })
             return
         }
-        req.activityID = project.activityID
-        req.stageID = stageID
-        req.project = project
+
+        req.projectID = stage.timelineProjectID
+        req.stage = stage
         next()
     })
 })
 
 //验证带id的timeline的activity是否有权限访问
 router.use((req, res, next) => {
-    let projectID = req.body.projectID || req.query.projectID
+    let projectID = req.body.projectID || req.query.projectID || req.projectID
     if (!projectID) {
         return next()
     }

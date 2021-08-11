@@ -4,6 +4,7 @@ import Course from "#models/Course.js"
 import Section from "#models/Section.js"
 import Activity from "#root/models/Activity.js"
 import TimeLineProject from "#models/TimeLineProject.js"
+import Stage from "#models/Stage.js"
 
 class routeTree {
     tree = {
@@ -113,20 +114,16 @@ class routeTree {
             meta: {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
-                        return await TimeLineProject.findOne(
-                            {
-                                "stages._id": id,
-                            },
-                            {
-                                stages: { $elemMatch: { _id: id } },
-                                activityID: 1,
-                            }
-                        ).then(project => {
-                            return {
-                                name: project.name || "暂无阶段名",
-                                parentID: project.activityID,
-                            }
-                        })
+                        return await Stage.findById(id)
+
+                            .select("timelineProjectID")
+                            .populate("timelineProjectID")
+                            .then(project => {
+                                return {
+                                    name: project.name || "暂无阶段名",
+                                    parentID: project.timelineProjectID.activityID,
+                                }
+                            })
                     }
                 },
             },
