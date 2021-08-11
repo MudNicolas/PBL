@@ -1,13 +1,6 @@
 <template>
     <div>
         <froala :tag="'div'" :config="config" v-model="content" ref="editor"></froala>
-        <div class="view-wrapper">
-            <div class="fr-box fr-basic">
-                <div class="fr-element">
-                    <froalaView v-model="content"></froalaView>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -40,10 +33,10 @@ import "froala-editor/js/plugins/entities.min.js"
 import "froala-editor/js/plugins/edit_in_popup.min.js"
 import "froala-editor/js/plugins/draggable.min.js"
 import "froala-editor/js/plugins/colors.min.js"
-import "froala-editor/js/plugins/code_view.min.js"
-import "froala-editor/js/plugins/code_beautifier.min.js"
 import "froala-editor/js/plugins/char_counter.min.js"
 import "froala-editor/js/plugins/align.min.js"
+import "froala-editor/js/plugins/inline_class.min.js"
+import "froala-editor/js/plugins/inline_style.min.js"
 
 import { getToken } from "@/utils/auth"
 import { autosave } from "@/api/timeline-project"
@@ -72,7 +65,13 @@ export default {
         },
     },
 
-    //TODO: 图片视频的上传，stage记录所有上传过的image和video，保存对比没用到的，标记isused为false，显示在管理员清理文件的七天外文件中
+    //TODO
+    /**
+     * √图片视频的上传，
+     * √stage记录所有上传过的image和video，
+     * √保存对比没用到的，标记isused为false，
+     * 显示在管理员清理文件的七天外文件中
+     */
     data() {
         let handleInit = editor => {
             this.handleInit(editor)
@@ -154,7 +153,6 @@ export default {
                             "strikeThrough",
                             "subscript",
                             "superscript",
-                            "fontFamily",
                             "fontSize",
                             "textColor",
                             "backgroundColor",
@@ -187,27 +185,12 @@ export default {
                             "insertImage",
                             "insertVideo",
                             "insertTable",
-                            "emoticons",
-                            "fontAwesome",
-                            "specialCharacters",
-                            "embedly",
-                            "insertFile",
                             "insertHR",
                         ],
                         buttonsVisible: 5,
                     },
                     moreMisc: {
-                        buttons: [
-                            "undo",
-                            "redo",
-                            "fullscreen",
-                            "print",
-                            "getPDF",
-                            "spellChecker",
-                            "selectAll",
-                            "html",
-                            "help",
-                        ],
+                        buttons: ["undo", "redo", "fullscreen", "selectAll", "help"],
                         align: "right",
                         buttonsVisible: 2,
                     },
@@ -222,9 +205,5 @@ export default {
 <style lang='scss'>
 #fr-logo {
     display: none;
-}
-.view-wrapper {
-    border: 1px solid #cccccc;
-    border-radius: 10px;
 }
 </style>

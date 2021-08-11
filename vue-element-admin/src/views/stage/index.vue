@@ -41,10 +41,12 @@
                             </div>
                         </upload-file>
                     </el-form-item>
+                    <!--TODO:保存按钮，提交审核按钮-->
                 </el-form>
             </el-col>
         </el-row>
         <el-divider />
+        <!--TODO:发言评论组件-->
     </div>
 </template>
 
@@ -52,6 +54,7 @@
 import { getStage } from "@/api/timeline-project"
 import Editor from "@/components/Editor"
 import uploadFile from "@/components/UploadFile"
+import download from "@/utils/download"
 
 export default {
     name: "TimeLineStage",

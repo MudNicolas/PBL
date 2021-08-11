@@ -58,6 +58,12 @@ var projectSchemas = new mongoose.Schema({
                     ref: "File",
                 },
             ],
+            allUploadedfiles: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "File",
+                },
+            ],
             public: {
                 type: Boolean,
                 default: false,
