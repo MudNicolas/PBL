@@ -67,7 +67,6 @@ export default {
                 let _p = {}
                 let position = this.position
                 _p[position.type] = position._id
-                console.log(_p, this.position)
                 autosave({ ..._p, content })
                     .then()
                     .catch()
