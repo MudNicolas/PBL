@@ -257,10 +257,11 @@ export default {
 
     .sketch {
         font-size: 14px;
-
+        line-height: 18px;
         border-left: 2px solid #cccccc;
         padding-left: 8px;
         color: #606266;
+        margin-bottom: 12px;
     }
 }
 </style>

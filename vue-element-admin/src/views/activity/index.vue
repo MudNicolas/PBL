@@ -125,7 +125,7 @@ export default {
         }
         .info {
             font-size: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 24px;
             border-left: 2px solid #cccccc;
             padding-left: 8px;
         }
