@@ -193,7 +193,7 @@ export default {
             getStage({ stageID })
                 .then(res => {
                     this.stage = res.data
-                    if (this.stage.isSaved) {
+                    if (this.stage.isSaved && !this.preview) {
                         this.togglePreview()
                     }
                     this.loading = false
