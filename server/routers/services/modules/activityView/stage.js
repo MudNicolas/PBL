@@ -252,6 +252,7 @@ function processStageFiles(stage, filesID) {
 
         File.find({
             _id: { $in: filesID },
+            isNeeded: false,
         }).then((files, err) => {
             if (err) {
                 return reject({
@@ -261,7 +262,7 @@ function processStageFiles(stage, filesID) {
             }
             let allSave = []
             files.forEach(f => {
-                f.isUsed = true
+                f.isNeeded = true
                 allSave.push(
                     new Promise((resolve, reject) => {
                         f.save(err => {
@@ -287,6 +288,7 @@ function processStageFiles(stage, filesID) {
 
         File.find({
             _id: { $in: notUsedFiles },
+            isNeeded: true,
         }).then(files => {
             files.forEach(f => {
                 f.isNeeded = false

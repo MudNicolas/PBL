@@ -86,7 +86,7 @@ router.post("/file/submit", (req, res) => {
         }
         let allSave = []
         files.forEach(f => {
-            f.isUsed = true
+            f.isNeeded = true
             allSave.push(
                 new Promise((resolve, reject) => {
                     f.save(err => {
