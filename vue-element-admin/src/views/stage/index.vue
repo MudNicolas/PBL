@@ -109,7 +109,7 @@
                         </el-form-item>
                     </span>
                     <el-form-item v-if="stage.editable">
-                        <el-button type="primary" @click="togglePreview">
+                        <el-button type="primary" @click="togglePreviewPage">
                             {{ previewButtonText }}
                         </el-button>
 
@@ -193,6 +193,9 @@ export default {
             getStage({ stageID })
                 .then(res => {
                     this.stage = res.data
+                    if (this.stage.isSaved) {
+                        this.togglePreview()
+                    }
                     this.loading = false
                 })
                 .catch()
@@ -207,13 +210,19 @@ export default {
         handleSuccess(response, file, fileList) {
             this.stage.files = fileList
         },
+        getContent() {
+            this.stage.content = this.$refs.Editor.editor.html.get()
+        },
         togglePreview() {
-            if (!this.preview) {
-                this.stage.content = this.$refs.Editor.editor.html.get()
-            }
             this.preview = !this.preview
 
             this.previewButtonText = this.preview ? "编辑" : "预览"
+        },
+        togglePreviewPage() {
+            if (!this.preview) {
+                this.getContent()
+            }
+            this.togglePreview()
         },
         handleSave() {
             this.saving = true

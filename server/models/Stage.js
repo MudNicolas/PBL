@@ -74,4 +74,8 @@ export default mongoose.model("Stage", {
         type: Boolean,
         default: true,
     },
+    isSaved: {
+        type: Boolean,
+        default: false,
+    },
 })

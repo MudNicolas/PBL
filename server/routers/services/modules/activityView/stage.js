@@ -31,6 +31,7 @@ router.get("/get", async (req, res) => {
                 subjectName,
                 _id,
                 editable,
+                isSaved,
             } = stage
             files = files.map(e => {
                 return {
@@ -51,6 +52,7 @@ router.get("/get", async (req, res) => {
                 subjectName,
                 _id,
                 editable,
+                isSaved,
             }
 
             res.json({
@@ -155,6 +157,12 @@ router.post("/save", (req, res) => {
     stage.sketch = sketch
     stage.allUploadedfiles = [...stage.allUploadedfiles, ...files]
     stage.files = files
+    stage.editLog.push({
+        uid: req.uid,
+        time: new Date(),
+        operation: "保存",
+    })
+    stage.isSaved = true
 
     processContentSource(stage, content)
         .then(d => {
