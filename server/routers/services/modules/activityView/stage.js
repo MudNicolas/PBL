@@ -60,16 +60,31 @@ router.get("/get", async (req, res) => {
 
             //mock start
             let comments = []
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 3; i++) {
                 comments.push(
                     Mock.mock({
                         comment: "@cparagraph",
                         time: new Date(),
+                        commentUser: {
+                            name: "Nicolas",
+                            _id: "60c21381c00dbe333cb5dfb8",
+                            avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
+                        },
                         reply: () => {
                             let r = []
                             for (let j = 0; j < 3; j++) {
                                 r.push(
                                     Mock.mock({
+                                        from: {
+                                            name: "Nicolas",
+                                            _id: "60c21381c00dbe333cb5dfb8",
+                                            avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
+                                        },
+                                        to: {
+                                            name: "Nicolas",
+                                            _id: "60c21381c00dbe333cb5dfb8",
+                                            avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
+                                        },
                                         content: "@cparagraph",
                                         time: new Date(),
                                     })

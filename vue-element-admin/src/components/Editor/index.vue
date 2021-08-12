@@ -52,14 +52,25 @@ export default {
             type: Number,
             default: 300,
         },
-        stageId: String,
+        position: Object,
+        isAutosave: {
+            type: Boolean,
+            default: false,
+        },
+        imageUploadPath: String,
+        videoUploadPath: String,
     },
     methods: {
         autosave(content) {
-            let stageID = this.stageId
             //防止保存空值
-            if (content) {
-                autosave({ stageID, content }).then().catch()
+            if (content && this.isAutosave) {
+                let _p = {}
+                let position = this.position
+                _p[position.type] = position._id
+                console.log(_p, this.position)
+                autosave({ ..._p, content })
+                    .then()
+                    .catch()
             }
         },
         handleInit(editor) {
@@ -79,19 +90,8 @@ export default {
             this.handleInit(editor)
         }
 
-        let stageID = this.stageId
-        let imageUploadPath
-        let videoUploadPath
-        if (stageID) {
-            imageUploadPath =
-                process.env.VUE_APP_BASE_API +
-                "/activity/view/timeline/stage/editor/image/upload?stageID=" +
-                stageID
-            videoUploadPath =
-                process.env.VUE_APP_BASE_API +
-                "/activity/view/timeline/stage/editor/video/upload?stageID=" +
-                stageID
-        }
+        let imageUploadPath = this.imageUploadPath
+        let videoUploadPath = this.videoUploadPath
 
         return {
             editor: null,

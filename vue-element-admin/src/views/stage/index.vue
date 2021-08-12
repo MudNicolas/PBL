@@ -26,7 +26,10 @@
                                 :exist-content="stage.content"
                                 ref="Editor"
                                 :min-height="480"
-                                :stage-id="stageID"
+                                :position="{ type: 'stageID', _id: stageID }"
+                                :is-autosave="true"
+                                :image-upload-path="imageUploadPath"
+                                :video-upload-path="videoUploadPath"
                             />
                         </el-form-item>
 
@@ -132,7 +135,7 @@
                             <el-popover
                                 placement="left"
                                 trigger="hover"
-                                :open-delay="100"
+                                :open-delay="200"
                                 width="360"
                                 @show="showUpPopoverKey = user._id"
                             >
@@ -157,11 +160,11 @@
                 </div>
             </el-col>
         </el-row>
-        <el-divider />
-        <!--TODO:发言评论组件-->
         <el-row>
             <el-col :span="18" :offset="3">
-                <comment :comments="comments" />
+                <el-divider />
+
+                <comment :comments="comments" :position="{ type: 'stageID', _id: stageID }" />
             </el-col>
         </el-row>
     </div>
@@ -219,6 +222,14 @@ export default {
             previewButtonText: "预览",
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             showUpPopoverKey: "",
+            imageUploadPath:
+                process.env.VUE_APP_BASE_API +
+                "/activity/view/timeline/stage/editor/image/upload?stageID=" +
+                this.stageID,
+            videoUploadPath:
+                process.env.VUE_APP_BASE_API +
+                "/activity/view/timeline/stage/editor/video/upload?stageID=" +
+                this.stageID,
         }
     },
     created() {
@@ -311,17 +322,16 @@ export default {
         color: #606266;
         margin-bottom: 12px;
     }
-}
 
-.author {
-    display: flex;
-    align-items: center;
-    margin-right: 0px;
+    .author {
+        display: flex;
+        align-items: center;
 
-    .name {
-        margin-left: 8px;
-        color: #606266;
-        font-size: 14px;
+        .name {
+            margin-left: 8px;
+            color: #606266;
+            font-size: 14px;
+        }
     }
 }
 </style>
