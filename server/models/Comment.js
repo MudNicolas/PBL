@@ -4,6 +4,10 @@ let commentSchemas = new mongoose.Schema({
     activityContentID: {
         type: mongoose.Schema.Types.ObjectId,
     },
+    commentUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     comment: [
         {
             entry: String,

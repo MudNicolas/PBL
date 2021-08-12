@@ -126,10 +126,44 @@
                         </el-button>
                     </el-form-item>
                 </el-form>
+                <div>
+                    <div v-for="user of stage.authorUID" :key="user._id">
+                        <div class="author">
+                            <el-popover
+                                placement="left"
+                                trigger="hover"
+                                :open-delay="100"
+                                width="360"
+                                @show="showUpPopoverKey = user._id"
+                            >
+                                <div>
+                                    <profile-popover
+                                        :uid="user._id"
+                                        :show-up-popover-key="showUpPopoverKey"
+                                    />
+                                </div>
+                                <span slot="reference">
+                                    <el-avatar
+                                        size="small"
+                                        :src="avatarPath + user.avatar"
+                                    ></el-avatar>
+                                </span>
+                            </el-popover>
+                            <span class="name">
+                                {{ user.name }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </el-col>
         </el-row>
         <el-divider />
         <!--TODO:发言评论组件-->
+        <el-row>
+            <el-col :span="18" :offset="3">
+                <comment :comments="comments" />
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -140,10 +174,12 @@ import EditorViewer from "@/components/EditorViewer"
 import uploadFile from "@/components/UploadFile"
 import download from "@/utils/download"
 import { fileType, fileIcon } from "@/utils/fileType"
+import Comment from "@/components/Comment"
+import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 
 export default {
     name: "TimeLineStage",
-    components: { Editor, uploadFile, EditorViewer },
+    components: { Editor, uploadFile, EditorViewer, Comment, ProfilePopover },
     filters: {
         subjectNameFilter: val => {
             return val || "暂无阶段名"
@@ -177,10 +213,12 @@ export default {
                 content: "",
                 files: [],
             },
-
+            comments: [],
             saving: false,
             preview: false,
             previewButtonText: "预览",
+            avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
+            showUpPopoverKey: "",
         }
     },
     created() {
@@ -192,7 +230,8 @@ export default {
             this.loading = true
             getStage({ stageID })
                 .then(res => {
-                    this.stage = res.data
+                    this.stage = res.data.stageData
+                    this.comments = res.data.comments
                     if (this.stage.isSaved && !this.preview) {
                         this.togglePreview()
                     }
@@ -271,6 +310,18 @@ export default {
         padding-left: 8px;
         color: #606266;
         margin-bottom: 12px;
+    }
+}
+
+.author {
+    display: flex;
+    align-items: center;
+    margin-right: 0px;
+
+    .name {
+        margin-left: 8px;
+        color: #606266;
+        font-size: 14px;
     }
 }
 </style>

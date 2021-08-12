@@ -10,6 +10,8 @@ import EditorImage from "#models/EditorImage.js"
 import EditorVideo from "#models/EditorVideo.js"
 import File from "#models/File.js"
 
+import Mock from "mockjs"
+
 router.get("/get", async (req, res) => {
     let { stage } = req
 
@@ -32,7 +34,8 @@ router.get("/get", async (req, res) => {
                 _id,
                 editable,
                 isSaved,
-            } = stage
+            } = _stage
+
             files = files.map(e => {
                 return {
                     name: e.originalFilename,
@@ -40,7 +43,7 @@ router.get("/get", async (req, res) => {
                     size: e.size,
                 }
             })
-            let data = {
+            let stageData = {
                 content,
                 authorUID,
                 editLog,
@@ -53,6 +56,35 @@ router.get("/get", async (req, res) => {
                 _id,
                 editable,
                 isSaved,
+            }
+
+            //mock start
+            let comments = []
+            for (let i = 0; i < 10; i++) {
+                comments.push(
+                    Mock.mock({
+                        comment: "@cparagraph",
+                        time: new Date(),
+                        reply: () => {
+                            let r = []
+                            for (let j = 0; j < 3; j++) {
+                                r.push(
+                                    Mock.mock({
+                                        content: "@cparagraph",
+                                        time: new Date(),
+                                    })
+                                )
+                            }
+                            return r
+                        },
+                    })
+                )
+            }
+            //mock end
+
+            let data = {
+                stageData,
+                comments,
             }
 
             res.json({
