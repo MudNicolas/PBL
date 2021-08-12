@@ -469,8 +469,19 @@ let types = [
     "zsh",
 ]
 
-export default function withInTypes(filename) {
-    let type = filename.split(".")[filename.split(".").length - 1]
+export function fileIcon(filename) {
+    let type = filename
+        .split(".")
+        .slice(-1)
+        .toString()
+
     if (types.indexOf(type) > -1) return type
-    return false
+    return "blank"
+}
+
+export function fileType(filename) {
+    return filename
+        .split(".")
+        .slice(-1)
+        .toString()
 }

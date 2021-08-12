@@ -9,44 +9,55 @@ import {
 import EditorImage from "#models/EditorImage.js"
 import EditorVideo from "#models/EditorVideo.js"
 import File from "#models/File.js"
-import fs from "fs"
 
 router.get("/get", async (req, res) => {
     let { stage } = req
 
-    stage.execPopulate("files authorUID").then(_stage => {
-        let {
-            content,
-            authorUID,
-            editLog,
-            files,
-            isUsed,
-            isPublic,
-            sketch,
-            status,
-            subjectName,
-            _id,
-            editable,
-        } = stage
-        let data = {
-            content,
-            authorUID,
-            editLog,
-            files,
-            isUsed,
-            isPublic,
-            sketch,
-            status,
-            subjectName,
-            _id,
-            editable,
-        }
+    stage
+        .execPopulate([
+            { path: "authorUID", select: "name avatar" },
+            { path: "files", select: "originalFilename size" },
+        ])
+        .then(_stage => {
+            let {
+                content,
+                authorUID,
+                editLog,
+                files,
+                isUsed,
+                isPublic,
+                sketch,
+                status,
+                subjectName,
+                _id,
+                editable,
+            } = stage
+            files = files.map(e => {
+                return {
+                    name: e.originalFilename,
+                    response: { _id: e._id },
+                    size: e.size,
+                }
+            })
+            let data = {
+                content,
+                authorUID,
+                editLog,
+                files,
+                isUsed,
+                isPublic,
+                sketch,
+                status,
+                subjectName,
+                _id,
+                editable,
+            }
 
-        res.json({
-            code: 20000,
-            data,
+            res.json({
+                code: 20000,
+                data,
+            })
         })
-    })
 })
 
 router.use((req, res, next) => {

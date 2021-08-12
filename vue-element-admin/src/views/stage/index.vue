@@ -35,7 +35,7 @@
                                 action="#"
                                 drag
                                 multiple
-                                :file-list="files"
+                                :file-list="stage.files"
                                 :on-preview="download"
                                 :on-remove="handleRemove"
                                 :on-success="handleSuccess"
@@ -61,8 +61,8 @@
                         </el-form-item>
                         <el-form-item>
                             <el-table
-                                v-if="files.length > 0"
-                                :data="files"
+                                v-if="stage.files.length > 0"
+                                :data="stage.files"
                                 border
                                 style="width: 100%"
                             >
@@ -70,7 +70,7 @@
                                     <template slot-scope="scope">
                                         <div class="content">
                                             <span @click="download(scope.row._id)">
-                                                <svg-icon :icon-class="scope.row.name | fileType" />
+                                                <svg-icon :icon-class="scope.row.name | fileIcon" />
                                                 {{ scope.row.name }}
                                             </span>
                                         </div>
@@ -139,7 +139,7 @@ import Editor from "@/components/Editor"
 import EditorViewer from "@/components/EditorViewer"
 import uploadFile from "@/components/UploadFile"
 import download from "@/utils/download"
-import includeFileType from "@/utils/fileType"
+import { fileType, fileIcon } from "@/utils/fileType"
 
 export default {
     name: "TimeLineStage",
@@ -148,12 +148,11 @@ export default {
         subjectNameFilter: val => {
             return val || "暂无阶段名"
         },
-        fileType: function (val) {
-            let type = includeFileType(val)
-            if (type) {
-                return type
-            }
-            return "blank"
+        fileType: val => {
+            return fileType(val)
+        },
+        fileIcon: val => {
+            return fileIcon(val)
         },
         fileSize: function (val) {
             if (val < 1024) {
@@ -172,8 +171,13 @@ export default {
         return {
             stageID: this.$route.params.id,
             loading: false,
-            stage: {},
-            files: [],
+            stage: {
+                subjectName: "",
+                sketch: "",
+                content: "",
+                files: [],
+            },
+
             saving: false,
             preview: false,
             previewButtonText: "预览",
@@ -182,7 +186,6 @@ export default {
     created() {
         this.getStage()
     },
-    //提交时，等待0.8秒再发送，防止手太快内容没同步
     methods: {
         getStage() {
             let { stageID } = this
@@ -199,10 +202,10 @@ export default {
             download(file.response._id)
         },
         handleRemove(file, fileList) {
-            this.files = fileList
+            this.stage.files = fileList
         },
         handleSuccess(response, file, fileList) {
-            this.files = fileList
+            this.stage.files = fileList
         },
         togglePreview() {
             if (!this.preview) {
@@ -220,7 +223,7 @@ export default {
             let content = this.$refs.Editor
                 ? this.$refs.Editor.editor.html.get()
                 : this.stage.content
-            let files = this.files.map(e => {
+            let files = this.stage.files.map(e => {
                 return e.response._id
             })
             let stageData = { subjectName, sketch, content, files }

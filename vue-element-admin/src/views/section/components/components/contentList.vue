@@ -66,7 +66,7 @@
                     <template slot-scope="scope">
                         <div class="content">
                             <span @click="download(scope.row._id)">
-                                <svg-icon :icon-class="scope.row.name | fileType" />
+                                <svg-icon :icon-class="scope.row.name | fileIcon" />
                                 {{ scope.row.name }}
                             </span>
                         </div>
@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import includeFileType from "@/utils/fileType"
+import { fileType, fileIcon } from "@/utils/fileType"
 import download from "@/utils/download"
 import newLink from "../comtentManage/components/newLink.vue"
 
@@ -167,12 +167,11 @@ export default {
         },
     },
     filters: {
-        fileType: function (val) {
-            let type = includeFileType(val)
-            if (type) {
-                return type
-            }
-            return "blank"
+        fileType: val => {
+            return fileType(val)
+        },
+        fileIcon: val => {
+            return fileIcon(val)
         },
         fileSize: function (val) {
             if (val < 1024) {
