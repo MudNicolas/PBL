@@ -47,3 +47,11 @@ export function saveStage(data) {
         data,
     })
 }
+
+export function getComments(query) {
+    return request({
+        url: "/activity/view/timeline/stage/comments/get",
+        method: "get",
+        params: query,
+    })
+}

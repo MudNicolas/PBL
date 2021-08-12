@@ -164,14 +164,50 @@
             <el-col :span="18" :offset="3">
                 <el-divider />
 
-                <comment :comments="comments" :position="{ type: 'stageID', _id: stageID }" />
+                <div id="commentList">
+                    <el-skeleton
+                        :rows="6"
+                        animated
+                        :loading="commentsLoading"
+                        :count="3"
+                        :throttle="300"
+                    >
+                        <template slot="template">
+                            <div style="display: flex; align-items: center; margin-bottom: 16px">
+                                <el-skeleton-item variant="circle" />
+                                <el-skeleton-item
+                                    variant="h3"
+                                    style="width: 20%; margin-left: 10px"
+                                />
+                            </div>
+                            <el-skeleton-item
+                                variant="rect"
+                                style="margin-left: 47px; margin-bottom: 16px"
+                            />
+                            <el-skeleton-item
+                                variant="rect"
+                                style="margin-left: 47px; margin-bottom: 16px"
+                            />
+                            <el-skeleton-item
+                                variant="rect"
+                                style="margin-left: 47px; margin-bottom: 16px; width: 66%"
+                            />
+                        </template>
+                        <slot>
+                            <comment
+                                :comments="comments"
+                                :position="{ type: 'stageID', _id: stageID }"
+                            />
+                        </slot>
+                    </el-skeleton>
+                </div>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <script>
-import { getStage, saveStage } from "@/api/timeline-project"
+import { getStage, saveStage, getComments } from "@/api/timeline-project"
 import Editor from "@/components/Editor"
 import EditorViewer from "@/components/EditorViewer"
 import uploadFile from "@/components/UploadFile"
@@ -217,6 +253,7 @@ export default {
                 files: [],
             },
             comments: [],
+            commentsLoading: true,
             saving: false,
             preview: false,
             previewButtonText: "预览",
@@ -241,16 +278,37 @@ export default {
             this.loading = true
             getStage({ stageID })
                 .then(res => {
-                    this.stage = res.data.stageData
-                    this.comments = res.data.comments
+                    this.stage = res.data
                     if (this.stage.isSaved && !this.preview) {
                         this.togglePreview()
                     }
                     this.loading = false
+                    let io = new IntersectionObserver(
+                        ([{ boundingClientRect, intersectionRatio }]) => {
+                            if (intersectionRatio <= 0) {
+                                return false
+                            }
+                            this.getComments()
+                            io.disconnect()
+                        }
+                    )
+                    // 6. 获取被监听元素
+                    let commentList = document.getElementById("commentList")
+                    // 7. 在观察对象上，监听 6 中获取的对象
+                    io.observe(commentList)
                 })
                 .catch()
         },
-
+        getComments() {
+            let { stageID } = this
+            this.commentsLoading = true
+            getComments({ stageID })
+                .then(res => {
+                    this.comments = res.data
+                    this.commentsLoading = false
+                })
+                .catch()
+        },
         download(file) {
             download(file.response._id)
         },

@@ -43,7 +43,7 @@ router.get("/get", async (req, res) => {
                     size: e.size,
                 }
             })
-            let stageData = {
+            let data = {
                 content,
                 authorUID,
                 editLog,
@@ -58,55 +58,56 @@ router.get("/get", async (req, res) => {
                 isSaved,
             }
 
-            //mock start
-            let comments = []
-            for (let i = 0; i < 3; i++) {
-                comments.push(
-                    Mock.mock({
-                        comment: "@cparagraph",
-                        time: new Date(),
-                        commentUser: {
-                            name: "Nicolas",
-                            _id: "60c21381c00dbe333cb5dfb8",
-                            avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
-                        },
-                        reply: () => {
-                            let r = []
-                            for (let j = 0; j < 3; j++) {
-                                r.push(
-                                    Mock.mock({
-                                        from: {
-                                            name: "Nicolas",
-                                            _id: "60c21381c00dbe333cb5dfb8",
-                                            avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
-                                        },
-                                        to: {
-                                            name: "Nicolas",
-                                            _id: "60c21381c00dbe333cb5dfb8",
-                                            avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
-                                        },
-                                        content: "@cparagraph",
-                                        time: new Date(),
-                                    })
-                                )
-                            }
-                            return r
-                        },
-                    })
-                )
-            }
-            //mock end
-
-            let data = {
-                stageData,
-                comments,
-            }
-
             res.json({
                 code: 20000,
                 data,
             })
         })
+})
+
+router.get("/comments/get", (req, res) => {
+    //mock start
+    let comments = []
+    for (let i = 0; i < 3; i++) {
+        comments.push(
+            Mock.mock({
+                comment: "@cparagraph",
+                time: new Date(),
+                commentUser: {
+                    name: "Nicolas",
+                    _id: "60c21381c00dbe333cb5dfb8",
+                    avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
+                },
+                reply: () => {
+                    let r = []
+                    for (let j = 0; j < 3; j++) {
+                        r.push(
+                            Mock.mock({
+                                from: {
+                                    name: "Nicolas",
+                                    _id: "60c21381c00dbe333cb5dfb8",
+                                    avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
+                                },
+                                to: {
+                                    name: "Nicolas",
+                                    _id: "60c21381c00dbe333cb5dfb8",
+                                    avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
+                                },
+                                content: "@cparagraph",
+                                time: new Date(),
+                            })
+                        )
+                    }
+                    return r
+                },
+            })
+        )
+    }
+    //mock end
+    res.json({
+        code: 20000,
+        data: comments,
+    })
 })
 
 router.use((req, res, next) => {

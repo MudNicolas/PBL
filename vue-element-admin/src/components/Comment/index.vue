@@ -83,6 +83,7 @@
         </div>
         <el-form>
             <el-form-item>
+                <!--TODO: 评论图片视频的上传路径-->
                 <editor ref="Editor" />
             </el-form-item>
             <el-form-item>
