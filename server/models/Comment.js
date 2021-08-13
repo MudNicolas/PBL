@@ -4,6 +4,10 @@ let commentSchemas = new mongoose.Schema({
     activityContentID: {
         type: mongoose.Schema.Types.ObjectId,
     },
+    isSubmit: {
+        type: Boolean,
+        default: false,
+    },
     commentUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -12,6 +16,30 @@ let commentSchemas = new mongoose.Schema({
         {
             entry: String,
             content: String,
+        },
+    ],
+    images: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "EditorImage",
+        },
+    ],
+    allUploadedImages: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "EditorImage",
+        },
+    ],
+    videos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "EditorVideo",
+        },
+    ],
+    allUploadedVideos: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "EditorVideo",
         },
     ],
     time: Date,

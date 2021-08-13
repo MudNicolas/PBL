@@ -68,7 +68,7 @@ router.get("/get", async (req, res) => {
 router.get("/comments/get", (req, res) => {
     //mock start
     let comments = []
-    for (let i = 0; i < 3; i++) {
+    /*  for (let i = 0; i < 3; i++) {
         comments.push(
             Mock.mock({
                 comment: "@cparagraph",
@@ -104,7 +104,7 @@ router.get("/comments/get", (req, res) => {
                 },
             })
         )
-    }
+    } */
     //mock end
     res.json({
         code: 20000,

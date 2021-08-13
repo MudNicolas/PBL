@@ -8,7 +8,13 @@
                     placement="left"
                     :open-delay="200"
                 >
-                    <el-button icon="el-icon-refresh" circle @click="reloadComments"></el-button>
+                    <el-button
+                        icon="el-icon-refresh"
+                        circle
+                        @click="reloadComments()"
+                        style="transition: all 0.5s"
+                        ref="refreshButton"
+                    ></el-button>
                 </el-tooltip>
             </affix>
 
@@ -171,6 +177,7 @@ export default {
             showUpPopoverKey: "",
             myReply: "",
             replyTo: "",
+            deg: 0,
         }
     },
     methods: {
@@ -179,6 +186,8 @@ export default {
         },
         reloadComments() {
             this.$emit("reloadComments")
+            this.deg += 180
+            this.$refs.refreshButton.$el.style.transform = `rotate(${this.deg}deg)`
         },
         showReplayArea(id) {
             if (this.replyTo === id) {
