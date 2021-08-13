@@ -197,6 +197,8 @@
                             <comment
                                 :comments="comments"
                                 :position="{ type: 'stageID', _id: stageID }"
+                                ref="comment"
+                                @reloadComments="getComments"
                             />
                         </slot>
                     </el-skeleton>
@@ -309,6 +311,7 @@ export default {
                 })
                 .catch()
         },
+
         download(file) {
             download(file.response._id)
         },

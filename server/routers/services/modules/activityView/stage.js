@@ -72,6 +72,7 @@ router.get("/comments/get", (req, res) => {
         comments.push(
             Mock.mock({
                 comment: "@cparagraph",
+                _id: "@id",
                 time: new Date(),
                 commentUser: {
                     name: "Nicolas",
@@ -95,6 +96,7 @@ router.get("/comments/get", (req, res) => {
                                 },
                                 content: "@cparagraph",
                                 time: new Date(),
+                                _id: "@id",
                             })
                         )
                     }
