@@ -116,11 +116,11 @@ class routeTree {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
                         return await Stage.findById(id)
 
-                            .select("timelineProjectID")
+                            .select("timelineProjectID subjectName")
                             .populate("timelineProjectID")
                             .then(project => {
                                 return {
-                                    name: project.name || "暂无阶段名",
+                                    name: project.subjectName || "暂无阶段名",
                                     parentID: project.timelineProjectID.activityID,
                                 }
                             })

@@ -39,7 +39,7 @@ import "froala-editor/js/plugins/inline_class.min.js"
 import "froala-editor/js/plugins/inline_style.min.js"
 
 import { getToken } from "@/utils/auth"
-import { autosave } from "@/api/timeline-project"
+import { autosave } from "@/api/editor"
 
 export default {
     name: "Editor",
@@ -53,9 +53,9 @@ export default {
             default: 300,
         },
         position: Object,
-        isAutosave: {
-            type: Boolean,
-            default: false,
+        autosavePath: {
+            type: String,
+            default: "",
         },
         imageUploadPath: String,
         videoUploadPath: String,
@@ -63,11 +63,12 @@ export default {
     methods: {
         autosave(content) {
             //防止保存空值
-            if (content && this.isAutosave) {
+            let path = this.autosavePath
+            if (content && path) {
                 let _p = {}
                 let position = this.position
                 _p[position.type] = position._id
-                autosave({ ..._p, content })
+                autosave(path, { ..._p, content })
                     .then()
                     .catch()
             }

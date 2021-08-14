@@ -135,13 +135,25 @@
                 </div>
             </div>
             <el-form>
-                <el-form-item>
-                    <!--TODO: 评论图片视频的上传路径-->
-                    <editor ref="Editor" />
+                <el-form-item v-if="!myComment._id">
+                    <el-button
+                        type="primary"
+                        @click="createComment"
+                        icon="el-icon-plus"
+                        :loading="commentCreating"
+                    >
+                        发言
+                    </el-button>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleSubmit">提交</el-button>
-                </el-form-item>
+                <span v-else>
+                    <el-form-item>
+                        <!--TODO: 评论图片视频的上传路径-->
+                        <editor ref="Editor" />
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="handleSubmit">提交</el-button>
+                    </el-form-item>
+                </span>
             </el-form>
         </div>
     </div>
@@ -178,6 +190,11 @@ export default {
             myReply: "",
             replyTo: "",
             deg: 0,
+            commentCreating: false,
+            myComment: {
+                _id: "",
+                content: "",
+            },
         }
     },
     methods: {
@@ -196,6 +213,7 @@ export default {
                 this.replyTo = id
             }
         },
+        createComment() {},
     },
 }
 </script>

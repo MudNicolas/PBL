@@ -27,7 +27,7 @@
                                 ref="Editor"
                                 :min-height="480"
                                 :position="{ type: 'stageID', _id: stageID }"
-                                :is-autosave="true"
+                                :autosave-path="autosavePath"
                                 :image-upload-path="imageUploadPath"
                                 :video-upload-path="videoUploadPath"
                             />
@@ -160,7 +160,7 @@
                 </div>
             </el-col>
         </el-row>
-        <el-row>
+        <el-row style="margin-top: 20px">
             <el-col :span="18" :offset="3">
                 <el-divider />
 
@@ -269,6 +269,7 @@ export default {
                 process.env.VUE_APP_BASE_API +
                 "/activity/view/timeline/stage/editor/video/upload?stageID=" +
                 this.stageID,
+            autosavePath: "/activity/view/timeline/stage/editor/autosave",
         }
     },
     created() {
