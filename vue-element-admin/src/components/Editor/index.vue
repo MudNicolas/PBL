@@ -52,7 +52,7 @@ export default {
             type: Number,
             default: 300,
         },
-        position: Object,
+        autosavePosition: Object,
         autosavePath: {
             type: String,
             default: "",
@@ -66,9 +66,9 @@ export default {
             let path = this.autosavePath
             if (content && path) {
                 let _p = {}
-                let position = this.position
-                _p[position.type] = position._id
-                autosave(path, { ..._p, content })
+                let position = this.autosavePosition
+
+                autosave(path, { ...position, content })
                     .then()
                     .catch()
             }
@@ -119,8 +119,8 @@ export default {
                 imageUploadParam: "img",
                 imageUploadURL: imageUploadPath,
 
-                //自动保存
-                saveInterval: 1000 * 30,
+                //自动保存(s)
+                saveInterval: 1000 * 10,
 
                 heightMin: this.minHeight,
                 toolbarStickyOffset: 50,

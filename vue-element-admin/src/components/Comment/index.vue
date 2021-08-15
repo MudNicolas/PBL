@@ -135,25 +135,28 @@
                 </div>
             </div>
             <el-form>
-                <el-form-item v-if="!myComment._id">
-                    <el-button
-                        type="primary"
-                        @click="createComment"
-                        icon="el-icon-plus"
-                        :loading="commentCreating"
-                    >
-                        发言
-                    </el-button>
+                <el-form-item>
+                    <!--多条目的制作-->
+                    <el-tabs type="border-card" v-if="entry.length > 0">
+                        <el-tab-pane label="用户管理">用户管理</el-tab-pane>
+                    </el-tabs>
+                    <editor
+                        v-else
+                        ref="Editor"
+                        :exist-content="myComment.comment[0].content"
+                        :autosave-position="{
+                            ...position,
+                            commentID: myComment._id,
+                            entry: 'default',
+                        }"
+                        :autosave-path="autosavePath"
+                        :image-upload-path="imageUploadPath"
+                        :video-upload-path="videoUploadPath"
+                    />
                 </el-form-item>
-                <span v-else>
-                    <el-form-item>
-                        <!--TODO: 评论图片视频的上传路径-->
-                        <editor ref="Editor" />
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="handleSubmit">提交</el-button>
-                    </el-form-item>
-                </span>
+                <el-form-item>
+                    <el-button type="primary" @click="handleSubmit">提交</el-button>
+                </el-form-item>
             </el-form>
         </div>
     </div>
@@ -170,13 +173,21 @@ export default {
     name: "Comment",
     components: { ProfilePopover, Editor, Affix },
     props: {
-        comments: {
-            type: Array,
-            default: [],
-        },
-        position: {
+        commentsData: {
             type: Object,
+            default: {
+                comments: [],
+                tempComm: {
+                    _id: "",
+                    comment: [],
+                },
+            },
         },
+        entry: {
+            type: Array,
+            default: () => [],
+        },
+        position: Object,
     },
     filters: {
         timeFormat: val => {
@@ -184,17 +195,21 @@ export default {
         },
     },
     data() {
+        let stageID = this.$route.params.id
         return {
+            stageID,
+
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
+            autosavePath: "/activity/view/comments/editor/autosave",
+            imageUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/image/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
+            videoUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/video/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
+
             showUpPopoverKey: "",
             myReply: "",
             replyTo: "",
             deg: 0,
-            commentCreating: false,
-            myComment: {
-                _id: "",
-                content: "",
-            },
+            myComment: this.commentsData.tempComm,
+            comments: this.commentsData.comments,
         }
     },
     methods: {
@@ -203,7 +218,7 @@ export default {
         },
         reloadComments() {
             this.$emit("reloadComments")
-            this.deg += 180
+            this.deg -= 180
             this.$refs.refreshButton.$el.style.transform = `rotate(${this.deg}deg)`
         },
         showReplayArea(id) {
@@ -213,7 +228,6 @@ export default {
                 this.replyTo = id
             }
         },
-        createComment() {},
     },
 }
 </script>

@@ -10,8 +10,6 @@ import EditorImage from "#models/EditorImage.js"
 import EditorVideo from "#models/EditorVideo.js"
 import File from "#models/File.js"
 
-import Mock from "mockjs"
-
 router.get("/get", async (req, res) => {
     let { stage } = req
 
@@ -63,53 +61,6 @@ router.get("/get", async (req, res) => {
                 data,
             })
         })
-})
-
-router.get("/comments/get", (req, res) => {
-    //mock start
-    let comments = []
-    /*  for (let i = 0; i < 3; i++) {
-        comments.push(
-            Mock.mock({
-                comment: "@cparagraph",
-                _id: "@id",
-                time: new Date(),
-                commentUser: {
-                    name: "Nicolas",
-                    _id: "60c21381c00dbe333cb5dfb8",
-                    avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
-                },
-                reply: () => {
-                    let r = []
-                    for (let j = 0; j < 3; j++) {
-                        r.push(
-                            Mock.mock({
-                                from: {
-                                    name: "Nicolas",
-                                    _id: "60c21381c00dbe333cb5dfb8",
-                                    avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
-                                },
-                                to: {
-                                    name: "Nicolas",
-                                    _id: "60c21381c00dbe333cb5dfb8",
-                                    avatar: "J_qKhxtbIcm69Nd_15NijDbP.png",
-                                },
-                                content: "@cparagraph",
-                                time: new Date(),
-                                _id: "@id",
-                            })
-                        )
-                    }
-                    return r
-                },
-            })
-        )
-    } */
-    //mock end
-    res.json({
-        code: 20000,
-        data: comments,
-    })
 })
 
 router.use((req, res, next) => {

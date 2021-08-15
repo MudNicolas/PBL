@@ -135,6 +135,8 @@ router.get("/type/get", (req, res) => {
 })
 
 import timeline from "#services/modules/activityView/timeline.js"
+import comments from "#root/routers/services/modules/comments/comments.js"
 router.use("/timeline", timeline)
+router.use("/comments", comments)
 
 export default router

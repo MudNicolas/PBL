@@ -85,12 +85,6 @@ router.get("/route", (req, res, next) => {
                 })
                 return
             }
-            /* {
-				path: 'view/777',
-				component: () => import('@/views/course/view/index'),
-				name: "CourseDetail",
-				meta: { title: '课程', roles: ['teacher', 'student'] }
-			}, */
 
             let courseRoute = []
             for (let e of course) {

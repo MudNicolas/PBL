@@ -26,7 +26,7 @@
                                 :exist-content="stage.content"
                                 ref="Editor"
                                 :min-height="480"
-                                :position="{ type: 'stageID', _id: stageID }"
+                                :autosave-position="{ stageID }"
                                 :autosave-path="autosavePath"
                                 :image-upload-path="imageUploadPath"
                                 :video-upload-path="videoUploadPath"
@@ -195,10 +195,11 @@
                         </template>
                         <slot>
                             <comment
-                                :comments="comments"
-                                :position="{ type: 'stageID', _id: stageID }"
+                                :comments-data="commentsData"
                                 ref="comment"
                                 @reloadComments="getComments"
+                                v-if="commentsData.comments"
+                                :position="{ stageID }"
                             />
                         </slot>
                     </el-skeleton>
@@ -209,7 +210,8 @@
 </template>
 
 <script>
-import { getStage, saveStage, getComments } from "@/api/timeline-project"
+import { getStage, saveStage } from "@/api/timeline-project"
+import { getComments } from "@/api/comments"
 import Editor from "@/components/Editor"
 import EditorViewer from "@/components/EditorViewer"
 import uploadFile from "@/components/UploadFile"
@@ -254,7 +256,7 @@ export default {
                 content: "",
                 files: [],
             },
-            comments: [],
+            commentsData: {},
             commentsLoading: true,
             saving: false,
             preview: false,
@@ -305,9 +307,10 @@ export default {
         getComments() {
             let { stageID } = this
             this.commentsLoading = true
-            getComments({ stageID })
+            let type = "private"
+            getComments({ stageID, type })
                 .then(res => {
-                    this.comments = res.data
+                    this.commentsData = res.data
                     this.commentsLoading = false
                 })
                 .catch()
