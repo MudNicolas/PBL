@@ -7,3 +7,11 @@ export function getComments(query) {
         params: query,
     })
 }
+
+export function submitComment(data) {
+    return request({
+        url: "/activity/view/comments/submit",
+        method: "post",
+        data,
+    })
+}

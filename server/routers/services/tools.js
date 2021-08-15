@@ -298,3 +298,62 @@ export function contentVideoResolution(htmlContent) {
     }
     return videosID
 }
+
+export function processContentSource(stage, content) {
+    return new Promise((resolve, reject) => {
+        //resolute images
+        let imagesID = contentImageResolution(content)
+        let videosID = contentVideoResolution(content)
+        //对比allUploadedImages,将差集全部isusedFalse，imagesID isused true
+        let allUploadedImagesIDSet = stage.allUploadedImages.map(e => {
+            return e.toString()
+        })
+        let allUploadedVideosIDSet = stage.allUploadedVideos.map(e => {
+            return e.toString()
+        })
+        //未使用的images
+        let notUsedImagesID = allUploadedImagesIDSet.filter(e => imagesID.indexOf(e) === -1)
+        let notUsedVideosID = allUploadedVideosIDSet.filter(e => videosID.indexOf(e) === -1)
+
+        let arrayProcess = []
+        for (let e of notUsedImagesID) {
+            arrayProcess.push(turnSource(EditorImage, e, false))
+        }
+        for (let e of imagesID) {
+            arrayProcess.push(turnSource(EditorImage, e, true))
+        }
+        for (let e of notUsedVideosID) {
+            arrayProcess.push(turnSource(EditorVideo, e, false))
+        }
+        for (let e of videosID) {
+            arrayProcess.push(turnSource(EditorVideo, e, true))
+        }
+        Promise.all(arrayProcess)
+            .then(() => {
+                return resolve({ imagesID, videosID })
+            })
+            .catch(() => {
+                return reject({ message: "资源处理出现错误" })
+            })
+
+        function turnSource(model, _id, status) {
+            return new Promise((resolve, reject) => {
+                model
+                    .findById(_id)
+                    .select("isNeeded")
+                    .then((e, err) => {
+                        if (err || !e) {
+                            return reject(err)
+                        }
+                        e.isNeeded = status
+                        e.save(err => {
+                            if (err) {
+                                return reject(err)
+                            }
+                            return resolve()
+                        })
+                    })
+            })
+        }
+    })
+}

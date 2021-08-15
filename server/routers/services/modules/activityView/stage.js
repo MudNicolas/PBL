@@ -1,13 +1,6 @@
 import Router from "express"
 let router = Router()
-import {
-    editorImageUpload,
-    contentImageResolution,
-    editorVideoUpload,
-    contentVideoResolution,
-} from "#services/tools.js"
-import EditorImage from "#models/EditorImage.js"
-import EditorVideo from "#models/EditorVideo.js"
+import { editorImageUpload, editorVideoUpload, processContentSource } from "#services/tools.js"
 import File from "#models/File.js"
 
 router.get("/get", async (req, res) => {
@@ -188,61 +181,6 @@ router.post("/save", (req, res) => {
         })
 })
 
-function processContentSource(stage, content) {
-    return new Promise((resolve, reject) => {
-        //resolute images
-        let imagesID = contentImageResolution(content)
-        let videosID = contentVideoResolution(content)
-        //对比allUploadedImages,将差集全部isusedFalse，imagesID isused true
-        let allUploadedImagesIDSet = stage.allUploadedImages.toString().split(",")
-        let allUploadedVideosIDSet = stage.allUploadedVideos.toString().split(",")
-        //未使用的images
-        let notUsedImagesID = allUploadedImagesIDSet.filter(e => imagesID.indexOf(e) === -1)
-        let notUsedVideosID = allUploadedVideosIDSet.filter(e => videosID.indexOf(e) === -1)
-
-        let arrayProcess = []
-        for (let e of notUsedImagesID) {
-            arrayProcess.push(turnSource(EditorImage, e, false))
-        }
-        for (let e of imagesID) {
-            arrayProcess.push(turnSource(EditorImage, e, true))
-        }
-        for (let e of notUsedVideosID) {
-            arrayProcess.push(turnSource(EditorVideo, e, false))
-        }
-        for (let e of videosID) {
-            arrayProcess.push(turnSource(EditorVideo, e, true))
-        }
-        Promise.all(arrayProcess)
-            .then(() => {
-                return resolve({ imagesID, videosID })
-            })
-            .catch(() => {
-                return reject({ message: "资源处理出现错误" })
-            })
-
-        function turnSource(model, _id, status) {
-            return new Promise((resolve, reject) => {
-                model
-                    .findById(_id)
-                    .select("isUsed")
-                    .then((e, err) => {
-                        if (err || !e) {
-                            return reject(err)
-                        }
-                        e.isUsed = status
-                        e.save(err => {
-                            if (err) {
-                                return reject(err)
-                            }
-                            return resolve()
-                        })
-                    })
-            })
-        }
-    })
-}
-
 function processStageFiles(stage, filesID) {
     return new Promise((resolve, reject) => {
         let validate = filesID.every(e => {
@@ -255,8 +193,12 @@ function processStageFiles(stage, filesID) {
             })
         }
 
-        let allUploadedfiles = stage.allUploadedfiles.toString().split(",")
-        let files = stage.files.toString().split(",")
+        let allUploadedfiles = stage.allUploadedfiles.map(e => {
+            return e.toString()
+        })
+        let files = stage.files.map(e => {
+            return e.toString()
+        })
         let notUsedFiles = allUploadedfiles.filter(e => files.indexOf(e) === -1)
 
         File.find({

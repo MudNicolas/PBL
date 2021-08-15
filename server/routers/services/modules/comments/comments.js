@@ -2,12 +2,7 @@ import Router from "express"
 let router = Router()
 
 import Comment from "#models/Comment.js"
-import {
-    editorImageUpload,
-    contentImageResolution,
-    editorVideoUpload,
-    contentVideoResolution,
-} from "#services/tools.js"
+import { editorImageUpload, editorVideoUpload, processContentSource } from "#services/tools.js"
 
 router.get("/get", (req, res) => {
     let { stageID, type } = req.query
@@ -19,7 +14,7 @@ router.get("/get", (req, res) => {
     })
         .select("commentUser comment time reply")
         .populate([
-            { path: "commentUer", select: "name avatar" },
+            { path: "commentUser", select: "name avatar" },
             { path: "reply.from", select: "name avatar" },
             { path: "reply.to", select: "name avatar" },
         ])
@@ -73,19 +68,26 @@ router.use((req, res, next) => {
     }
 
     Comment.findById(commentID).then(c => {
-        req.comment = c
+        req.commentData = c
         next()
     })
 })
 
 router.post("/editor/autosave", (req, res) => {
-    let { entry, content, commentID } = req.body
-    console.log(entry, content, commentID)
-    let { comment } = req
+    let { entry, content } = req.body
+    let { commentData } = req
 
-    let index = comment.comment.findIndex(e => e.entry === entry)
-    comment.comment[index].content = content
-    comment.save(err => {
+    if (commentData.isSubmit) {
+        return
+    }
+    let index = commentData.comment.findIndex(e => e.entry === entry)
+    if (index > -1) {
+        commentData.comment[index].content = content
+    } else {
+        commentData.comment.push({ entry, content })
+    }
+
+    commentData.save(err => {
         if (err) {
             res.json({
                 code: 300001,
@@ -102,9 +104,9 @@ router.post("/editor/autosave", (req, res) => {
 router.post("/editor/image/upload", (req, res) => {
     editorImageUpload(req)
         .then(r => {
-            let { comment } = req
-            comment.allUploadedImages.push(r.imageID)
-            comment.save(err => {
+            let { commentData } = req
+            commentData.allUploadedImages.push(r.imageID)
+            commentData.save(err => {
                 if (err) {
                     res.json({
                         code: 300001,
@@ -126,9 +128,9 @@ router.post("/editor/image/upload", (req, res) => {
 router.post("/editor/video/upload", (req, res) => {
     editorVideoUpload(req)
         .then(r => {
-            let { comment } = req
-            comment.allUploadedVideos.push(r.videoID)
-            comment.save(err => {
+            let { commentData } = req
+            commentData.allUploadedVideos.push(r.videoID)
+            commentData.save(err => {
                 if (err) {
                     res.json({
                         code: 300001,
@@ -143,6 +145,53 @@ router.post("/editor/video/upload", (req, res) => {
             })
         })
         .catch(err => {
+            res.json(err)
+        })
+})
+
+router.use((req, res, next) => {
+    let { commentData } = req
+    if (commentData.commentUser.toString() !== req.uid.toString()) {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+    next()
+})
+
+router.post("/submit", (req, res) => {
+    let { comments } = req.body
+    let { commentData } = req
+    let contents = ""
+    for (let c of comments) {
+        let { entry, content } = c
+        let index = commentData.comment.findIndex(e => e.entry === entry)
+        if (index > -1) {
+            commentData.comment[index].content = content
+        } else {
+            commentData.comment.push(c)
+        }
+        contents += content
+    }
+    commentData.isSubmit = true
+    commentData.time = new Date()
+    processContentSource(commentData, contents)
+        .then(d => {
+            let { imagesID, videosID } = d
+            commentData.images = imagesID
+            commentData.videos = videosID
+            commentData.save(err => {
+                if (err) {
+                    return
+                }
+                res.json({
+                    code: 20000,
+                })
+            })
+        })
+        .catch(err => {
+            console.log(err)
             res.json(err)
         })
 })

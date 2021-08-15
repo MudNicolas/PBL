@@ -18,9 +18,9 @@
                 </el-tooltip>
             </affix>
 
-            <div class="nav">共{{ comments.length }}条发言评论</div>
+            <div class="nav">共{{ commentsData.comments.length }}条发言评论</div>
 
-            <div v-for="comment of comments" :key="comment._id">
+            <div v-for="comment of commentsData.comments" :key="comment._id">
                 <div class="header">
                     <el-popover
                         placement="left"
@@ -53,7 +53,9 @@
                 </div>
                 <div class="comment">
                     <div class="main">
-                        {{ comment.comment }}
+                        <span v-if="comment.comment.length === 1">
+                            <editor-viewer :content="comment.comment[0].content" />
+                        </span>
                     </div>
                     <div class="tool">
                         <el-button
@@ -143,10 +145,14 @@
                     <editor
                         v-else
                         ref="Editor"
-                        :exist-content="myComment.comment[0].content"
+                        :exist-content="
+                            commentsData.tempComm.comment[0]
+                                ? commentsData.tempComm.comment[0].content
+                                : ''
+                        "
                         :autosave-position="{
                             ...position,
-                            commentID: myComment._id,
+                            commentID: commentsData.tempComm._id,
                             entry: 'default',
                         }"
                         :autosave-path="autosavePath"
@@ -155,7 +161,9 @@
                     />
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="handleSubmit">提交</el-button>
+                    <el-button type="primary" @click="handleSubmit" :loading="commentSubmitting">
+                        提交
+                    </el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -166,21 +174,24 @@
 import { formatTime } from "@/utils/index"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import Editor from "@/components/Editor"
-
+import EditorViewer from "@/components/EditorViewer"
 import Affix from "@/components/Affix"
+import { submitComment } from "@/api/comments"
 
 export default {
     name: "Comment",
-    components: { ProfilePopover, Editor, Affix },
+    components: { ProfilePopover, Editor, Affix, EditorViewer },
     props: {
         commentsData: {
             type: Object,
-            default: {
-                comments: [],
-                tempComm: {
-                    _id: "",
-                    comment: [],
-                },
+            default: () => {
+                return {
+                    comments: [],
+                    tempComm: {
+                        _id: "",
+                        comment: [],
+                    },
+                }
             },
         },
         entry: {
@@ -198,7 +209,7 @@ export default {
         let stageID = this.$route.params.id
         return {
             stageID,
-
+            commentSubmitting: false,
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             autosavePath: "/activity/view/comments/editor/autosave",
             imageUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/image/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
@@ -208,13 +219,30 @@ export default {
             myReply: "",
             replyTo: "",
             deg: 0,
-            myComment: this.commentsData.tempComm,
-            comments: this.commentsData.comments,
         }
     },
     methods: {
         handleSubmit() {
-            console.log(this.$refs.Editor.editor.html.get())
+            this.commentSubmitting = true
+            let comments = []
+            if (this.entry.length === 0) {
+                comments.push({
+                    entry: "default",
+                    content: this.$refs.Editor.editor.html.get(),
+                })
+            }
+            let { stageID } = this
+            let commentID = this.commentsData.tempComm._id
+            submitComment({ comments, stageID, commentID })
+                .then(() => {
+                    this.$message.success("提交成功")
+                    this.$refs.Editor.editor.html.set("")
+                    this.commentSubmitting = false
+                    this.reloadComments()
+                })
+                .catch(() => {
+                    this.commentSubmitting = false
+                })
         },
         reloadComments() {
             this.$emit("reloadComments")
@@ -266,11 +294,6 @@ export default {
     margin-bottom: 22px;
     font-size: 14px;
     line-height: 1.5715;
-
-    .main {
-        border-left: 1px solid #cccccc;
-        padding-left: 12px;
-    }
 }
 
 .replies {

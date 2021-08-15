@@ -65,7 +65,6 @@ export default {
             //防止保存空值
             let path = this.autosavePath
             if (content && path) {
-                let _p = {}
                 let position = this.autosavePosition
 
                 autosave(path, { ...position, content })
