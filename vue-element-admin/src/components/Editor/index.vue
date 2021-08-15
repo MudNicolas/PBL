@@ -181,13 +181,12 @@ export default {
                     },
                     moreRich: {
                         buttons: [
-                            "insertLink",
+                            "insertTable",
                             "insertImage",
                             "insertVideo",
-                            "insertTable",
+                            "insertLink",
                             "insertHR",
                         ],
-                        buttonsVisible: 5,
                     },
                     moreMisc: {
                         buttons: ["undo", "redo", "fullscreen", "selectAll", "help"],

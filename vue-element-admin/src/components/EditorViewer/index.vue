@@ -16,7 +16,8 @@ export default {
 
 <style>
 .view-wrapper {
-    border: 1px solid #dcdfe6;
-    border-radius: 10px;
+    /*  border: 1px solid #dcdfe6;
+    border-radius: 10px; */
+    border-left: 1px solid #dcdfe6;
 }
 </style>

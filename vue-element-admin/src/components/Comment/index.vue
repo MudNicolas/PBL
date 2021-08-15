@@ -294,14 +294,11 @@ export default {
     margin-bottom: 22px;
     font-size: 14px;
     line-height: 1.5715;
+    border-bottom: 1px solid #e6e6e6;
 }
 
 .replies {
     margin-top: 20px;
-
-    .reply:last-child {
-        border-bottom: 1px solid #e6e6e6;
-    }
 }
 
 .reply-area {
