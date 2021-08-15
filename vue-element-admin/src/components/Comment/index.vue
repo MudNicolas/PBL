@@ -50,6 +50,25 @@
                             {{ comment.time | timeFormat }}
                         </span>
                     </span>
+                    <span class="right-panel">
+                        <span
+                            class="remove-comment"
+                            v-if="uid === comment.commentUser._id || checkPermission(['teacher'])"
+                        >
+                            <el-dropdown
+                                trigger="click"
+                                placement="bottom"
+                                @command="handleRemoveComment"
+                            >
+                                <el-button type="text" icon="el-icon-more-outline"></el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item icon="el-icon-delete" :command="comment._id">
+                                        删除
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </span>
+                    </span>
                 </div>
                 <div class="comment">
                     <div class="main">
@@ -64,6 +83,7 @@
                             @click="showReplayArea(comment._id)"
                         >
                             回复
+                            <!--TODO: reply-->
                         </el-button>
                     </div>
                     <div class="reply-area" v-if="replyTo === comment._id">
@@ -176,7 +196,9 @@ import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import Editor from "@/components/Editor"
 import EditorViewer from "@/components/EditorViewer"
 import Affix from "@/components/Affix"
-import { submitComment } from "@/api/comments"
+import { submitComment, removeComment } from "@/api/comments"
+import { mapGetters } from "vuex"
+import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     name: "Comment",
@@ -205,6 +227,9 @@ export default {
             return formatTime(new Date(val))
         },
     },
+    computed: {
+        ...mapGetters(["uid", "roles"]),
+    },
     data() {
         let stageID = this.$route.params.id
         return {
@@ -222,6 +247,7 @@ export default {
         }
     },
     methods: {
+        checkPermission,
         handleSubmit() {
             this.commentSubmitting = true
             let comments = []
@@ -256,6 +282,33 @@ export default {
                 this.replyTo = id
             }
         },
+        handleRemoveComment(_id) {
+            this.$confirm("确定移除这条发言？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        let commentID = _id
+                        let { stageID } = this
+                        removeComment({ commentID, stageID })
+                            .then(() => {
+                                this.$message.success("移除成功")
+                                this.$emit("reloadComments")
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            })
+        },
     },
 }
 </script>
@@ -281,6 +334,10 @@ export default {
             color: #bbb;
             font-size: 13px;
         }
+    }
+
+    .right-panel {
+        margin-left: auto;
     }
 }
 

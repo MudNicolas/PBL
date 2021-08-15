@@ -11,6 +11,7 @@ router.get("/get", (req, res) => {
         activityContentID: stageID,
         type,
         isSubmit: true,
+        isUsed: true,
     })
         .select("commentUser comment time reply")
         .populate([
@@ -194,6 +195,39 @@ router.post("/submit", (req, res) => {
             console.log(err)
             res.json(err)
         })
+})
+
+router.use((req, res, next) => {
+    let { commentData, course } = req
+    let { chiefTeacher, partnerTeacher } = course
+    if (
+        commentData.commentUser.toString() !== req.uid &&
+        chiefTeacher.toString() !== req.uid &&
+        !partnerTeacher.find(e => e.toString() === req.uid)
+    ) {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+    next()
+})
+
+router.post("/remove", (req, res) => {
+    let { commentData } = req
+    commentData.isUsed = false
+    commentData.save(err => {
+        if (err) {
+            res.json({
+                code: 300001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
 })
 
 export default router

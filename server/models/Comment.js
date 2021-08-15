@@ -8,6 +8,10 @@ let commentSchemas = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isUsed: {
+        type: Boolean,
+        default: true,
+    },
     commentUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

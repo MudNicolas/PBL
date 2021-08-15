@@ -15,3 +15,11 @@ export function submitComment(data) {
         data,
     })
 }
+
+export function removeComment(data) {
+    return request({
+        url: "/activity/view/comments/remove",
+        method: "post",
+        data,
+    })
+}
