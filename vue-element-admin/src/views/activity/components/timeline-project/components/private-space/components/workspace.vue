@@ -160,7 +160,15 @@
                                         v-if="newStageData.creatMethod === 'blank'"
                                     ></span>
                                     <el-card shadow="hover">
-                                        <div class="stage-choice-card">
+                                        <div
+                                            class="stage-choice-card"
+                                            :style="{
+                                                transform:
+                                                    newStageData.creatMethod === 'blank'
+                                                        ? 'scale(1.0681818182)'
+                                                        : '',
+                                            }"
+                                        >
                                             <i
                                                 class="el-icon-circle-plus-outline"
                                                 :style="{
@@ -185,7 +193,15 @@
                                         v-if="newStageData.creatMethod === 'inheritance'"
                                     ></span>
                                     <el-card shadow="hover">
-                                        <div class="stage-choice-card">
+                                        <div
+                                            class="stage-choice-card"
+                                            :style="{
+                                                transform:
+                                                    newStageData.creatMethod === 'inheritance'
+                                                        ? 'scale(1.0681818182)'
+                                                        : '',
+                                            }"
+                                        >
                                             <i
                                                 class="el-icon-document-copy"
                                                 :style="{
@@ -378,6 +394,7 @@ export default {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    transition: all 0.3s;
 
     i {
         font-size: 48px;

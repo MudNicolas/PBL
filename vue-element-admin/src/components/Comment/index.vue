@@ -83,7 +83,6 @@
                             @click="showReplayArea(comment._id)"
                         >
                             回复
-                            <!--TODO: reply-->
                         </el-button>
                     </div>
                     <div class="reply-area" v-if="replyTo === comment._id">
