@@ -50,16 +50,23 @@ let commentSchemas = new mongoose.Schema({
     type: String, //private,public
     reply: [
         {
-            from: {
+            fromUser: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
             },
-            to: {
+            toUser: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
+            },
+            toReply: {
+                type: mongoose.Schema.Types.ObjectId,
             },
             content: String,
             time: Date,
+            isUsed: {
+                type: Boolean,
+                default: true,
+            },
         },
     ],
 })

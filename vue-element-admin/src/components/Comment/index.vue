@@ -20,7 +20,7 @@
 
             <div class="nav">共{{ commentsData.comments.length }}条发言评论</div>
 
-            <div v-for="comment of commentsData.comments" :key="comment._id">
+            <div v-for="comment of commentsData.comments" :key="comment._id" class="single-comment">
                 <div class="header">
                     <el-popover
                         placement="left"
@@ -94,7 +94,14 @@
                             v-model="myReply"
                         ></el-input>
 
-                        <el-button type="primary" style="margin-top: 12px">回复</el-button>
+                        <el-button
+                            type="primary"
+                            style="margin-top: 12px"
+                            @click="handleReply(comment._id)"
+                            :loading="replying"
+                        >
+                            回复
+                        </el-button>
                     </div>
                     <div class="replies">
                         <div v-for="reply of comment.reply" class="reply" :key="reply._id">
@@ -115,20 +122,52 @@
                                     <span slot="reference">
                                         <el-avatar
                                             :size="32"
-                                            :src="avatarPath + reply.from.avatar"
+                                            :src="avatarPath + reply.fromUser.avatar"
                                         ></el-avatar>
                                     </span>
                                 </el-popover>
                                 <span class="text">
                                     <span class="name">
-                                        {{ reply.from.name }}
+                                        {{ reply.fromUser.name }}
                                     </span>
                                     <span class="time">
                                         {{ reply.time | timeFormat }}
                                     </span>
                                 </span>
+                                <span class="right-panel">
+                                    <span
+                                        class="remove-comment"
+                                        v-if="
+                                            uid === reply.fromUser._id ||
+                                            checkPermission(['teacher'])
+                                        "
+                                    >
+                                        <el-dropdown
+                                            trigger="click"
+                                            placement="bottom"
+                                            @command="handleRemoveReply"
+                                        >
+                                            <el-button
+                                                type="text"
+                                                icon="el-icon-more-outline"
+                                            ></el-button>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item
+                                                    icon="el-icon-delete"
+                                                    :command="{
+                                                        replyID: reply._id,
+                                                        commentID: comment._id,
+                                                    }"
+                                                >
+                                                    删除
+                                                </el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                    </span>
+                                </span>
                             </div>
                             <div class="comment">
+                                <span v-if="reply.toReply">回复 @{{ reply.toUser.name }}：</span>
                                 {{ reply.content }}
                                 <div class="tool">
                                     <el-button
@@ -143,11 +182,16 @@
                                     <el-input
                                         type="textarea"
                                         :autosize="{ minRows: 2 }"
-                                        :placeholder="`回复@${reply.from.name}:`"
+                                        :placeholder="`回复@${reply.fromUser.name}:`"
                                         v-model="myReply"
                                     ></el-input>
 
-                                    <el-button type="primary" style="margin-top: 12px">
+                                    <el-button
+                                        type="primary"
+                                        style="margin-top: 12px"
+                                        @click="handleReply(comment._id, reply._id)"
+                                        :loading="replying"
+                                    >
                                         回复
                                     </el-button>
                                 </div>
@@ -196,7 +240,7 @@ import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import Editor from "@/components/Editor"
 import EditorViewer from "@/components/EditorViewer"
 import Affix from "@/components/Affix"
-import { submitComment, removeComment } from "@/api/comments"
+import { submitComment, removeComment, submitReply, removeReply } from "@/api/comments"
 import { mapGetters } from "vuex"
 import checkPermission from "@/utils/permission" // 权限判断函数
 
@@ -244,6 +288,7 @@ export default {
             myReply: "",
             replyTo: "",
             deg: 0,
+            replying: false,
         }
     },
     methods: {
@@ -307,7 +352,50 @@ export default {
                         done()
                     }
                 },
-            })
+            }).catch(() => {})
+        },
+        handleRemoveReply(e) {
+            this.$confirm("确定移除这条回复？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        let { stageID } = this
+                        removeReply({ ...e, stageID })
+                            .then(() => {
+                                this.$message.success("移除成功")
+                                this.$emit("reloadComments")
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            }).catch(() => {})
+        },
+        handleReply(commentID, replyID) {
+            this.replying = true
+            let { stageID } = this
+            let reply = this.myReply
+            submitReply({ reply, commentID, replyID, stageID })
+                .then(() => {
+                    this.$message.success("发送成功")
+                    this.replyTo = ""
+
+                    this.myReply = ""
+                    this.$emit("reloadComments")
+                    this.replying = false
+                })
+                .catch(() => {
+                    this.replying = false
+                })
         },
     },
 }
@@ -345,17 +433,40 @@ export default {
     margin-top: 4px;
 }
 
-.comment {
-    margin-left: 42px;
-    color: #303133;
-    margin-bottom: 22px;
-    font-size: 14px;
-    line-height: 1.5715;
-    border-bottom: 1px solid #e6e6e6;
+.single-comment {
+    > .comment {
+        margin-left: 42px;
+        color: #303133;
+        margin-bottom: 22px;
+        font-size: 14px;
+        line-height: 1.5715;
+        border-bottom: 1px solid #e6e6e6;
+    }
 }
 
 .replies {
     margin-top: 20px;
+
+    .reply {
+        .comment {
+            margin-left: 42px;
+            color: #303133;
+            margin-bottom: 22px;
+            font-size: 14px;
+            line-height: 1.5715;
+            padding-bottom: 10px;
+        }
+    }
+    .reply:not(:last-child) {
+        .comment {
+            margin-left: 42px;
+            color: #303133;
+            margin-bottom: 22px;
+            font-size: 14px;
+            line-height: 1.5715;
+            border-bottom: 1px solid #e6e6e6;
+        }
+    }
 }
 
 .reply-area {

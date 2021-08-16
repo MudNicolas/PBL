@@ -23,3 +23,19 @@ export function removeComment(data) {
         data,
     })
 }
+
+export function submitReply(data) {
+    return request({
+        url: "/activity/view/comments/reply/submit",
+        method: "post",
+        data,
+    })
+}
+
+export function removeReply(data) {
+    return request({
+        url: "/activity/view/comments/reply/remove",
+        method: "post",
+        data,
+    })
+}

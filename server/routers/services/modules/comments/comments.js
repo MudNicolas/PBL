@@ -13,13 +13,23 @@ router.get("/get", (req, res) => {
         isSubmit: true,
         isUsed: true,
     })
-        .select("commentUser comment time reply")
+        .select({ commentUser: 1, comment: 1, time: 1, reply: 1 })
         .populate([
             { path: "commentUser", select: "name avatar" },
-            { path: "reply.from", select: "name avatar" },
-            { path: "reply.to", select: "name avatar" },
+            { path: "reply.fromUser", select: "name avatar" },
+            { path: "reply.toUser", select: "name avatar" },
         ])
-        .exec()
+        .then(c => {
+            return c.map(e => {
+                return {
+                    _id: e._id,
+                    commentUser: e.commentUser,
+                    comment: e.comment,
+                    time: e.time,
+                    reply: e.reply.filter(r => r.isUsed),
+                }
+            })
+        })
 
     let tempSaveComment = Comment.findOne({
         activityContentID: stageID,
@@ -195,6 +205,85 @@ router.post("/submit", (req, res) => {
             console.log(err)
             res.json(err)
         })
+})
+
+router.post("/reply/submit", (req, res) => {
+    let { reply, replyID } = req.body
+    let { commentData } = req
+    commentData.reply.push({
+        fromUser: req.uid,
+        toUser: commentData.commentUser,
+        toReply: replyID,
+        content: reply,
+        time: new Date(),
+    })
+    commentData.save(err => {
+        if (err) {
+            res.json({
+                code: 300001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
+router.post("/reply/submit", (req, res) => {
+    let { reply, replyID } = req.body
+    let { commentData } = req
+    commentData.reply.push({
+        fromUser: req.uid,
+        toUser: commentData.commentUser,
+        toReply: replyID,
+        content: reply,
+        time: new Date(),
+    })
+    commentData.save(err => {
+        if (err) {
+            res.json({
+                code: 300001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
+router.post("/reply/remove", (req, res) => {
+    let { replyID } = req.body
+    let { commentData, course } = req
+    let index = commentData.reply.findIndex(e => e._id.toString() === replyID.toString())
+    let reply = commentData.reply[index]
+    let { chiefTeacher, partnerTeacher } = course
+    if (
+        reply.fromUser.toString() !== req.uid &&
+        chiefTeacher.toString() !== req.uid &&
+        !partnerTeacher.find(e => e.toString() === req.uid)
+    ) {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+    commentData.reply[index].isUsed = false
+    commentData.save(err => {
+        if (err) {
+            res.json({
+                code: 300001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
 })
 
 router.use((req, res, next) => {
