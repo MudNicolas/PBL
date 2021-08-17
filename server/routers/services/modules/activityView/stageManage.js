@@ -26,6 +26,17 @@ router.get("/info/get", (req, res) => {
     })
 })
 
+router.use((req, res, next) => {
+    let { stage } = req
+    if (stage.status === "abandoned") {
+        res.json({
+            message: "该阶段已废弃",
+        })
+        return
+    }
+    next()
+})
+
 router.post("/info/save", (req, res) => {
     let { stage } = req
     let { subjectName, sketch } = req.body
