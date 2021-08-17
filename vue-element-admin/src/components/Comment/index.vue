@@ -1,7 +1,7 @@
 <template>
     <div>
         <div id="container">
-            <affix :offset="120" boundary="container" style="position: absolute; right: 40px">
+            <sticky :sticky-top="120" style="position: absolute; right: 40px">
                 <el-tooltip
                     effect="light"
                     content="重新加载评论"
@@ -16,7 +16,7 @@
                         ref="refreshButton"
                     ></el-button>
                 </el-tooltip>
-            </affix>
+            </sticky>
 
             <div class="nav">共{{ commentsData.comments.length }}条发言评论</div>
 
@@ -242,10 +242,11 @@ import Affix from "@/components/Affix"
 import { submitComment, removeComment, submitReply, removeReply } from "@/api/comments"
 import { mapGetters } from "vuex"
 import checkPermission from "@/utils/permission" // 权限判断函数
+import Sticky from "@/components/Sticky"
 
 export default {
     name: "Comment",
-    components: { ProfilePopover, Editor, Affix, EditorViewer },
+    components: { ProfilePopover, Editor, Affix, EditorViewer, Sticky },
     props: {
         commentsData: {
             type: Object,

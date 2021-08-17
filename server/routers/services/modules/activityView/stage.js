@@ -15,7 +15,6 @@ router.get("/get", async (req, res) => {
             let {
                 content,
                 authorUID,
-                editLog,
                 files,
                 isUsed,
                 isPublic,
@@ -37,7 +36,6 @@ router.get("/get", async (req, res) => {
             let data = {
                 content,
                 authorUID,
-                editLog,
                 files,
                 isUsed,
                 isPublic,
@@ -252,5 +250,8 @@ function processStageFiles(stage, filesID) {
         })
     })
 }
+
+import manage from "./stageManage.js"
+router.use("/manage", manage)
 
 export default router

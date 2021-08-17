@@ -226,8 +226,17 @@ export const asyncRoutes = [
             },
             {
                 path: "section/activity/timeline/private/view/:id([a-f0-9]{24})",
-                component: () => import("@/views/stage/private"),
+                component: () => import("@/views/stage/private/index"),
                 name: "TimeLineStage",
+                hidden: true,
+                meta: {
+                    roles: ["teacher", "student"],
+                },
+            },
+            {
+                path: "section/activity/timeline/private/manage/:id([a-f0-9]{24})",
+                component: () => import("@/views/stage/private/manage"),
+                name: "StageManage",
                 hidden: true,
                 meta: {
                     roles: ["teacher", "student"],

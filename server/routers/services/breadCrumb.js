@@ -128,6 +128,13 @@ class routeTree {
                 },
             },
         },
+        StageManage: {
+            path: "/course/section/activity/timeline/private/manage/",
+            parent: "TimeLineStage",
+            meta: {
+                title: "管理",
+            },
+        },
     }
 
     get(name) {

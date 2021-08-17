@@ -39,3 +39,11 @@ export function saveStage(data) {
         data,
     })
 }
+
+export function getStageInfo(query) {
+    return request({
+        url: "/activity/view/timeline/stage/manage/info/get",
+        method: "get",
+        params: query,
+    })
+}

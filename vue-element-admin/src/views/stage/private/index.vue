@@ -5,7 +5,36 @@
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
                     <!--TODO:管理页面-->
-                    <el-button style="margin-left: auto" icon="el-icon-s-tools">管理</el-button>
+
+                    <el-button style="margin-left: auto" icon="el-icon-s-tools" @click="toManage">
+                        管理
+                    </el-button>
+                </div>
+                <div class="author-area">
+                    <div v-for="user of stage.authorUID" :key="user._id">
+                        <div class="author">
+                            <el-popover
+                                placement="left"
+                                trigger="hover"
+                                :open-delay="200"
+                                width="360"
+                                @show="showUpPopoverKey = user._id"
+                            >
+                                <div>
+                                    <profile-popover
+                                        :uid="user._id"
+                                        :show-up-popover-key="showUpPopoverKey"
+                                    />
+                                </div>
+                                <span slot="reference">
+                                    <el-avatar
+                                        :size="24"
+                                        :src="avatarPath + user.avatar"
+                                    ></el-avatar>
+                                </span>
+                            </el-popover>
+                        </div>
+                    </div>
                 </div>
             </el-col>
         </el-row>
@@ -137,35 +166,6 @@
                             </el-button>
                         </el-form-item>
                     </el-form>
-                    <div>
-                        <div v-for="user of stage.authorUID" :key="user._id">
-                            <div class="author">
-                                <el-popover
-                                    placement="left"
-                                    trigger="hover"
-                                    :open-delay="200"
-                                    width="360"
-                                    @show="showUpPopoverKey = user._id"
-                                >
-                                    <div>
-                                        <profile-popover
-                                            :uid="user._id"
-                                            :show-up-popover-key="showUpPopoverKey"
-                                        />
-                                    </div>
-                                    <span slot="reference">
-                                        <el-avatar
-                                            size="small"
-                                            :src="avatarPath + user.avatar"
-                                        ></el-avatar>
-                                    </span>
-                                </el-popover>
-                                <span class="name">
-                                    {{ user.name }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
                 </el-col>
             </el-row>
             <el-row style="margin-top: 20px">
@@ -327,7 +327,9 @@ export default {
                 })
                 .catch()
         },
-
+        toManage() {
+            this.$router.push("/course/section/activity/timeline/private/manage/" + this.stageID)
+        },
         download(file) {
             download(file.response._id)
         },
@@ -383,14 +385,21 @@ export default {
 
 <style lang="scss" scoped>
 .subtitle {
-    background-color: rgb(245, 245, 246);
-
+    // background-color: rgb(245, 245, 246);
+    border-bottom: solid 1px #e4e7ed;
     .subject-name {
         align-items: center;
         display: flex;
         font-size: 22px;
         color: #303133;
-        padding: 30px 40px;
+        padding: 30px 40px 10px 40px;
+    }
+    .author-area {
+        align-items: center;
+        display: flex;
+        font-size: 22px;
+        color: #303133;
+        padding: 10px 40px 20px 40px;
     }
 }
 
@@ -406,16 +415,15 @@ export default {
         color: #606266;
         margin-bottom: 12px;
     }
+}
+.author {
+    display: flex;
+    align-items: center;
 
-    .author {
-        display: flex;
-        align-items: center;
-
-        .name {
-            margin-left: 8px;
-            color: #606266;
-            font-size: 14px;
-        }
+    .name {
+        margin-left: 8px;
+        color: #606266;
+        font-size: 14px;
     }
 }
 </style>
