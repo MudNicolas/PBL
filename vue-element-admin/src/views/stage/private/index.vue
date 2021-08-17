@@ -355,8 +355,9 @@ export default {
         },
         handleSave() {
             this.saving = true
+            this.stage.subjectName = this.stage.subjectName.trim()
             let { subjectName, sketch } = this.stage
-            subjectName = subjectName.trim() || ""
+            subjectName = subjectName || ""
             sketch = sketch || ""
             let content = this.$refs.Editor
                 ? this.$refs.Editor.editor.html.get()

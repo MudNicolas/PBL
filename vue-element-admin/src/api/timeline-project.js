@@ -47,3 +47,19 @@ export function getStageInfo(query) {
         params: query,
     })
 }
+
+export function manageSaveInfo(data) {
+    return request({
+        url: "/activity/view/timeline/stage/manage/info/save",
+        method: "post",
+        data,
+    })
+}
+
+export function getEditLog(query) {
+    return request({
+        url: "/activity/view/timeline/stage/manage/editLog/get",
+        method: "get",
+        params: query,
+    })
+}

@@ -54,7 +54,9 @@
                             />
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary">更新</el-button>
+                            <el-button type="primary" @click="saveInfo" :loading="infoSaving">
+                                更新
+                            </el-button>
                         </el-form-item>
                         <br />
                         <el-form-item>
@@ -65,7 +67,9 @@
                                         <div class="info">查看本阶段的所有操作记录</div>
                                     </div>
                                     <div class="button">
-                                        <el-button type="primary">查看</el-button>
+                                        <el-button type="primary" @click="viewEditlog">
+                                            查看
+                                        </el-button>
                                     </div>
                                 </div>
                             </div>
@@ -112,16 +116,32 @@
                 </el-col>
             </el-row>
         </div>
+        <el-dialog title="操作记录" :visible.sync="operationDialogVisible">
+            <div class="container">
+                <el-timeline v-loading="editlogLoading">
+                    <el-timeline-item
+                        v-for="(log, index) in stage.editLog"
+                        :key="index"
+                        :timestamp="normalFormatTime(new Date(log.time), '{y}-{m}-{d} {h}:{i}')"
+                        placement="top"
+                    >
+                        {{ log.operation }} - {{ log.uid.name }}
+                    </el-timeline-item>
+                </el-timeline>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { getStageInfo } from "@/api/timeline-project"
+import { getStageInfo, manageSaveInfo, getEditLog } from "@/api/timeline-project"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+import { normalFormatTime } from "@/utils/index.js"
 
 export default {
     name: "StageManage",
     components: { ProfilePopover },
+
     data() {
         return {
             stageID: this.$route.params.id,
@@ -129,6 +149,9 @@ export default {
             loading: true,
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             showUpPopoverKey: "",
+            infoSaving: false,
+            operationDialogVisible: false,
+            editlogLoading: false,
         }
     },
     filters: {
@@ -140,6 +163,7 @@ export default {
         this.getStageInfo()
     },
     methods: {
+        normalFormatTime,
         toView() {
             this.$router.push("/course/section/activity/timeline/private/view/" + this.stageID)
         },
@@ -154,11 +178,44 @@ export default {
                 })
                 .catch()
         },
+        saveInfo() {
+            this.infoSaving = true
+            this.stage.subjectName = this.stage.subjectName.trim()
+            let { stageID } = this
+            let { subjectName, sketch } = this.stage
+            subjectName = subjectName || ""
+            sketch = sketch || ""
+            manageSaveInfo({ subjectName, sketch, stageID })
+                .then(() => {
+                    this.$message.success("更新成功")
+                    this.infoSaving = false
+                    this.getStageInfo()
+                })
+                .catch(() => {
+                    this.infoSaving = false
+                })
+        },
+        viewEditlog() {
+            this.operationDialogVisible = true
+            let { editLog } = this.stage
+            if (editLog) {
+                return
+            }
+            let { stageID } = this
+
+            this.editlogLoading = true
+            getEditLog({ stageID })
+                .then(res => {
+                    this.stage.editLog = res.data
+                    this.editlogLoading = false
+                })
+                .catch()
+        },
     },
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .subtitle {
     // background-color: rgb(245, 245, 246);
     border-bottom: solid 1px #e4e7ed;
