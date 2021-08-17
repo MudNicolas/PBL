@@ -2,10 +2,11 @@ import Router from "express"
 let router = Router()
 
 router.get("/info/get", (req, res) => {
-    let { stage } = req
+    let { stage, activity } = req
 
     stage.execPopulate([{ path: "authorUID", select: "name avatar" }]).then(_stage => {
-        let { authorUID, isUsed, isPublic, sketch, status, subjectName, _id } = _stage
+        let { authorUID, isUsed, isPublic, sketch, status, subjectName, _id, editable } = _stage
+        let { isNeedApprove } = activity.options
         let data = {
             authorUID,
             isUsed,
@@ -14,6 +15,8 @@ router.get("/info/get", (req, res) => {
             status,
             subjectName,
             _id,
+            editable,
+            isNeedApprove,
         }
 
         res.json({
@@ -56,6 +59,41 @@ router.get("/editLog/get", (req, res) => {
                 data: editLog,
             })
         })
+})
+
+router.post("/danger/submit", (req, res) => {
+    let { type } = req.body
+    let { stage } = req
+    if (type === "public") {
+        stage.isPublic = true
+    }
+    if (type === "approve") {
+        let { project } = req
+        stage.status = "underApprove"
+        project.status = "underApprove"
+        project.save(err => {
+            if (err) {
+                console.log(err)
+            }
+        })
+    }
+    if (type === "abandon") {
+        stage.status = "abandoned"
+    }
+    stage.editable = false
+
+    stage.save(err => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
 })
 
 export default router

@@ -55,11 +55,8 @@ export default mongoose.model("Stage", {
         type: Boolean,
         default: false,
     },
-    status: String, //approvePending待审批,underApprove审批中,normal,conclude,rejected,abandoned 正式阶段,结题，驳回，废弃
-    isUsed: {
-        type: Boolean,
-        default: true,
-    },
+    status: String, //beforeApprove审批前,underApprove审批中,normal,conclude,rejected,abandoned 正式阶段,结题，驳回，废弃
+
     editLog: [
         {
             uid: {

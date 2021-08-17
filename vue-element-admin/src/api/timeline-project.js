@@ -63,3 +63,11 @@ export function getEditLog(query) {
         params: query,
     })
 }
+
+export function submitDangerOperation(data) {
+    return request({
+        url: "/activity/view/timeline/stage/manage/danger/submit",
+        method: "post",
+        data,
+    })
+}

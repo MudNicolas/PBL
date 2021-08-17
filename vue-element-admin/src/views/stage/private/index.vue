@@ -4,6 +4,33 @@
             <el-col :span="18" :offset="3">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="info"
+                        v-if="stage.status === 'abandoned'"
+                    >
+                        已废弃
+                    </el-tag>
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="danger"
+                        v-if="stage.status === 'rejected'"
+                    >
+                        审核驳回
+                    </el-tag>
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="warning"
+                        v-if="stage.status === 'underApprove'"
+                    >
+                        审核中
+                    </el-tag>
+                    <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
+                        已公开
+                    </el-tag>
                     <!--TODO:管理页面-->
 
                     <el-button style="margin-left: auto" icon="el-icon-s-tools" @click="toManage">

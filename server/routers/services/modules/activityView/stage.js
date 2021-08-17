@@ -54,6 +54,9 @@ router.get("/get", async (req, res) => {
         })
 })
 
+import manage from "./stageManage.js"
+router.use("/manage", manage)
+
 router.use((req, res, next) => {
     let { stage } = req
     let { editable } = stage
@@ -250,8 +253,5 @@ function processStageFiles(stage, filesID) {
         })
     })
 }
-
-import manage from "./stageManage.js"
-router.use("/manage", manage)
 
 export default router

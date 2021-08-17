@@ -4,6 +4,33 @@
             <el-col :span="16" :offset="4">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="info"
+                        v-if="stage.status === 'abandoned'"
+                    >
+                        已废弃
+                    </el-tag>
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="danger"
+                        v-if="stage.status === 'rejected'"
+                    >
+                        审核驳回
+                    </el-tag>
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="warning"
+                        v-if="stage.status === 'underApprove'"
+                    >
+                        审核中
+                    </el-tag>
+                    <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
+                        已公开
+                    </el-tag>
                     <!--TODO:管理页面-->
 
                     <el-button style="margin-left: auto" icon="el-icon-view" @click="toView">
@@ -43,7 +70,11 @@
                 <el-col :span="16" :offset="4">
                     <el-form label-positoin="left" label-width="80px">
                         <el-form-item label="阶段名">
-                            <el-input v-model="stage.subjectName" placeholder="阶段名" />
+                            <el-input
+                                v-model="stage.subjectName"
+                                placeholder="阶段名"
+                                :disabled="!stage.editable"
+                            />
                         </el-form-item>
                         <el-form-item label="摘要">
                             <el-input
@@ -51,10 +82,16 @@
                                 type="textarea"
                                 :autosize="{ minRows: 2 }"
                                 placeholder="摘要"
+                                :disabled="!stage.editable"
                             />
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="saveInfo" :loading="infoSaving">
+                            <el-button
+                                type="primary"
+                                @click="saveInfo"
+                                :loading="infoSaving"
+                                v-if="stage.editable"
+                            >
                                 更新
                             </el-button>
                         </el-form-item>
@@ -85,10 +122,20 @@
                                         </div>
                                     </div>
                                     <div class="button">
-                                        <el-button type="primary" plain>公开</el-button>
+                                        <el-button
+                                            type="primary"
+                                            plain
+                                            @click="handleDangerOperation('public')"
+                                            :disabled="
+                                                stage.isPublic || stage.status === 'abandoned'
+                                            "
+                                        >
+                                            公开
+                                        </el-button>
                                     </div>
                                 </div>
-                                <div class="item">
+                                <!--TODO:不需要审批的不显示这条-->
+                                <div class="item" v-if="stage.isNeedApprove">
                                     <div class="text">
                                         <div class="title">提交审批</div>
                                         <div class="info">
@@ -96,7 +143,14 @@
                                         </div>
                                     </div>
                                     <div class="button">
-                                        <el-button type="primary" plain>提交</el-button>
+                                        <el-button
+                                            type="primary"
+                                            plain
+                                            @click="handleDangerOperation('approve')"
+                                            :disabled="stage.status !== 'beforeApprove'"
+                                        >
+                                            提交
+                                        </el-button>
                                     </div>
                                 </div>
                                 <div class="item">
@@ -107,7 +161,17 @@
                                         </div>
                                     </div>
                                     <div class="button">
-                                        <el-button type="danger" plain>废弃</el-button>
+                                        <el-button
+                                            type="danger"
+                                            plain
+                                            @click="handleDangerOperation('abandon')"
+                                            :disabled="
+                                                stage.status === 'abandoned' ||
+                                                stage.status === 'underApprove'
+                                            "
+                                        >
+                                            废弃
+                                        </el-button>
                                     </div>
                                 </div>
                             </div>
@@ -134,7 +198,12 @@
 </template>
 
 <script>
-import { getStageInfo, manageSaveInfo, getEditLog } from "@/api/timeline-project"
+import {
+    getStageInfo,
+    manageSaveInfo,
+    getEditLog,
+    submitDangerOperation,
+} from "@/api/timeline-project"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import { normalFormatTime } from "@/utils/index.js"
 
@@ -211,6 +280,37 @@ export default {
                 })
                 .catch()
         },
+        handleDangerOperation(type) {
+            let tip = {
+                public: "确定将本阶段公开？",
+                approve: "确定将本阶段提交审核？",
+                abandon: "确定废弃本阶段？",
+            }
+            let message = tip[type] || "error"
+            this.$confirm(message, "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        let { stageID } = this
+                        submitDangerOperation({ stageID, type })
+                            .then(() => {
+                                this.$message.success("更新成功")
+                                instance.confirmButtonLoading = false
+                                this.getStageInfo()
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            }).catch(() => {})
+        },
     },
 }
 </script>
@@ -270,5 +370,9 @@ export default {
 .danger-zone {
     border: 1px solid #f56c6c;
     border-radius: 6px;
+
+    .item:not(:last-child) {
+        border-bottom: 1px solid #e4e7ed;
+    }
 }
 </style>

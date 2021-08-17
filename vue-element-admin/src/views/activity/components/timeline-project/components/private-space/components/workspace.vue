@@ -103,7 +103,7 @@
                                 >
                                     审核中
                                 </el-tag>
-                                <el-tag size="mini" style="margin-left: 4px" v-if="e.public">
+                                <el-tag size="mini" style="margin-left: 4px" v-if="e.isPublic">
                                     已公开
                                 </el-tag>
                             </div>

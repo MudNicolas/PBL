@@ -60,10 +60,11 @@ export default {
             getPrivateTimeline({ activityID })
                 .then(res => {
                     this.loading = false
-                    let { project, stages } = res.data
-                    if (!project) {
+                    let { status } = res.data
+                    if (status === "NoProject") {
                         this.status = "NoProject"
                     } else {
+                        let { project, stages } = res.data
                         this.project = project
                         this.stages = stages
                         this.status = "Normal"

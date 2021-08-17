@@ -43,12 +43,22 @@ router.get("/private/get", (req, res) => {
         authorID,
         activityID,
     })
-        .select("name intro time  status")
+        .select("name intro time status")
         .then((project, err) => {
             if (err) {
                 res.json({
                     code: 30001,
                     message: "DataBase Error",
+                })
+                return
+            }
+
+            if (!project) {
+                res.json({
+                    code: 20000,
+                    data: {
+                        status: "NoProject",
+                    },
                 })
                 return
             }
@@ -64,33 +74,6 @@ router.get("/private/get", (req, res) => {
                     })
                 })
         })
-})
-
-//高级操作验权限
-router.use((req, res, next) => {
-    let { project } = req
-    //个人项目，作者id与uid不匹配
-    if (project.authorType === "personal" && project.authorID.toString() !== req.uid.toString()) {
-        res.json({
-            code: "401",
-        })
-        return
-    }
-    //小组项目，小组内无uid
-    if (project.authorType === "group") {
-        let { group } = req
-        let valid = group.groupMember.some(m => {
-            m.toString() === sid.toString()
-        })
-
-        if (!valid) {
-            res.json({
-                code: "401",
-            })
-            return
-        }
-    }
-    next()
 })
 
 router.post("/private/project/create", (req, res) => {
@@ -138,6 +121,33 @@ router.post("/private/project/create", (req, res) => {
             code: 20000,
         })
     })
+})
+
+//高级操作验权限
+router.use((req, res, next) => {
+    let { project } = req
+    //个人项目，作者id与uid不匹配
+    if (project.authorType === "personal" && project.authorID.toString() !== req.uid.toString()) {
+        res.json({
+            code: "401",
+        })
+        return
+    }
+    //小组项目，小组内无uid
+    if (project.authorType === "group") {
+        let { group } = req
+        let valid = group.groupMember.some(m => {
+            m.toString() === sid.toString()
+        })
+
+        if (!valid) {
+            res.json({
+                code: "401",
+            })
+            return
+        }
+    }
+    next()
 })
 
 router.post("/private/project/edit", (req, res) => {
