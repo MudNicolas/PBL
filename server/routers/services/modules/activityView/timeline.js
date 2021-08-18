@@ -201,6 +201,7 @@ router.post("/private/project/stage/new", async (req, res) => {
         ],
     }
 
+    //继承时，复制content、contentImage、contentVideo、file
     if (stageOptions.creatMethod === "inheritance") {
         let stageID = stageOptions.inhertStageID
         let originStage = await Stage.findById(stageID)
@@ -226,12 +227,6 @@ router.post("/private/project/stage/new", async (req, res) => {
             })
             return
         }
-        //继承内容
-
-        /**
-         * TODO : √继承时，image和video和file复制一份储存返回的新id
-         *        content里的image、video换id
-         * */
 
         let { images, videos, files } = originStage.toJSON()
 
@@ -258,7 +253,7 @@ router.post("/private/project/stage/new", async (req, res) => {
         stage.allUploadedVideos = targetVideosID
         stage.files = targetFilesID
         stage.allUploadedFiles = targetFilesID
-
+        //将content的src替换
         stage.content = transNewContentSourceUrl(
             originStage.content,
             targetImagesID,
