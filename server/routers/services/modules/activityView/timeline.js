@@ -2,7 +2,7 @@ import Router from "express"
 let router = Router()
 import TimeLineProject from "#models/TimeLineProject.js"
 import Stage from "#models/Stage.js"
-import { copySources } from "#services/tools.js"
+import { copySources, transNewContentSourceUrl } from "#services/tools.js"
 
 function findStudentGroup(group, sid) {
     return group.find(g => {
@@ -227,26 +227,45 @@ router.post("/private/project/stage/new", async (req, res) => {
             return
         }
         //继承内容
-        stage.content = originStage.content
-        //TODO: 继承时，image和video和file复制一份储存返回的新id
+
+        /**
+         * TODO : √继承时，image和video和file复制一份储存返回的新id
+         *        content里的image、video换id
+         * */
 
         let { images, videos, files } = originStage.toJSON()
 
-        let [iErr, targetImages] = await copySources("public/img/editor/", "image", images)
-        let [vErr, targetVideos] = await copySources("public/files/", "video", videos)
-        let [fErr, targetFiles] = await copySources("public/files/", "file", files)
+        let [iErr, targetImagesID, imagesServerFilename] = await copySources(
+            "public/img/editor/",
+            "image",
+            images
+        )
+        let [vErr, targetVideosID, videoServerFilename] = await copySources(
+            "public/files/",
+            "video",
+            videos
+        )
+        let [fErr, targetFilesID] = await copySources("public/files/", "file", files)
         if (iErr || vErr || fErr) {
             console.log(iErr, vErr, fErr)
             return res.json({
                 message: "服务器出现错误",
             })
         }
-        stage.images = targetImages
-        stage.allUploadedImages = targetImages
-        stage.videos = targetVideos
-        stage.allUploadedVideos = targetVideos
-        stage.files = targetFiles
-        stage.allUploadedFiles = targetFiles
+        stage.images = targetImagesID
+        stage.allUploadedImages = targetImagesID
+        stage.videos = targetVideosID
+        stage.allUploadedVideos = targetVideosID
+        stage.files = targetFilesID
+        stage.allUploadedFiles = targetFilesID
+
+        stage.content = transNewContentSourceUrl(
+            originStage.content,
+            targetImagesID,
+            imagesServerFilename,
+            targetVideosID,
+            videoServerFilename
+        )
     }
 
     Stage.find({

@@ -11,7 +11,10 @@ export default mongoose.model("Stage", {
             ref: "User",
         },
     ],
-    subjectName: String,
+    subjectName: {
+        type: String,
+        default: "",
+    },
     sketch: String,
     createTime: Date,
     content: String,

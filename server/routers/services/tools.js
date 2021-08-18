@@ -301,6 +301,25 @@ export function contentVideoResolution(htmlContent) {
     return videosID
 }
 
+export function transNewContentSourceUrl(
+    htmlContent,
+    imageIDs,
+    imageFileNames,
+    videoIDs,
+    videoFilenames
+) {
+    let $ = cheerio.load(htmlContent)
+    let imagePath = SERVER_ADDRESS + "/public/img/editor/"
+    let videoPath = SERVER_ADDRESS + "/public/files/"
+    $("img").each((i, e) => {
+        e.attribs.src = imagePath + imageFileNames[i] + "?_id=" + imageIDs[i]
+    })
+    $("video").each((i, e) => {
+        e.attribs.src = videoPath + videoFilenames[i] + "?_id=" + videoIDs[i]
+    })
+    return $.html()
+}
+
 export function processContentSource(stage, content) {
     return new Promise((resolve, reject) => {
         //resolute images
@@ -385,7 +404,14 @@ export function copySources(path, type, e) {
             processArray.push(process(path, model, i))
         }
         Promise.all(processArray)
-            .then(ids => {
+            .then(idsAndSername => {
+                let ids = idsAndSername.map(e => {
+                    return e[0]
+                })
+                let sername = idsAndSername.map(e => {
+                    return e[1]
+                })
+
                 model
                     .find({
                         _id: { $in: ids },
@@ -398,7 +424,7 @@ export function copySources(path, type, e) {
                         }
                         Promise.all(saveArray)
                             .then(() => {
-                                return resolve([null, ids])
+                                return resolve([null, ids, sername])
                             })
                             .catch(err => {
                                 return reject([err, []])
@@ -439,7 +465,7 @@ export function copySources(path, type, e) {
                     if (err) {
                         return reject(err)
                     }
-                    return resolve(t._id)
+                    return resolve([t._id, t.serverFilename])
                 })
             })
         })
