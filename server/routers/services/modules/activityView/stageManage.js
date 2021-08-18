@@ -26,6 +26,22 @@ router.get("/info/get", (req, res) => {
     })
 })
 
+router.get("/editLog/get", (req, res) => {
+    let { stage } = req
+    stage
+        .execPopulate({
+            path: "editLog.uid",
+            select: "name",
+        })
+        .then(_stage => {
+            let { editLog } = _stage
+            res.json({
+                code: 20000,
+                data: editLog,
+            })
+        })
+})
+
 router.use((req, res, next) => {
     let { stage } = req
     if (stage.status === "abandoned") {
@@ -56,22 +72,6 @@ router.post("/info/save", (req, res) => {
     })
 })
 
-router.get("/editLog/get", (req, res) => {
-    let { stage } = req
-    stage
-        .execPopulate({
-            path: "editLog.uid",
-            select: "name",
-        })
-        .then(_stage => {
-            let { editLog } = _stage
-            res.json({
-                code: 20000,
-                data: editLog,
-            })
-        })
-})
-
 router.post("/danger/submit", (req, res) => {
     let { type } = req.body
     let { stage } = req
@@ -85,10 +85,11 @@ router.post("/danger/submit", (req, res) => {
         project.save(err => {
             if (err) {
                 console.log(err)
+                return
             }
         })
     }
-    if (type === "abandon") {
+    if (type === "abandon" && stage.status !== "underApprove") {
         stage.status = "abandoned"
     }
     stage.editable = false

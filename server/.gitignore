@@ -1,5 +1,5 @@
 node_modules/
-db/
-public/img
-public/files
-logs
+db/*
+public/img/*/*
+public/files/*
+logs/*
