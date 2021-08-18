@@ -343,6 +343,10 @@ export default {
     padding: 10px 40px 20px 40px;
 }
 
+.author {
+    margin-right: 6px;
+}
+
 .container {
     padding: 40px;
 }

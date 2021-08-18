@@ -5,11 +5,7 @@ import Stage from "#models/Stage.js"
 import { copySources, transNewContentSourceUrl } from "#services/tools.js"
 
 function findStudentGroup(group, sid) {
-    return group.find(g => {
-        g.groupMember.some(m => {
-            m.toString() === sid.toString()
-        })
-    })
+    return group.find(g => g.groupMember.some(m => m.toString() === sid.toString()))
 }
 
 router.use((req, res, next) => {
@@ -137,9 +133,7 @@ router.use((req, res, next) => {
     //小组项目，小组内无uid
     if (project.authorType === "group") {
         let { group } = req
-        let valid = group.groupMember.some(m => {
-            m.toString() === sid.toString()
-        })
+        let valid = group.groupMember.some(m => m.toString() === req.uid.toString())
 
         if (!valid) {
             res.json({
@@ -174,10 +168,7 @@ router.post("/private/project/edit", (req, res) => {
 router.post("/private/project/stage/new", async (req, res) => {
     let { stageOptions } = req.body
     let { project } = req
-    console.log(stageOptions)
-    //新建全新的空白stage
 
-    //新阶段的status继承自project
     let status = project.status
 
     let time = new Date()

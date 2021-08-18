@@ -13,8 +13,8 @@
                 >
                     <el-input v-model="project.name" />
                 </el-form-item>
-                <el-form-item label="项目名称" prop="intro">
-                    <el-input type="textarea" :autosize="{ minRows: 3 }" />
+                <el-form-item label="项目描述" prop="intro">
+                    <el-input type="textarea" :autosize="{ minRows: 3 }" v-model="project.intro" />
                 </el-form-item>
                 <el-form-item>
                     <el-button
@@ -63,6 +63,7 @@ export default {
                 .then(() => {
                     this.submitting = false
                     this.$emit("onSuccess")
+                    this.$message.success("创建成功")
                 })
                 .catch(() => {
                     this.submitting = false

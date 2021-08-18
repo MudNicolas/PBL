@@ -438,14 +438,7 @@ export default {
     }
 }
 .author {
-    display: flex;
-    align-items: center;
-
-    .name {
-        margin-left: 8px;
-        color: #606266;
-        font-size: 14px;
-    }
+    margin-right: 6px;
 }
 </style>
 <style lang='scss' >

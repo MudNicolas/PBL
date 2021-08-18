@@ -68,20 +68,95 @@ router.get("/get", (req, res) => {
     })
 })
 
+//验证comment是否存在
 router.use((req, res, next) => {
     let commentID = req.body.commentID || req.query.commentID
     let validate = /^[a-fA-F0-9]{24}$/.test(commentID)
     if (!validate) {
         res.json({
-            code: 404,
+            message: "该评论不存在",
         })
         return
     }
 
-    Comment.findById(commentID).then(c => {
+    Comment.findOne({
+        _id: commentID,
+        isUsed: true,
+    }).then(c => {
+        if (!c) {
+            return res.json({
+                message: "该评论不存在或已被移除",
+            })
+        }
         req.commentData = c
         next()
     })
+})
+
+router.post("/reply/submit", (req, res) => {
+    let { reply, replyID } = req.body
+    let { commentData } = req
+    commentData.reply.push({
+        fromUser: req.uid,
+        toUser: commentData.commentUser,
+        toReply: replyID,
+        content: reply,
+        time: new Date(),
+    })
+    commentData.save(err => {
+        if (err) {
+            res.json({
+                code: 300001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
+router.post("/reply/remove", (req, res) => {
+    let { replyID } = req.body
+    let { commentData, course } = req
+    let index = commentData.reply.findIndex(e => e._id.toString() === replyID.toString())
+    let reply = commentData.reply[index]
+    let { chiefTeacher, partnerTeacher } = course
+    if (
+        reply.fromUser.toString() !== req.uid &&
+        chiefTeacher.toString() !== req.uid &&
+        !partnerTeacher.find(e => e.toString() === req.uid)
+    ) {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+    commentData.reply[index].isUsed = false
+    commentData.save(err => {
+        if (err) {
+            res.json({
+                code: 300001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        res.json({
+            code: 20000,
+        })
+    })
+})
+
+router.use((req, res, next) => {
+    let { commentData } = req
+    if (commentData.commentUser.toString() !== req.uid.toString()) {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+    next()
 })
 
 router.post("/editor/autosave", (req, res) => {
@@ -160,17 +235,6 @@ router.post("/editor/video/upload", (req, res) => {
         })
 })
 
-router.use((req, res, next) => {
-    let { commentData } = req
-    if (commentData.commentUser.toString() !== req.uid.toString()) {
-        res.json({
-            code: 401,
-        })
-        return
-    }
-    next()
-})
-
 router.post("/submit", (req, res) => {
     let { comments } = req.body
     let { commentData } = req
@@ -205,85 +269,6 @@ router.post("/submit", (req, res) => {
             console.log(err)
             res.json(err)
         })
-})
-
-router.post("/reply/submit", (req, res) => {
-    let { reply, replyID } = req.body
-    let { commentData } = req
-    commentData.reply.push({
-        fromUser: req.uid,
-        toUser: commentData.commentUser,
-        toReply: replyID,
-        content: reply,
-        time: new Date(),
-    })
-    commentData.save(err => {
-        if (err) {
-            res.json({
-                code: 300001,
-                message: "DataBase Error",
-            })
-            return
-        }
-        res.json({
-            code: 20000,
-        })
-    })
-})
-
-router.post("/reply/submit", (req, res) => {
-    let { reply, replyID } = req.body
-    let { commentData } = req
-    commentData.reply.push({
-        fromUser: req.uid,
-        toUser: commentData.commentUser,
-        toReply: replyID,
-        content: reply,
-        time: new Date(),
-    })
-    commentData.save(err => {
-        if (err) {
-            res.json({
-                code: 300001,
-                message: "DataBase Error",
-            })
-            return
-        }
-        res.json({
-            code: 20000,
-        })
-    })
-})
-
-router.post("/reply/remove", (req, res) => {
-    let { replyID } = req.body
-    let { commentData, course } = req
-    let index = commentData.reply.findIndex(e => e._id.toString() === replyID.toString())
-    let reply = commentData.reply[index]
-    let { chiefTeacher, partnerTeacher } = course
-    if (
-        reply.fromUser.toString() !== req.uid &&
-        chiefTeacher.toString() !== req.uid &&
-        !partnerTeacher.find(e => e.toString() === req.uid)
-    ) {
-        res.json({
-            code: 401,
-        })
-        return
-    }
-    commentData.reply[index].isUsed = false
-    commentData.save(err => {
-        if (err) {
-            res.json({
-                code: 300001,
-                message: "DataBase Error",
-            })
-            return
-        }
-        res.json({
-            code: 20000,
-        })
-    })
 })
 
 router.use((req, res, next) => {
