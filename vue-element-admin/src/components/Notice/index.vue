@@ -1,29 +1,14 @@
 <template>
     <div>
-        <el-dropdown
-            placement="bottom"
-            size="medium"
-            :hide-on-click="hideOnClick"
-        >
+        <el-dropdown placement="bottom" size="medium" :hide-on-click="hideOnClick">
             <span class="el-dropdown-link out-area" @click="badgeClick">
                 <el-badge is-dot class="item" :hidden="hidden">
                     <svg-icon icon-class="email" />
                 </el-badge>
             </span>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-plus"
-                    >黄金黄金黄金黄金黄金糕</el-dropdown-item
-                >
-                <el-dropdown-item icon="el-icon-circle-plus"
-                    >狮子头</el-dropdown-item
-                >
-                <el-dropdown-item icon="el-icon-circle-plus-outline"
-                    >螺蛳粉</el-dropdown-item
-                >
-                <el-dropdown-item icon="el-icon-check">双皮奶</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-circle-check"
-                    >蚵仔煎</el-dropdown-item
-                >
+                <el-dropdown-item icon="el-icon-message">通知</el-dropdown-item>
+                <el-dropdown-item icon="el-icon-bell">我的私信</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
     </div>
@@ -36,15 +21,15 @@ export default {
         return {
             hidden: false,
             hideOnClick: false,
-        };
+        }
     },
 
     methods: {
         badgeClick() {
-            this.hidden = true;
+            this.hidden = true
         },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -46,10 +46,15 @@ router.get("/get", (req, res, next) => {
 
             theCourse.cover = `${COVER_PATH}/${theCourse.cover}`
 
-            let sections = await Section.find({
+            let query = {
                 courseID: courseID,
                 isUsed: true,
-            })
+            }
+            if (req.role === "student") {
+                query.visible = true
+            }
+
+            let sections = await Section.find(query)
                 .sort({
                     index: 1,
                 })
