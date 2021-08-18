@@ -31,7 +31,6 @@
                     <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
                         已公开
                     </el-tag>
-                    <!--TODO:管理页面-->
 
                     <el-button style="margin-left: auto" icon="el-icon-s-tools" @click="toManage">
                         管理

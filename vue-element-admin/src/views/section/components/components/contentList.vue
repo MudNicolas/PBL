@@ -118,8 +118,10 @@
                 <el-table-column prop="name" label="名称">
                     <template slot-scope="scope">
                         <div class="content">
-                            <i class="el-icon-s-cooperation" />
-                            {{ scope.row.name }}
+                            <router-link :to="'/course/section/activity/view/' + scope.row._id">
+                                <i class="el-icon-s-cooperation" />
+                                {{ scope.row.name }}
+                            </router-link>
                         </div>
                     </template>
                 </el-table-column>

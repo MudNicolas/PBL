@@ -31,7 +31,6 @@
                     <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
                         已公开
                     </el-tag>
-                    <!--TODO:管理页面-->
 
                     <el-button style="margin-left: auto" icon="el-icon-view" @click="toView">
                         详情
@@ -134,7 +133,7 @@
                                         </el-button>
                                     </div>
                                 </div>
-                                <!--TODO:不需要审批的不显示这条-->
+
                                 <div class="item" v-if="stage.isNeedApprove">
                                     <div class="text">
                                         <div class="title">提交审批</div>
