@@ -224,7 +224,7 @@
                             placeholder="请选择将要继承的阶段"
                         >
                             <el-option
-                                v-for="item in project.stages"
+                                v-for="item in stages"
                                 :key="item._id"
                                 :label="item.subjectName || '暂无阶段名'"
                                 :value="item._id"

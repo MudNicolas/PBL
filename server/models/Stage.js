@@ -45,7 +45,7 @@ export default mongoose.model("Stage", {
             ref: "File",
         },
     ],
-    allUploadedfiles: [
+    allUploadedFiles: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "File",

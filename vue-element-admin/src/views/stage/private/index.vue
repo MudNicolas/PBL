@@ -183,14 +183,6 @@
                             <el-button type="primary" @click="handleSave" :loading="saving">
                                 保存
                             </el-button>
-                            <!--TODO:审批按钮放管理页面-->
-                            <el-button
-                                type="primary"
-                                icon="el-icon-s-promotion"
-                                v-if="stage.status === 'beforeApprove'"
-                            >
-                                提交审批
-                            </el-button>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -286,8 +278,9 @@ export default {
         },
     },
     data() {
+        let stageID = this.$route.params.id
         return {
-            stageID: this.$route.params.id,
+            stageID,
             loading: false,
             stage: {
                 subjectName: "",
@@ -305,11 +298,11 @@ export default {
             imageUploadPath:
                 process.env.VUE_APP_BASE_API +
                 "/activity/view/timeline/stage/editor/image/upload?stageID=" +
-                this.stageID,
+                stageID,
             videoUploadPath:
                 process.env.VUE_APP_BASE_API +
                 "/activity/view/timeline/stage/editor/video/upload?stageID=" +
-                this.stageID,
+                stageID,
             autosavePath: "/activity/view/timeline/stage/editor/autosave",
         }
     },

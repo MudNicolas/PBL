@@ -2,6 +2,7 @@ import Router from "express"
 let router = Router()
 import TimeLineProject from "#models/TimeLineProject.js"
 import Stage from "#models/Stage.js"
+import { copySources } from "#services/tools.js"
 
 function findStudentGroup(group, sid) {
     return group.find(g => {
@@ -180,7 +181,14 @@ router.post("/private/project/stage/new", async (req, res) => {
     let status = project.status
 
     let time = new Date()
+
+    let authorUID = [req.uid]
+    if (project.authorType === "group") {
+        let { group } = req
+        authorUID = group.groupMember
+    }
     let stage = {
+        authorUID,
         timelineProjectID: project._id,
         createTime: time,
         status,
@@ -195,7 +203,23 @@ router.post("/private/project/stage/new", async (req, res) => {
 
     if (stageOptions.creatMethod === "inheritance") {
         let stageID = stageOptions.inhertStageID
-        let originStage = await Stage.findById(stageID).exec()
+        let originStage = await Stage.findById(stageID)
+            .populate([
+                {
+                    path: "images",
+                    select: "serverFilename submitUID sectionID courseID type",
+                },
+                {
+                    path: "videos",
+                    select: "serverFilename submitUID sectionID courseID type",
+                },
+                {
+                    path: "files",
+                    select: "serverFilename originalFilename size submitUID type",
+                },
+            ])
+            .exec()
+
         if (!originStage) {
             res.json({
                 message: "该阶段不存在",
@@ -205,12 +229,24 @@ router.post("/private/project/stage/new", async (req, res) => {
         //继承内容
         stage.content = originStage.content
         //TODO: 继承时，image和video和file复制一份储存返回的新id
-    } else {
-        stage.authorUID = [req.uid]
-        if (project.authorType === "group") {
-            let { group } = req
-            stage.authorUID = group.groupMember
+
+        let { images, videos, files } = originStage.toJSON()
+
+        let [iErr, targetImages] = await copySources("public/img/editor/", "image", images)
+        let [vErr, targetVideos] = await copySources("public/files/", "video", videos)
+        let [fErr, targetFiles] = await copySources("public/files/", "file", files)
+        if (iErr || vErr || fErr) {
+            console.log(iErr, vErr, fErr)
+            return res.json({
+                message: "服务器出现错误",
+            })
         }
+        stage.images = targetImages
+        stage.allUploadedImages = targetImages
+        stage.videos = targetVideos
+        stage.allUploadedVideos = targetVideos
+        stage.files = targetFiles
+        stage.allUploadedFiles = targetFiles
     }
 
     Stage.find({
@@ -226,6 +262,7 @@ router.post("/private/project/stage/new", async (req, res) => {
 
             Stage(stage).save((err, s) => {
                 if (err) {
+                    console.log(err, stage)
                     res.json({
                         code: 30001,
                         message: "Database Error",

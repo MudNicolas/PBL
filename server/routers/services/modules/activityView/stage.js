@@ -150,12 +150,12 @@ router.post("/save", (req, res) => {
     stage.subjectName = subjectName
     stage.content = content
     stage.sketch = sketch
-    stage.allUploadedfiles = [...stage.allUploadedfiles, ...files]
+    stage.allUploadedFiles = [...stage.allUploadedFiles, ...files]
     stage.files = files
     stage.editLog.push({
         uid: req.uid,
         time: new Date(),
-        operation: "保存",
+        operation: "编辑保存",
     })
     stage.isSaved = true
 
@@ -194,13 +194,13 @@ function processStageFiles(stage, filesID) {
             })
         }
 
-        let allUploadedfiles = stage.allUploadedfiles.map(e => {
+        let allUploadedFiles = stage.allUploadedFiles.map(e => {
             return e.toString()
         })
         let files = stage.files.map(e => {
             return e.toString()
         })
-        let notUsedFiles = allUploadedfiles.filter(e => files.indexOf(e) === -1)
+        let notUsedFiles = allUploadedFiles.filter(e => files.indexOf(e) === -1)
 
         File.find({
             _id: { $in: filesID },

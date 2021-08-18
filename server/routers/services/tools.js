@@ -5,10 +5,12 @@ import User from "#models/User.js"
 import Course from "#models/Course.js"
 import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS } from "#root/settings.js"
 
-import EditorImage from "#models/EditorImage.js"
-
 import cheerio from "cheerio"
 import EditorVideo from "#models/EditorVideo.js"
+import EditorImage from "#models/EditorImage.js"
+import File from "#models/File.js"
+import { v1 as uuidv1 } from "uuid"
+import fs from "fs"
 
 const algorithm = "aes128"
 //aes加密解密
@@ -356,4 +358,90 @@ export function processContentSource(stage, content) {
             })
         }
     })
+}
+
+/**
+ *
+ * @param {file path String} path
+ * @param {file type ->image,video,file} type
+ * @param {file databese object} e
+ */
+export function copySources(path, type, e) {
+    return new Promise((resolve, reject) => {
+        let map = {
+            image: EditorImage,
+            video: EditorVideo,
+            file: File,
+        }
+        let model = map[type]
+
+        let obj = e.map(i => {
+            delete i._id
+            return i
+        })
+
+        let processArray = []
+        for (let i of obj) {
+            processArray.push(process(path, model, i))
+        }
+        Promise.all(processArray)
+            .then(ids => {
+                model
+                    .find({
+                        _id: { $in: ids },
+                    })
+                    .then(s => {
+                        let saveArray = []
+                        for (let j of s) {
+                            j.isNeeded = true
+                            saveArray.push(saveProcess(j))
+                        }
+                        Promise.all(saveArray)
+                            .then(() => {
+                                return resolve([null, ids])
+                            })
+                            .catch(err => {
+                                return reject([err, []])
+                            })
+                    })
+            })
+            .catch(err => {
+                return reject([err, []])
+            })
+    })
+
+    function saveProcess(e) {
+        return new Promise((resolve, reject) => {
+            e.save(err => {
+                if (err) {
+                    return reject(err)
+                }
+                resolve()
+            })
+        })
+    }
+
+    function process(path, model, i) {
+        return new Promise((resolve, reject) => {
+            let newServerFilename = uuidv1()
+            let fileType = i.serverFilename.split(".")[1] || i.serverFilename
+            let oPath = path + i.serverFilename
+            let nPath = path + newServerFilename + "." + fileType
+            fs.copyFile(oPath, nPath, err => {
+                if (err) {
+                    return reject(err)
+                }
+                i.serverFilename = newServerFilename + "." + fileType
+                i.uploadTime = new Date()
+                i.isNeeded = false
+                let n = new model(i)
+                n.save((err, t) => {
+                    if (err) {
+                        return reject(err)
+                    }
+                    return resolve(t._id)
+                })
+            })
+        })
+    }
 }
