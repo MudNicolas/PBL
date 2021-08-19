@@ -29,8 +29,9 @@ class routeTree {
                         let title = await Course.findById(id)
                             .select("name")
                             .then(e => {
-                                //console.log(e)
-                                return e
+                                if (e) {
+                                    return e
+                                }
                             })
                         return title
                     }
@@ -70,10 +71,11 @@ class routeTree {
                         let title = await Section.findById(id)
                             .select("name courseID")
                             .then(e => {
-                                //console.log(e)
-                                return {
-                                    name: e.name,
-                                    parentID: e.courseID,
+                                if (e) {
+                                    return {
+                                        name: e.name,
+                                        parentID: e.courseID,
+                                    }
                                 }
                             })
                         return title
@@ -97,10 +99,11 @@ class routeTree {
                         let title = await Activity.findById(id)
                             .select("name sectionID")
                             .then(e => {
-                                //console.log(e)
-                                return {
-                                    name: e.name,
-                                    parentID: e.sectionID,
+                                if (e) {
+                                    return {
+                                        name: e.name,
+                                        parentID: e.sectionID,
+                                    }
                                 }
                             })
                         return title
@@ -133,13 +136,14 @@ class routeTree {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
                         return await TimeLineProject.findById(id)
-
                             .select("activityID name")
                             .populate("timelineProjectID")
                             .then(project => {
-                                return {
-                                    name: project.name || "暂无阶段名",
-                                    parentID: project.activityID,
+                                if (project) {
+                                    return {
+                                        name: project.name || "暂无阶段名",
+                                        parentID: project.activityID,
+                                    }
                                 }
                             })
                     }
@@ -153,13 +157,14 @@ class routeTree {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
                         return await Stage.findById(id)
-
                             .select("timelineProjectID subjectName")
                             .populate("timelineProjectID")
                             .then(project => {
-                                return {
-                                    name: project.subjectName || "暂无阶段名",
-                                    parentID: project.timelineProjectID.activityID,
+                                if (project) {
+                                    return {
+                                        name: project.subjectName || "暂无阶段名",
+                                        parentID: project.timelineProjectID.activityID,
+                                    }
                                 }
                             })
                     }

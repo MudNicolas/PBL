@@ -32,6 +32,7 @@ router.use((req, res, next) => {
         }
         if (!stage) {
             res.json({
+                code: 404,
                 message: "stage不存在",
             })
             return
@@ -67,6 +68,7 @@ router.use((req, res, next) => {
         }
         if (!proj) {
             res.json({
+                code: 404,
                 message: "不存在此项目",
             })
             return
