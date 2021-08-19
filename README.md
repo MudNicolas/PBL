@@ -20,4 +20,4 @@ Final PBL project
 -   vue-element-admin 官方文档：https://panjiachen.gitee.io/vue-element-admin-site/zh/guide/#%E5%8A%9F%E8%83%BD
 -   element-ui 官方文档：https://element.eleme.cn/#/zh-CN/component/installation
 -   froala-editor 官方文档：https://froala.com/wysiwyg-editor/docs/options/
--   mongoose 中文文档：http://www.mongoosejs.net/docs/populate.html
+-   mongoose 中文文档：http://www.mongoosejs.net/docs/index.html
