@@ -4,8 +4,6 @@ Final PBL project
 
 <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif">
 
----
-
 # 获取源文件后
 
 -   `cd server` 进入服务端文件夹
@@ -15,8 +13,6 @@ Final PBL project
 -   `cd vue-element-admin`
 -   `npm install` 安装依赖
 -   `npm run dev` 开启在 develop 模式下开启前端服务器
-
----
 
 # 相关文档
 
