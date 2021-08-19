@@ -52,7 +52,6 @@ router.get("/getAll", (req, res) => {
 
                 return Stage.find({
                     timelineProjectID: TLProject._id,
-                    authorID: e._id,
                     isPublic: true,
                 })
                     .select("publicTime")
