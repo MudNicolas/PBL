@@ -108,9 +108,18 @@ class routeTree {
                 },
             },
         },
+        PrivateSpace: {
+            path: id => {
+                return `/course/section/activity/view/${id}?tab=privateSpace`
+            },
+            parent: "ActivityView",
+            meta: {
+                title: "私有空间",
+            },
+        },
         TimeLineStage: {
             path: "/course/section/activity/timeline/private/view/",
-            parent: "ActivityView",
+            parent: "PrivateSpace",
             meta: {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
@@ -158,6 +167,10 @@ async function generateBreadCrumb(name, id) {
     //parentID不断传递更新
     let fid = id
     for (let f of gen) {
+        if (typeof f.path === "function") {
+            let func = f.path
+            f.path = func(fid)
+        }
         if (f.meta && f.meta.title && typeof f.meta.title === "function") {
             f.path += fid
             let func = f.meta.title

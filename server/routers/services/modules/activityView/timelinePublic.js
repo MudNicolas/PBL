@@ -56,9 +56,9 @@ router.get("/get", (req, res) => {
                     isPublic: true,
                 })
                     .select("publicTime")
-                    .then(stages => {
+                    .then(async stages => {
                         let latestPublicTime
-                        let stageNumber = stages.length
+                        let publicStageNumber = stages.length
 
                         if (stages.length > 0) {
                             latestPublicTime = stages[stages.length - 1].publicTime
@@ -67,11 +67,12 @@ router.get("/get", (req, res) => {
                         let { status } = TLProject
                         let projectName = TLProject.name
                         return {
+                            _id: TLProject._id,
                             projectName,
                             authors,
                             latestPublicTime,
                             status,
-                            stageNumber,
+                            publicStageNumber,
                         }
                     })
             })

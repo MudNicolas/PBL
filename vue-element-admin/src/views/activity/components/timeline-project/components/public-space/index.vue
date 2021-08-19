@@ -19,6 +19,7 @@
                 <template slot-scope="scope">
                     <el-popover
                         v-for="author of scope.row.authors"
+                        :key="author._id"
                         placement="left"
                         trigger="hover"
                         :open-delay="200"
@@ -59,8 +60,9 @@
                     </el-tag>
                 </template>
             </el-table-column>
+
             <el-table-column
-                prop="stageNumber"
+                prop="publicStageNumber"
                 label="已公开的阶段数"
                 sortable
                 align="center"
@@ -72,7 +74,7 @@
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
-                    <el-button>查看</el-button>
+                    <el-button :disabled="!scope.row._id">查看</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -103,6 +105,7 @@ export default {
             return val
         },
     },
+
     data() {
         return {
             loading: true,

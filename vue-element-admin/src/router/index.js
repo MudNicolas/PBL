@@ -224,24 +224,7 @@ export const asyncRoutes = [
                     roles: ["teacher", "student"],
                 },
             },
-            {
-                path: "section/activity/timeline/private/view/:id([a-f0-9]{24})",
-                component: () => import("@/views/stage/private/index"),
-                name: "TimeLineStage",
-                hidden: true,
-                meta: {
-                    roles: ["teacher", "student"],
-                },
-            },
-            {
-                path: "section/activity/timeline/private/manage/:id([a-f0-9]{24})",
-                component: () => import("@/views/stage/private/manage"),
-                name: "StageManage",
-                hidden: true,
-                meta: {
-                    roles: ["teacher", "student"],
-                },
-            },
+
             {
                 path: "section/activity/timeline/public/:id([a-f0-9]{24})",
                 /*  component: () => import("@/views/timeline-project"),
@@ -250,6 +233,28 @@ export const asyncRoutes = [
                 meta: {
                     roles: ["teacher", "student"],
                 }, */
+            },
+        ],
+    },
+    {
+        path: "/course/section/activity/timeline/private",
+        name: "PrivateSpace",
+        component: Layout,
+        hidden: true,
+        meta: {
+            roles: ["teacher", "student"],
+            title: "私有空间",
+        },
+        children: [
+            {
+                path: "view/:id([a-f0-9]{24})",
+                component: () => import("@/views/stage/private/index"),
+                name: "TimeLineStage",
+            },
+            {
+                path: "manage/:id([a-f0-9]{24})",
+                component: () => import("@/views/stage/private/manage"),
+                name: "StageManage",
             },
         ],
     },

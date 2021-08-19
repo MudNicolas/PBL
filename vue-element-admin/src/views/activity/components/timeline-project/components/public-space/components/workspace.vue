@@ -1,0 +1,186 @@
+<template>
+    <div>
+        <el-row>
+            <el-col :span="5">
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span v-if="!isIntroEdit" style="display: flex; align-items: center">
+                            {{ project.name }}
+                            <el-tag
+                                size="mini"
+                                style="margin-left: 4px"
+                                :type="project.status | tagTypeFilter"
+                            >
+                                {{ project.status | statusFilter }}
+                            </el-tag>
+                        </span>
+                        <span v-else key="editProjectName">
+                            <el-input v-model="editData.name" placeholder="项目名称" />
+                        </span>
+                    </div>
+                    <div class="intro">
+                        <div class="text">
+                            {{ project.intro | noIntro }}
+                        </div>
+                    </div>
+                </el-card>
+            </el-col>
+            <el-col :span="19">
+                <el-timeline>
+                    <el-timeline-item
+                        v-for="e of stages"
+                        :timestamp="normalFormatTime(new Date(e.createTime), '{y}-{m}-{d} {h}:{i}')"
+                        placement="top"
+                        :key="e._id"
+                        :color="e.status | stageColorFilter"
+                    >
+                        <el-card>
+                            <div class="subjuct-name" slot="header">
+                                <router-link
+                                    :to="{
+                                        path: `/course/section/activity/timeline/public/view/${e._id}`,
+                                    }"
+                                >
+                                    {{ e.subjectName | subjectNameFilter }}
+                                </router-link>
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="info"
+                                    v-if="e.status === 'abandoned'"
+                                >
+                                    已废弃
+                                </el-tag>
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="danger"
+                                    v-if="e.status === 'rejected'"
+                                >
+                                    审核驳回
+                                </el-tag>
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="warning"
+                                    v-if="e.status === 'underApprove'"
+                                >
+                                    审核中
+                                </el-tag>
+                                <el-tag size="mini" style="margin-left: 4px" v-if="e.isPublic">
+                                    已公开
+                                </el-tag>
+                            </div>
+                            <div class="content-preview">{{ e.sketch | sketchFilter }}</div>
+                        </el-card>
+                    </el-timeline-item>
+                </el-timeline>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<script>
+import { normalFormatTime } from "@/utils/index.js"
+import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
+export default {
+    props: ["project", "stages"],
+    filters: {
+        noIntro,
+        tagTypeFilter,
+        statusFilter,
+        stageColorFilter,
+        subjectNameFilter: val => {
+            return val || "暂无阶段名"
+        },
+        sketchFilter: val => {
+            return val || "暂无简述"
+        },
+    },
+    data() {
+        return {}
+    },
+    methods: {
+        normalFormatTime,
+    },
+}
+</script>
+
+<style lang='scss' >
+.clearfix {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    color: #303133;
+}
+.intro {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #606266;
+
+    .text {
+        line-height: 1.5;
+    }
+}
+.stage-wrapper {
+    height: 86px;
+
+    .create-stage-card-wrapper {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+.content-preview {
+    color: #606266;
+    //文本超出部分以...形式展示
+    text-overflow: -o-ellipsis-lastline;
+    //整体超出部分隐藏
+    overflow: hidden;
+    //文本超出部分以...形式展示，同第一行样式代码
+    text-overflow: ellipsis;
+    //display 块级元素展示
+    display: -webkit-box;
+    //设置文本行数为2行
+    -webkit-line-clamp: 2;
+    //设置文本行数为2行
+    line-clamp: 2;
+    //从上到下垂直排列子元素（设置伸缩盒子的子元素排列方式）
+    -webkit-box-orient: vertical;
+}
+
+.subjuct-name {
+    font-size: 16px;
+    color: #303133;
+    display: flex;
+    align-items: center;
+}
+
+.stage-choice-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: all 0.3s;
+
+    i {
+        font-size: 48px;
+        margin-bottom: 8px;
+        color: #606266;
+        transition: all 0.3s;
+    }
+
+    .tip {
+        color: #606266;
+    }
+}
+
+.corner-mark {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 20px solid #67c23a;
+    border-right: 20px solid transparent;
+}
+</style>

@@ -31,7 +31,7 @@
                             v-if="!isIntroEdit"
                             key="intro"
                             class="text"
-                            @dblclick="isIntroEdit = true"
+                            @dblclick="handleEditButtonClick"
                         >
                             {{ project.intro | noIntro }}
                         </div>
