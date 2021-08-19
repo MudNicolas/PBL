@@ -53,11 +53,17 @@ router.get("/get", (req, res) => {
                 return Stage.find({
                     timelineProjectID: TLProject._id,
                     authorID: e._id,
+                    isPublic: true,
                 })
                     .select("publicTime")
                     .then(stages => {
-                        let latestPublicTime = stages[stages.length - 1].publicTime
+                        let latestPublicTime
                         let stageNumber = stages.length
+
+                        if (stages.length > 0) {
+                            latestPublicTime = stages[stages.length - 1].publicTime
+                        }
+
                         let { status } = TLProject
                         let projectName = TLProject.name
                         return {
