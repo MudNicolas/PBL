@@ -34,6 +34,7 @@
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value"
+                                        :disabled="item.disabled"
                                     ></el-option>
                                 </el-select>
                             </el-form-item>
@@ -384,9 +385,7 @@
 <script>
 import { newActivityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
 import { submitCreateActivity } from "@/api/activity"
-import Activity from "../../../../profile/components/Activity.vue"
 export default {
-    components: { Activity },
     name: "CreateActivity",
     created() {
         this.sectionID = this.$route.params.id
@@ -405,18 +404,22 @@ export default {
                 {
                     value: "TimeLineProject",
                     label: "形成性项目",
+                    disabled: false,
                 },
                 {
                     value: "Forum",
                     label: "论坛",
+                    disabled: true,
                 },
                 {
                     value: "Evaluation",
                     label: "互动评价",
+                    disabled: true,
                 },
                 {
                     value: "Work",
                     label: "作业提交",
+                    disabled: true,
                 },
             ],
 
