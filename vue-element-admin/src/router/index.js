@@ -247,14 +247,34 @@ export const asyncRoutes = [
         },
         children: [
             {
-                path: "view/:id([a-f0-9]{24})",
+                path: "stage/view/:id([a-f0-9]{24})",
                 component: () => import("@/views/stage/private/index"),
                 name: "TimeLineStage",
             },
             {
-                path: "manage/:id([a-f0-9]{24})",
+                path: "stage/manage/:id([a-f0-9]{24})",
                 component: () => import("@/views/stage/private/manage"),
                 name: "StageManage",
+            },
+        ],
+    },
+    {
+        path: "/course/section/activity/timeline/public",
+        name: "PublicSpace",
+        component: Layout,
+        hidden: true,
+        meta: {
+            roles: ["teacher", "student"],
+            title: "公共空间",
+        },
+        children: [
+            {
+                path: "view/:id([a-f0-9]{24})",
+                component: () =>
+                    import(
+                        "@/views/activity/components/timeline-project/components/public-space/workspace"
+                    ),
+                name: "PublicTimelineProjectView",
             },
         ],
     },

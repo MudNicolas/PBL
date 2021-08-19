@@ -34,6 +34,32 @@
                             @dblclick="handleEditButtonClick"
                         >
                             {{ project.intro | noIntro }}
+                            <div class="author-area">
+                                <div v-for="user of project.authors" :key="user._id">
+                                    <div class="author">
+                                        <el-popover
+                                            placement="left"
+                                            trigger="hover"
+                                            :open-delay="200"
+                                            width="360"
+                                            @show="showUpPopoverKey = user._id"
+                                        >
+                                            <div>
+                                                <profile-popover
+                                                    :uid="user._id"
+                                                    :show-up-popover-key="showUpPopoverKey"
+                                                />
+                                            </div>
+                                            <span slot="reference">
+                                                <el-avatar
+                                                    :size="24"
+                                                    :src="avatarPath + user.avatar"
+                                                ></el-avatar>
+                                            </span>
+                                        </el-popover>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div v-else>
                             <el-form>
@@ -74,7 +100,7 @@
                             <div class="subjuct-name" slot="header">
                                 <router-link
                                     :to="{
-                                        path: `/course/section/activity/timeline/private/view/${e._id}`,
+                                        path: `/course/section/activity/timeline/private/stage/view/${e._id}`,
                                     }"
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
@@ -250,8 +276,11 @@
 import { submitEditIntro, newStageSubmit } from "@/api/timeline-project"
 import { normalFormatTime } from "@/utils/index.js"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
+import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+
 export default {
     props: ["project", "stages"],
+    components: { ProfilePopover },
     filters: {
         noIntro,
         tagTypeFilter,
@@ -278,6 +307,8 @@ export default {
                 inhertStageID: "",
             },
             newStageSubmitting: false,
+            avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
+            showUpPopoverKey: "",
         }
     },
     methods: {
@@ -414,5 +445,14 @@ export default {
     height: 0;
     border-top: 20px solid #67c23a;
     border-right: 20px solid transparent;
+}
+
+.author-area {
+    display: flex;
+    margin-top: 12px;
+
+    .author {
+        margin-right: 6px;
+    }
 }
 </style>

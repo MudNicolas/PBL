@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div class="container" v-loading="loading">
         <el-row>
             <el-col :span="5">
-                <el-card>
+                <el-card v-if="project.name">
                     <div slot="header" class="clearfix">
-                        <span v-if="!isIntroEdit" style="display: flex; align-items: center">
+                        <span style="display: flex; align-items: center">
                             {{ project.name }}
                             <el-tag
                                 size="mini"
@@ -14,19 +14,56 @@
                                 {{ project.status | statusFilter }}
                             </el-tag>
                         </span>
-                        <span v-else key="editProjectName">
-                            <el-input v-model="editData.name" placeholder="项目名称" />
-                        </span>
                     </div>
                     <div class="intro">
                         <div class="text">
                             {{ project.intro | noIntro }}
                         </div>
                     </div>
+                    <div class="author-area">
+                        <div v-for="user of project.authors" :key="user._id">
+                            <div class="author">
+                                <el-popover
+                                    placement="left"
+                                    trigger="hover"
+                                    :open-delay="200"
+                                    width="360"
+                                    @show="showUpPopoverKey = user._id"
+                                >
+                                    <div>
+                                        <profile-popover
+                                            :uid="user._id"
+                                            :show-up-popover-key="showUpPopoverKey"
+                                        />
+                                    </div>
+                                    <span slot="reference">
+                                        <el-avatar
+                                            :size="24"
+                                            :src="avatarPath + user.avatar"
+                                        ></el-avatar>
+                                    </span>
+                                </el-popover>
+                            </div>
+                        </div>
+                    </div>
                 </el-card>
             </el-col>
             <el-col :span="19">
                 <el-timeline>
+                    <el-timeline-item
+                        v-if="stages.length === 0"
+                        :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
+                        placement="top"
+                    >
+                        <el-card>
+                            <div class="stage-wrapper">
+                                <div class="create-stage-card-wrapper">
+                                    <span style="color: #606266">暂无公开的阶段</span>
+                                </div>
+                            </div>
+                        </el-card>
+                    </el-timeline-item>
+
                     <el-timeline-item
                         v-for="e of stages"
                         :timestamp="normalFormatTime(new Date(e.createTime), '{y}-{m}-{d} {h}:{i}')"
@@ -83,8 +120,12 @@
 <script>
 import { normalFormatTime } from "@/utils/index.js"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
+import { getPubicProject } from "@/api/timeline-project"
+import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+
 export default {
-    props: ["project", "stages"],
+    name: "PublicTimelineProjectView",
+    components: { ProfilePopover },
     filters: {
         noIntro,
         tagTypeFilter,
@@ -98,15 +139,41 @@ export default {
         },
     },
     data() {
-        return {}
+        return {
+            project: {},
+            stages: [],
+            loading: false,
+            projectID: this.$route.params.id,
+            avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
+            showUpPopoverKey: "",
+        }
+    },
+    created() {
+        this.getPubicProject()
     },
     methods: {
         normalFormatTime,
+        getPubicProject() {
+            this.loading = true
+            let { projectID } = this
+            getPubicProject({ projectID })
+                .then(res => {
+                    this.loading = false
+                    let { project, stages } = res.data
+                    this.project = project
+                    this.stages = stages
+                })
+                .catch(() => {})
+        },
     },
 }
 </script>
 
-<style lang='scss' >
+<style lang='scss' scoped>
+.container {
+    min-height: 80vh;
+    padding: 40px;
+}
 .clearfix {
     font-size: 20px;
     display: flex;
@@ -182,5 +249,25 @@ export default {
     height: 0;
     border-top: 20px solid #67c23a;
     border-right: 20px solid transparent;
+}
+
+.author-area {
+    display: flex;
+    margin-top: 12px;
+
+    .author {
+        margin-right: 6px;
+    }
+}
+
+.stage-wrapper {
+    height: 86px;
+
+    .create-stage-card-wrapper {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }
 </style>

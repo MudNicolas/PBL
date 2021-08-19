@@ -117,6 +117,35 @@ class routeTree {
                 title: "私有空间",
             },
         },
+        PublicSpace: {
+            path: id => {
+                return `/course/section/activity/view/${id}?tab=publicSpace`
+            },
+            parent: "ActivityView",
+            meta: {
+                title: "公共空间",
+            },
+        },
+        PublicTimelineProjectView: {
+            path: "/course/section/activity/timeline/public/view/",
+            parent: "PublicSpace",
+            meta: {
+                title: async id => {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        return await TimeLineProject.findById(id)
+
+                            .select("activityID name")
+                            .populate("timelineProjectID")
+                            .then(project => {
+                                return {
+                                    name: project.name || "暂无阶段名",
+                                    parentID: project.activityID,
+                                }
+                            })
+                    }
+                },
+            },
+        },
         TimeLineStage: {
             path: "/course/section/activity/timeline/private/view/",
             parent: "PrivateSpace",

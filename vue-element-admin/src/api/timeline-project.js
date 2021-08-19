@@ -74,7 +74,15 @@ export function submitDangerOperation(data) {
 
 export function getPubProjects(query) {
     return request({
-        url: "/activity/view/timeline/public/get",
+        url: "/activity/view/timeline/public/getAll",
+        method: "get",
+        params: query,
+    })
+}
+
+export function getPubicProject(query) {
+    return request({
+        url: "/activity/view/timeline/public/getSingle",
         method: "get",
         params: query,
     })

@@ -74,7 +74,9 @@
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
-                    <el-button :disabled="!scope.row._id">查看</el-button>
+                    <el-button :disabled="!scope.row._id" @click="handleToPage(scope.row._id)">
+                        查看
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -132,6 +134,9 @@ export default {
         },
         filterHandleProjectStatus(value, row, column) {
             return value === row.status
+        },
+        handleToPage(id) {
+            this.$router.push(`/course/section/activity/timeline/public/view/${id}`)
         },
     },
 }

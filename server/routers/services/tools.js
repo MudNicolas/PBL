@@ -471,3 +471,15 @@ export function copySources(path, type, e) {
         })
     }
 }
+
+export async function getUserInfoFromGroupID(groupID, course) {
+    let { group } = course
+    let g = group.find(e => e._id.toString() === groupID.toString())
+    let { groupMember } = g
+    const users = await User.find({
+        _id: { $in: groupMember },
+    })
+        .select("avatar name")
+        .exec()
+    return users
+}

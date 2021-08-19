@@ -2,6 +2,7 @@ import Router from "express"
 let router = Router()
 import TimeLineProject from "#models/TimeLineProject.js"
 import Stage from "#models/Stage.js"
+import User from "#models/User.js"
 import { copySources, transNewContentSourceUrl } from "#services/tools.js"
 
 import p from "./timelinePublic.js"
@@ -43,8 +44,8 @@ router.get("/private/get", (req, res) => {
         authorID,
         activityID,
     })
-        .select("name intro time status")
-        .then((project, err) => {
+        .select("name intro time status authorType")
+        .then(async (project, err) => {
             if (err) {
                 res.json({
                     code: 30001,
@@ -62,6 +63,29 @@ router.get("/private/get", (req, res) => {
                 })
                 return
             }
+
+            let { authorType } = project
+            let authorsUID
+            if (authorType === "personal") {
+                authorsUID = [authorID]
+            } else {
+                let { course } = req
+                let { group } = course
+                let g = group.find(e => e._id.toString() === authorID.toString())
+                authorsUID = g.groupMember
+            }
+
+            let authors = await User.find({
+                _id: { $in: authorsUID },
+            })
+                .select("name avatar")
+                .then(u => {
+                    return u
+                })
+
+            project = project.toJSON()
+
+            project.authors = authors
 
             Stage.find({
                 timelineProjectID: project._id,
