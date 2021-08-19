@@ -296,7 +296,7 @@ export default {
                         let { stageID } = this
                         submitDangerOperation({ stageID, type })
                             .then(() => {
-                                this.$message.success("更新成功")
+                                this.$message.success("操作成功")
                                 instance.confirmButtonLoading = false
                                 this.getStageInfo()
                                 done()

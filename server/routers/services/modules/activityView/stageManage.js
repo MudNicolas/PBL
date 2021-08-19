@@ -77,6 +77,7 @@ router.post("/danger/submit", (req, res) => {
     let { stage } = req
     if (type === "public") {
         stage.isPublic = true
+        stage.publicTime = new Date()
     }
     if (type === "approve") {
         let { project } = req
@@ -93,6 +94,18 @@ router.post("/danger/submit", (req, res) => {
         stage.status = "abandoned"
     }
     stage.editable = false
+
+    let operation = {
+        public: "公开",
+        approve: "提交审核",
+        abandon: "废弃",
+    }
+
+    stage.editLog.push({
+        uid: req.uid,
+        time: new Date(),
+        operation: operation[type],
+    })
 
     stage.save(err => {
         if (err) {

@@ -4,6 +4,9 @@ import TimeLineProject from "#models/TimeLineProject.js"
 import Stage from "#models/Stage.js"
 import { copySources, transNewContentSourceUrl } from "#services/tools.js"
 
+import p from "./timelinePublic.js"
+router.use("/public", p)
+
 function findStudentGroup(group, sid) {
     return group.find(g => g.groupMember.some(m => m.toString() === sid.toString()))
 }
@@ -174,11 +177,14 @@ router.post("/private/project/stage/new", async (req, res) => {
     let time = new Date()
 
     let authorUID = [req.uid]
+    let authorID = req.uid
     if (project.authorType === "group") {
         let { group } = req
         authorUID = group.groupMember
+        authorID = group._id
     }
     let stage = {
+        authorID,
         authorUID,
         timelineProjectID: project._id,
         createTime: time,

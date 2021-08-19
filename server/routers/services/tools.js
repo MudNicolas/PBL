@@ -276,7 +276,7 @@ export function editorVideoUpload(req) {
     })
 }
 
-export function contentImageResolution(htmlContent) {
+export function contentImageResolution(htmlContent = "") {
     const $ = cheerio.load(htmlContent)
     let images = $("img")
     let imagesID = []
@@ -288,7 +288,7 @@ export function contentImageResolution(htmlContent) {
     }
     return imagesID
 }
-export function contentVideoResolution(htmlContent) {
+export function contentVideoResolution(htmlContent = "") {
     const $ = cheerio.load(htmlContent)
     let videos = $("video")
     let videosID = []
@@ -302,7 +302,7 @@ export function contentVideoResolution(htmlContent) {
 }
 
 export function transNewContentSourceUrl(
-    htmlContent,
+    htmlContent = "",
     imageIDs,
     imageFileNames,
     videoIDs,

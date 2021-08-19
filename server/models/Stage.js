@@ -5,6 +5,7 @@ export default mongoose.model("Stage", {
         type: mongoose.Schema.Types.ObjectId,
         ref: "TimeLineProject",
     },
+    authorID: mongoose.Schema.Types.ObjectId,
     authorUID: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -58,6 +59,7 @@ export default mongoose.model("Stage", {
         type: Boolean,
         default: false,
     },
+    publicTime: Date,
     status: String, //beforeApprove审批前,underApprove审批中,normal,conclude,rejected,abandoned 正式阶段,结题，驳回，废弃
 
     editLog: [
