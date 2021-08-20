@@ -138,4 +138,42 @@ router.get("/getSingle", (req, res) => {
         })
 })
 
+router.get("/stage/get", (req, res) => {
+    let { stage } = req
+
+    stage
+        .execPopulate([
+            { path: "authorUID", select: "name avatar" },
+            { path: "files", select: "originalFilename size" },
+        ])
+        .then(_stage => {
+            let { content, authorUID, files, isUsed, isPublic, sketch, status, subjectName, _id } =
+                _stage
+
+            files = files.map(e => {
+                return {
+                    name: e.originalFilename,
+                    response: { _id: e._id },
+                    size: e.size,
+                }
+            })
+            let data = {
+                content,
+                authorUID,
+                files,
+                isUsed,
+                isPublic,
+                sketch,
+                status,
+                subjectName,
+                _id,
+            }
+
+            res.json({
+                code: 20000,
+                data,
+            })
+        })
+})
+
 export default router

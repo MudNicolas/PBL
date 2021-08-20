@@ -87,3 +87,11 @@ export function getPubicProject(query) {
         params: query,
     })
 }
+
+export function getPubicStage(query) {
+    return request({
+        url: "/activity/view/timeline/public/stage/get",
+        method: "get",
+        params: query,
+    })
+}

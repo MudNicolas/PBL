@@ -359,7 +359,9 @@ export default {
             newStageSubmit({ projectID, stageOptions })
                 .then(res => {
                     this.$message.success("新建阶段成功")
-                    this.$router.push(`/course/section/activity/timeline/private/view/${res.data}`)
+                    this.$router.push(
+                        `/course/section/activity/timeline/private/stage/view/${res.data}`
+                    )
                 })
                 .catch(() => {
                     this.newStageSubmitting = false

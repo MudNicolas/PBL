@@ -276,6 +276,11 @@ export const asyncRoutes = [
                     ),
                 name: "PublicTimelineProjectView",
             },
+            {
+                path: "stage/view/:id([a-f0-9]{24})",
+                component: () => import("@/views/stage/public/index"),
+                name: "PublicTimelineStage",
+            },
         ],
     },
     {

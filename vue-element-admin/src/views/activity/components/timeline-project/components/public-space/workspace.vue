@@ -75,7 +75,7 @@
                             <div class="subjuct-name" slot="header">
                                 <router-link
                                     :to="{
-                                        path: `/course/section/activity/timeline/public/view/${e._id}`,
+                                        path: `/course/section/activity/timeline/public/stage/view/${e._id}`,
                                     }"
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
