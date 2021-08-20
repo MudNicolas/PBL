@@ -70,10 +70,22 @@
                         </span>
                     </span>
                 </div>
+
                 <div class="comment">
                     <div class="main">
                         <span v-if="comment.comment.length === 1">
                             <editor-viewer :content="comment.comment[0].content" />
+                        </span>
+                        <span v-else>
+                            <el-tabs type="card" v-if="entry.length > 0">
+                                <el-tab-pane
+                                    v-for="c of comment.comment"
+                                    :label="c.entry"
+                                    :key="c._id"
+                                >
+                                    <editor-viewer :content="c.content" />
+                                </el-tab-pane>
+                            </el-tabs>
                         </span>
                     </div>
                     <div class="tool">
@@ -110,11 +122,11 @@
                                     trigger="hover"
                                     :open-delay="200"
                                     width="360"
-                                    @show="showUpPopoverKey = comment.commentUser._id"
+                                    @show="showUpPopoverKey = reply.fromUser._id"
                                 >
                                     <div>
                                         <profile-popover
-                                            :uid="comment.commentUser._id"
+                                            :uid="reply.fromUser._id"
                                             :show-up-popover-key="showUpPopoverKey"
                                         />
                                     </div>
@@ -200,10 +212,25 @@
                 </div>
             </div>
             <el-form>
-                <el-form-item>
+                <el-form-item style="margin-top: 60px">
                     <!--多条目的制作-->
-                    <el-tabs type="border-card" v-if="entry.length > 0">
-                        <el-tab-pane label="用户管理">用户管理</el-tab-pane>
+                    <el-tabs type="card" v-if="entry.length > 0">
+                        <el-tab-pane v-for="e of entry" :label="e" :key="'comentry' + e" lazy>
+                            <editor
+                                ref="Editors"
+                                :exist-content="
+                                    commentsData.tempComm.comment | commentContentFilter(e)
+                                "
+                                :autosave-position="{
+                                    ...position,
+                                    commentID: commentsData.tempComm._id,
+                                    entry: e,
+                                }"
+                                :autosave-path="autosavePath"
+                                :image-upload-path="imageUploadPath"
+                                :video-upload-path="videoUploadPath"
+                            />
+                        </el-tab-pane>
                     </el-tabs>
                     <editor
                         v-else
@@ -270,6 +297,11 @@ export default {
         timeFormat: val => {
             return formatTime(new Date(val))
         },
+        commentContentFilter: (val, e) => {
+            let i = val.find(c => c.entry === e)
+            if (i) return i.content
+            return ""
+        },
     },
     computed: {
         ...mapGetters(["uid", "roles"]),
@@ -301,19 +333,41 @@ export default {
                     entry: "default",
                     content: this.$refs.Editor.editor.html.get(),
                 })
+            } else {
+                let editors = this.$refs.Editors
+                comments = this.entry.map(e => {
+                    let theEditor = editors.find(editor => editor.autosavePosition.entry === e)
+                    let content = this.handleEntryComments(theEditor, e)
+                    return {
+                        entry: e,
+                        content,
+                    }
+                })
             }
             let { stageID } = this
             let commentID = this.commentsData.tempComm._id
             submitComment({ comments, stageID, commentID })
                 .then(() => {
                     this.$message.success("提交成功")
-                    this.$refs.Editor.editor.html.set("")
+                    if (this.$refs.Editor) this.$refs.Editor.editor.html.set("")
+                    if (this.$refs.Editors) {
+                        this.$refs.Editors.forEach(e => {
+                            e.editor.html.set("")
+                        })
+                    }
                     this.commentSubmitting = false
                     this.reloadComments()
                 })
-                .catch(() => {
+                .catch(err => {
+                    console.log(err)
                     this.commentSubmitting = false
                 })
+        },
+        handleEntryComments(editor, entry) {
+            if (editor) return editor.editor.html.get()
+            let t = this.commentsData.tempComm.comment.find(c => c.entry === entry)
+            if (t) return t.content
+            return ""
         },
         reloadComments() {
             this.$emit("reloadComments")
@@ -437,10 +491,10 @@ export default {
     > .comment {
         margin-left: 42px;
         color: #303133;
-        margin-bottom: 22px;
+        margin-bottom: 36px;
         font-size: 14px;
         line-height: 1.5715;
-        border-bottom: 1px solid #e6e6e6;
+        //border-bottom: 1px solid #e6e6e6;
     }
 }
 

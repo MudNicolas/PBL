@@ -19,6 +19,7 @@ router.get("/get", (req, res) => {
             { path: "reply.fromUser", select: "name avatar" },
             { path: "reply.toUser", select: "name avatar" },
         ])
+        .sort({ time: 1 })
         .then(c => {
             return c.map(e => {
                 return {
@@ -96,9 +97,14 @@ router.use((req, res, next) => {
 router.post("/reply/submit", (req, res) => {
     let { reply, replyID } = req.body
     let { commentData } = req
+    let toUser = commentData.commentUser
+    if (replyID) {
+        let t = commentData.reply.find(r => r._id.toString() === replyID.toString())
+        if (t) toUser = t.fromUser
+    }
     commentData.reply.push({
         fromUser: req.uid,
-        toUser: commentData.commentUser,
+        toUser,
         toReply: replyID,
         content: reply,
         time: new Date(),
@@ -164,6 +170,9 @@ router.post("/editor/autosave", (req, res) => {
     let { commentData } = req
 
     if (commentData.isSubmit) {
+        res.json({
+            message: "已提交",
+        })
         return
     }
     let index = commentData.comment.findIndex(e => e.entry === entry)

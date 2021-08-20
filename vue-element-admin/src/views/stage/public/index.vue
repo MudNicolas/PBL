@@ -166,6 +166,7 @@
                                     @reloadComments="getComments"
                                     v-if="commentsData.comments"
                                     :position="{ stageID }"
+                                    :entry="entry"
                                 />
                             </slot>
                         </el-skeleton>
@@ -223,6 +224,7 @@ export default {
                 content: "",
                 files: [],
             },
+            entry: [],
             commentsData: {},
             commentsLoading: true,
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
@@ -247,8 +249,8 @@ export default {
             this.loading = true
             getPubicStage({ stageID })
                 .then(res => {
-                    this.stage = res.data
-
+                    this.stage = res.data.stage
+                    this.entry = res.data.entry
                     this.loading = false
                     let io = new IntersectionObserver(
                         ([{ boundingClientRect, intersectionRatio }]) => {
@@ -320,14 +322,6 @@ export default {
 }
 .author {
     margin-right: 6px;
-}
-</style>
-<style lang='scss' >
-.el-upload {
-    width: 100%;
-    .el-upload-dragger {
-        width: 100%;
-    }
 }
 </style>
 
