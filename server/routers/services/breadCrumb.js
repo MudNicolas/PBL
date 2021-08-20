@@ -150,6 +150,26 @@ class routeTree {
                 },
             },
         },
+        PublicTimelineStage: {
+            path: "/course/section/activity/timeline/public/stage/view/",
+            parent: "PublicTimelineProjectView",
+            meta: {
+                title: async id => {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        return await Stage.findById(id)
+                            .select("timelineProjectID subjectName")
+                            .then(project => {
+                                if (project) {
+                                    return {
+                                        name: project.subjectName || "暂无阶段名",
+                                        parentID: project.timelineProjectID,
+                                    }
+                                }
+                            })
+                    }
+                },
+            },
+        },
         TimeLineStage: {
             path: "/course/section/activity/timeline/private/view/",
             parent: "PrivateSpace",

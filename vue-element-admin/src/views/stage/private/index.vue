@@ -347,7 +347,9 @@ export default {
                 .catch()
         },
         toManage() {
-            this.$router.push("/course/section/activity/timeline/private/manage/" + this.stageID)
+            this.$router.push(
+                "/course/section/activity/timeline/private/stage/manage/" + this.stageID
+            )
         },
         download(file) {
             download(file.response._id)
