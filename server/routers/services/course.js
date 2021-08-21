@@ -223,6 +223,22 @@ router.post("/create", async (req, res, next) => {
         return
     }
 
+    let v_partner = await User.countDocuments({
+        _id: { $in: partnerID },
+        role: "teacher",
+    })
+        .exec()
+        .catch(err => {
+            return false
+        })
+
+    if (v_partner !== partnerID.length) {
+        res.json({
+            message: "存在非法ID",
+        })
+        return
+    }
+
     let tempCourse = {
         name: name,
         cover: cover,

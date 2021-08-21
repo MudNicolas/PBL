@@ -60,6 +60,38 @@ router.post("/search/teacher", async (req, res, next) => {
     )
 })
 
+router.use((req, res, next) => {
+    let { course } = req
+    if (course.chiefTeacher.toString() !== req.uid.toString()) {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+    next()
+})
+
+router.use(async (req, res, next) => {
+    let { t_uids } = req.body
+
+    let v = await User.countDocuments({
+        _id: { $in: t_uids },
+        role: "teacher",
+    })
+        .exec()
+        .catch(err => {
+            return false
+        })
+
+    if (v !== t_uids.length) {
+        res.json({
+            message: "存在非法ID",
+        })
+        return
+    }
+    next()
+})
+
 router.post("/addTeacher", (req, res) => {
     let { course } = req
     let { t_uids } = req.body

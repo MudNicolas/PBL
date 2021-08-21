@@ -32,7 +32,7 @@ if (env === "dev") {
 app.use(
     cors({
         allowedHeaders: ["X-Requested-With", "content-type", "token"],
-        origin: origin,
+        origin,
         preflightContinue: false,
     })
 )
