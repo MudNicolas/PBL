@@ -171,7 +171,7 @@ class routeTree {
             },
         },
         TimeLineStage: {
-            path: "/course/section/activity/timeline/private/view/",
+            path: "/course/section/activity/timeline/private/stage/view/",
             parent: "PrivateSpace",
             meta: {
                 title: async id => {

@@ -138,7 +138,7 @@
                                     <div class="text">
                                         <div class="title">提交审批</div>
                                         <div class="info">
-                                            将本阶段提交审批。提交后本阶段内容不可修改，审批中无法废弃本阶段，无法新建阶段。
+                                            将本阶段提交审批。提交后本阶段内容不可修改，审批中无法废弃本阶段，无法新建阶段。只有最新阶段可以提交审批。
                                         </div>
                                     </div>
                                     <div class="button">
@@ -146,7 +146,9 @@
                                             type="primary"
                                             plain
                                             @click="handleDangerOperation('approve')"
-                                            :disabled="stage.status !== 'beforeApprove'"
+                                            :disabled="
+                                                stage.status !== 'beforeApprove' || !stage.isLast
+                                            "
                                         >
                                             提交
                                         </el-button>

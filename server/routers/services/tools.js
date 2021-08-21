@@ -154,7 +154,7 @@ export function CheckCourseAvailableAndReqUserHasPermission(courseID, roles, req
         if (!validate) {
             return reject({
                 code: 404,
-                message: "error",
+                message: "该课程不存在",
             })
         }
         Course.findById(courseID).then((course, err) => {

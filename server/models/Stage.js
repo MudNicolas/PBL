@@ -60,6 +60,7 @@ export default mongoose.model("Stage", {
         default: false,
     },
     publicTime: Date,
+    submitAuditTime: Date,
     status: String, //beforeApprove审批前,underApprove审批中,normal,conclude,rejected,abandoned 正式阶段,结题，驳回，废弃
 
     editLog: [

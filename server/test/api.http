@@ -1,11 +1,27 @@
 @host=http://127.0.0.1:14758/api
 
-@token=123456789
+@token=e7b6657ebe9a1c35e8dc1ae5d38b66f258e0a2b5097d596d3dfac7c1242f6935b1413b11f83393d95647a1ea8ac278c88c5029f097b3aeba3c3d65f2b55e99125ba0bf3cefddea03a3f3ce9f59d1ebca312e2ad2952fa133271977cd9183a372
 
-POST {{host}}/api/activity/view/timeline/private/get?activityID=610a6229c2ba023e541ef643
-token: {{token}}
+POST {{host}}/course/manage/partner/addTeacher
+token: {{ token }}
+User-Agent: 'rest-client'
+Accept-Language: 'en-GB,en-US;q=0.8,en;q=0.6,zh-CN;q=0.4'
+Content-Type: 'application/json'
 
+{
+	"courseID": "60c21f659135164e5c7635db",
+    "t_uids": [1,2],
+}
 
+###
+
+POST {{host}}/course/manage/partner/addTeacher HTTP/1.1
+token: {{ token }}
+
+{
+	"courseID": "60c21f659135164e5c7635db",
+    "t_uids": [1,2],
+}
 
 
 ###

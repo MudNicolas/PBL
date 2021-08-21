@@ -37,6 +37,13 @@ router.post("/submit", async (req, res, next) => {
     let { course } = req
     let studentList = req.body.studentList
 
+    if (studentList.length === 0) {
+        res.json({
+            message: "学生列表不能为空",
+        })
+        return
+    }
+
     studentList = studentList.map(item => {
         return {
             username: item["学号"],

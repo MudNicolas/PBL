@@ -139,7 +139,7 @@ router.get("/getSingle", (req, res) => {
 })
 
 router.get("/stage/get", (req, res) => {
-    let { stage } = req
+    let { stage, activity } = req
 
     stage
         .execPopulate([
@@ -157,7 +157,14 @@ router.get("/stage/get", (req, res) => {
                     size: e.size,
                 }
             })
-            let data = {
+
+            let { options } = activity
+            let entry = []
+            if (options.isUseCommentTemplate) {
+                entry = options.commentTemplate
+            }
+
+            let stage = {
                 content,
                 authorUID,
                 files,
@@ -166,12 +173,16 @@ router.get("/stage/get", (req, res) => {
                 sketch,
                 status,
                 subjectName,
+
                 _id,
             }
 
             res.json({
                 code: 20000,
-                data,
+                data: {
+                    stage,
+                    entry,
+                },
             })
         })
 })
