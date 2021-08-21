@@ -91,7 +91,7 @@ router.post("/info/save", (req, res) => {
     })
 })
 
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
     let { type } = req.body
     let { stage } = req
 
@@ -107,6 +107,19 @@ router.use((req, res, next) => {
         if (stage.status !== "beforeApprove" || project.status !== "beforeApprove") {
             res.json({
                 message: "当前已不是待审核阶段",
+            })
+            return
+        }
+
+        let { timelineProjectID } = stage
+        let allStages = await Stage.find({ timelineProjectID }).select("status").exec()
+        let isLast = false
+        if (allStages.pop()._id.toString() === stage._id.toString()) {
+            isLast = true
+        }
+        if (!isLast) {
+            res.json({
+                message: "该阶段不可提交审批",
             })
             return
         }
