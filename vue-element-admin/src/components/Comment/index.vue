@@ -46,6 +46,9 @@
                         <span class="name">
                             {{ comment.commentUser.name }}
                         </span>
+                        <el-tag size="mini" v-if="comment.commentUserRole">
+                            {{ comment.commentUserRole | roleFilter }}
+                        </el-tag>
                         <span class="time">
                             {{ comment.time | timeFormat }}
                         </span>
@@ -141,6 +144,9 @@
                                     <span class="name">
                                         {{ reply.fromUser.name }}
                                     </span>
+                                    <el-tag size="mini" v-if="reply.fromUserRole">
+                                        {{ reply.fromUserRole | roleFilter }}
+                                    </el-tag>
                                     <span class="time">
                                         {{ reply.time | timeFormat }}
                                     </span>
@@ -301,6 +307,13 @@ export default {
             let i = val.find(c => c.entry === e)
             if (i) return i.content
             return ""
+        },
+        roleFilter: val => {
+            let map = {
+                teacher: "教师",
+                admin: "管理员",
+            }
+            return map[val]
         },
     },
     computed: {

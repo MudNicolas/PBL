@@ -158,10 +158,12 @@ router.get("/stage/get", (req, res) => {
                 }
             })
 
-            let { options } = activity
             let entry = []
-            if (options.isUseCommentTemplate) {
-                entry = options.commentTemplate
+            if (req.role === "student") {
+                let { options } = activity
+                if (options.isUseCommentTemplate) {
+                    entry = options.commentTemplate
+                }
             }
 
             let stage = {

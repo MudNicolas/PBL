@@ -16,6 +16,7 @@ let commentSchemas = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
+    commentUserRole: String,
     comment: [
         {
             entry: String,
@@ -54,6 +55,7 @@ let commentSchemas = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
             },
+            fromUserRole: String,
             toUser: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",

@@ -1,4 +1,5 @@
 <template>
+    <!--TODO:教师能够从管理页面访问private-->
     <div>
         <el-row>
             <el-col :span="5">
