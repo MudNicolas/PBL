@@ -226,8 +226,7 @@ export const asyncRoutes = [
             },
             {
                 path: "section/activity/manage/:id([a-f0-9]{24})",
-                component: () =>
-                    import("@/views/activity/components/timeline-project/components/settings"),
+                component: () => import("@/views/activity/settings"),
                 name: "ActivityManage",
                 hidden: true,
                 meta: {
