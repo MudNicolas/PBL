@@ -198,6 +198,13 @@ class routeTree {
                 title: "管理",
             },
         },
+        ActivityManage: {
+            path: "/course/section/activity/setting/",
+            parent: "ActivityView",
+            meta: {
+                title: "管理",
+            },
+        },
     }
 
     get(name) {

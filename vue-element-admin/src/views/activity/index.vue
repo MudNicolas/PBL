@@ -1,7 +1,12 @@
 <template>
     <div class="container" v-loading="loading" element-loading-text="加载中">
         <div class="header">
-            <div class="title">{{ activity.name }}</div>
+            <div class="title">
+                {{ activity.name }}
+                <router-link :to="'/course/section/activity/manage/' + activityID">
+                    <el-button style="float: right" icon="el-icon-setting">管理</el-button>
+                </router-link>
+            </div>
             <div class="info">
                 {{ activity.intro | noIntro }}
             </div>

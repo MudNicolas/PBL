@@ -46,6 +46,7 @@
                             icon="el-icon-view"
                             type="primary"
                             @click="openLink(scope.row.url)"
+                            plain
                         >
                             查看
                         </el-button>
@@ -99,6 +100,7 @@
                             type="primary"
                             icon="el-icon-download"
                             @click="download(scope.row._id)"
+                            plain
                         >
                             下载
                         </el-button>
@@ -140,7 +142,9 @@
                 <el-table-column prop="operation" label="操作" width="330px">
                     <template slot-scope="scope">
                         <router-link :to="'/course/section/activity/view/' + scope.row._id">
-                            <el-button type="primary" icon="el-icon-top-right">进入</el-button>
+                            <el-button type="primary" icon="el-icon-top-right" plain>
+                                进入
+                            </el-button>
                         </router-link>
                         <slot name="activityOperation" :row="scope.row"></slot>
                     </template>
