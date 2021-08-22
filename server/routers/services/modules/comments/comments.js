@@ -13,7 +13,7 @@ router.get("/get", (req, res) => {
         isSubmit: true,
         isUsed: true,
     })
-        .select({ commentUser: 1, comment: 1, time: 1, reply: 1 })
+        .select({ commentUser: 1, comment: 1, time: 1, reply: 1, commentUserRole: 1 })
         .populate([
             { path: "commentUser", select: "name avatar" },
             { path: "reply.fromUser", select: "name avatar" },
@@ -25,6 +25,7 @@ router.get("/get", (req, res) => {
                 return {
                     _id: e._id,
                     commentUser: e.commentUser,
+                    commentUserRole: e.commentUserRole,
                     comment: e.comment,
                     time: e.time,
                     reply: e.reply.filter(r => r.isUsed),
@@ -108,6 +109,7 @@ router.post("/reply/submit", (req, res) => {
         toReply: replyID,
         content: reply,
         time: new Date(),
+        fromUserRole: req.role,
     })
     commentData.save(err => {
         if (err) {
@@ -258,6 +260,7 @@ router.post("/submit", (req, res) => {
         }
         contents += content
     }
+    commentData.commentUserRole = req.role
     commentData.isSubmit = true
     commentData.time = new Date()
     processContentSource(commentData, contents)

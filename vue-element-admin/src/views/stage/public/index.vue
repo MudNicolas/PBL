@@ -128,6 +128,7 @@
                 <el-col :span="18" :offset="3">
                     <el-divider />
 
+                    <!--TODO:老师标签在加持显示-->
                     <div id="commentList">
                         <el-skeleton
                             :rows="6"

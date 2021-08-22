@@ -224,6 +224,15 @@ export const asyncRoutes = [
                     roles: ["teacher", "student"],
                 },
             },
+            {
+                path: "section/activity/manage/:id([a-f0-9]{24})",
+                component: () => import("@/views/activity/settings"),
+                name: "ActivityManage",
+                hidden: true,
+                meta: {
+                    roles: ["teacher"],
+                },
+            },
 
             {
                 path: "section/activity/timeline/public/:id([a-f0-9]{24})",

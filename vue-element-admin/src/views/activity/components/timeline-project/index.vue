@@ -24,12 +24,11 @@ import { mapGetters } from "vuex"
 import privateSpace from "./components/private-space"
 import publicSpace from "./components/public-space"
 import statistics from "./components/statistics.vue"
-import settings from "./components/settings.vue"
 
 export default {
     name: "TimeLineProjectActivity",
     props: ["type", "activityId"],
-    components: { privateSpace, publicSpace, statistics, settings },
+    components: { privateSpace, publicSpace, statistics },
     data() {
         let activeName
         if (this.checkPermission(["student"])) {
@@ -46,7 +45,6 @@ export default {
                 { name: "privateSpace", label: "私有空间", role: ["student"] },
                 { name: "publicSpace", label: "公共空间", role: ["student", "teacher"] },
                 { name: "statistics", label: "信息统计", role: ["student", "teacher"] },
-                { name: "settings", label: "管理", role: ["teacher"] },
             ],
         }
     },
