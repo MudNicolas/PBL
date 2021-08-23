@@ -145,7 +145,8 @@
                         <el-card>
                             <div class="stage-wrapper">
                                 <div class="create-stage-card-wrapper">
-                                    <span v-if="project.timeout" style="color: #606266">
+                                    <span v-if="project.timeout">
+                                        <i class="el-icon-lock" />
                                         当前已不在限定时间内
                                     </span>
                                     <span v-else>
@@ -163,16 +164,11 @@
                                                 placement="right"
                                                 effect="light"
                                             >
-                                                <i
-                                                    class="el-icon-warning-outline"
-                                                    style="margin-left: 8px; color: #606266"
-                                                />
+                                                <i class="el-icon-warning-outline" />
                                             </el-tooltip>
                                         </span>
-                                        <span
-                                            v-if="project.status === 'underApprove'"
-                                            style="color: #606266"
-                                        >
+                                        <span v-if="project.status === 'underApprove'">
+                                            <i class="el-icon-s-check" />
                                             审批期间无法新建阶段，请等待审批完成
                                         </span>
                                     </span>
@@ -404,6 +400,11 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        color: #909399;
+
+        i {
+            margin-left: 8px;
+        }
     }
 }
 .content-preview {
