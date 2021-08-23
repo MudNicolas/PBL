@@ -383,7 +383,7 @@
 </template>
 
 <script>
-import { activityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
+import { activityGetCommentTemplate, inActivitySubmitNewCommentTemplate } from "@/api/section"
 import { submitCreateActivity } from "@/api/activity"
 export default {
     name: "CreateActivity",
@@ -589,7 +589,7 @@ export default {
             this.entryValidate(formName)
                 .then(temp => {
                     this.newTemplateSubmitting = true
-                    newActivitySubmitNewCommentTemplate({
+                    inActivitySubmitNewCommentTemplate({
                         sectionID: this.sectionID,
                         template: temp,
                     })

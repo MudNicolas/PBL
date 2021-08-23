@@ -104,14 +104,14 @@
                                     :key="'perview' + entry"
                                     style="margin-bottom: 12px"
                                 >
-                                    <el-input placeholder="具体评论...">
+                                    <el-input placeholder="具体评论..." :disabled="!editable">
                                         <template slot="prepend">
                                             {{ entry }}
                                         </template>
                                     </el-input>
                                 </el-form-item>
                             </el-form>
-                            <el-button @click="updateCommentTemplate = true">
+                            <el-button @click="updateCommentTemplate = true" v-show="editable">
                                 更换发言模板
                             </el-button>
                         </el-form-item>
@@ -291,6 +291,33 @@
         <el-button style="margin-left: 100px" @click="editable = true" v-if="!editable">
             编辑
         </el-button>
+        <el-divider />
+        <el-form label-position="right" label-width="100px">
+            <el-row>
+                <el-col :span="16">
+                    <el-form-item>
+                        <h2 style="font-weight: 400; margin-bottom: 8px">Danger Zone</h2>
+                        <div class="danger-zone">
+                            <div class="item">
+                                <div class="text">
+                                    <div class="title">移除活动</div>
+                                    <div class="info">将本活动从本节中移除</div>
+                                </div>
+                                <div class="button">
+                                    <el-button
+                                        class="right-wrapper"
+                                        type="danger"
+                                        @click="removeActivity"
+                                    >
+                                        移除
+                                    </el-button>
+                                </div>
+                            </div>
+                        </div>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+        </el-form>
         <el-dialog title="新建发言模板" :visible.sync="newCommentTemplateDialogVisible">
             <el-form
                 :model="newCommentTemplate"
@@ -364,18 +391,49 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
+        <el-dialog title="移除活动" :visible.sync="removeComfirmVisible" width="30%">
+            <span style="display: flex; flex-direction: column">
+                <span style="display: flex; align-items: center">
+                    <i class="el-icon-warning" />
+                    <p style="color: #606266; line-height: 24px">
+                        确认删除此活动？删除后本活动无法被访问，但如果是误操作可以联系管理员进行恢复。如果确定要删除本节，请输入本节名
+                        <b>{{ removeConfirm.source }}</b>
+                    </p>
+                </span>
+                <span style="margin-left: 36px">
+                    <el-input v-model="removeConfirm.input" @keyup.enter.native="submitRemove" />
+                </span>
+            </span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="removeComfirmVisible = false">取 消</el-button>
+                <el-button
+                    type="primary"
+                    :disabled="removeConfirm.source !== removeConfirm.input"
+                    @click="submitRemove"
+                    :loading="removeSubmitting"
+                >
+                    确 定
+                </el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { getActivityInfo, submitEditActivity } from "@/api/activityManage"
-import { activityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
+import { getActivityInfo, submitEditActivity, submitRemoveActivity } from "@/api/activityManage"
+import { activityGetCommentTemplate, inActivitySubmitNewCommentTemplate } from "@/api/section"
 
 export default {
     props: ["activityId"],
     name: "info",
     data() {
         return {
+            removeComfirmVisible: false,
+            removeConfirm: {
+                source: "",
+                input: "",
+            },
+            removeSubmitting: false,
             editable: false,
             updateCommentTemplate: false,
             activityID: this.activityId,
@@ -553,7 +611,7 @@ export default {
             this.entryValidate(formName)
                 .then(temp => {
                     this.newTemplateSubmitting = true
-                    newActivitySubmitNewCommentTemplate({
+                    inActivitySubmitNewCommentTemplate({
                         sectionID: this.sectionID,
                         template: temp,
                     })
@@ -675,15 +733,69 @@ export default {
 
             return data
         },
+        removeActivity() {
+            this.removeConfirm.source = this.activity.name
+            this.removeComfirmVisible = true
+        },
+        submitRemove() {
+            if (this.removeConfirm.source !== this.removeConfirm.input || this.removeSubmitting) {
+                return
+            }
+            this.removeSubmitting = true
+            let { activityID } = this
+            submitRemoveActivity({ activityID })
+                .then(res => {
+                    this.$message({
+                        type: "success",
+                        message: "删除成功",
+                    })
+                    let toPath = res.toPath
+                    this.$router.replace(toPath)
+                })
+                .catch(err => console.log(err))
+        },
     },
 }
 </script>
 
 <style lang='scss' scoped>
 .wrapper {
-    padding-top: 15px;
+    padding-top: 30px;
 }
 .new-template-footbar {
     display: flex;
+}
+.danger-zone {
+    border: 1px solid #f56c6c;
+    border-radius: 6px;
+
+    .item {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+
+        color: #303133;
+
+        .title {
+            font-size: 16px;
+        }
+
+        .info {
+            line-height: 1.5715;
+        }
+
+        .button {
+            margin-left: auto;
+        }
+    }
+
+    .item:not(:last-child) {
+        border-bottom: 1px solid #e4e7ed;
+    }
+}
+.el-icon-warning {
+    color: #e6a23c;
+    font-size: 24px;
+    margin-right: 12px;
 }
 </style>

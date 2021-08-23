@@ -23,3 +23,11 @@ export function submitEditActivity(data) {
         data,
     })
 }
+
+export function submitRemoveActivity(data) {
+    return request({
+        url: "/activity/manage/remove/submit",
+        method: "delete",
+        data,
+    })
+}

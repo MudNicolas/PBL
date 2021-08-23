@@ -71,6 +71,7 @@ router.get("/get", (req, res) => {
                 urls: s.urls,
                 activities: await Activity.find({
                     sectionID: s._id,
+                    isUsed: true,
                 })
                     .select(["_id", "name", "type"])
                     .exec(),
