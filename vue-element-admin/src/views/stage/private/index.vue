@@ -228,6 +228,7 @@
                                     @reloadComments="getComments"
                                     v-if="commentsData.comments"
                                     :position="{ stageID }"
+                                    :commentable="!stage.timeout"
                                 />
                             </slot>
                         </el-skeleton>

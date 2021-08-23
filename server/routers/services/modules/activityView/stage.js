@@ -4,7 +4,7 @@ import { editorImageUpload, editorVideoUpload, processContentSource } from "#ser
 import File from "#models/File.js"
 
 router.get("/get", async (req, res) => {
-    let { stage } = req
+    let { stage, activity } = req
 
     stage
         .execPopulate([
@@ -33,6 +33,7 @@ router.get("/get", async (req, res) => {
                     size: e.size,
                 }
             })
+
             let data = {
                 content,
                 authorUID,
@@ -45,6 +46,13 @@ router.get("/get", async (req, res) => {
                 _id,
                 editable,
                 isSaved,
+            }
+
+            if (activity.options.isTimeLimited) {
+                let limitTime = activity.options.limitTime
+                if (new Date() < new Date(limitTime[0]) || new Date() > new Date(limitTime[1])) {
+                    data.timeout = true
+                }
             }
 
             res.json({

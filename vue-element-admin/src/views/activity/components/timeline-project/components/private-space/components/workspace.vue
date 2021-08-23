@@ -19,7 +19,7 @@
                             <el-input v-model="editData.name" placeholder="项目名称" />
                         </span>
                         <el-button
-                            style="margin-left: auto"
+                            style="margin-left: auto; padding-left: 6px"
                             type="text"
                             @click="handleEditButtonClick"
                         >
@@ -145,28 +145,32 @@
                         <el-card>
                             <div class="stage-wrapper">
                                 <div class="create-stage-card-wrapper">
-                                    <span v-if="project.status !== 'underApprove'">
-                                        <el-button
-                                            type="text"
-                                            icon="el-icon-plus"
-                                            @click="newStageDialogVisible = true"
-                                        >
-                                            <!--全新or选择已有阶段继承-->
-                                            建立新的阶段
-                                        </el-button>
-                                        <el-tooltip
-                                            content="注意：新建阶段或公开阶段后，已有阶段不可编辑"
-                                            placement="right"
-                                            effect="light"
-                                        >
-                                            <i
-                                                class="el-icon-warning-outline"
-                                                style="margin-left: 8px; color: #606266"
-                                            />
-                                        </el-tooltip>
+                                    <span v-if="project.timeout">
+                                        <i class="el-icon-lock" />
+                                        当前已不在限定时间内
                                     </span>
-                                    <span v-else style="color: #606266">
-                                        审批期间无法新建阶段，请等待审批完成
+                                    <span v-else>
+                                        <span v-if="project.status !== 'underApprove'">
+                                            <el-button
+                                                type="text"
+                                                icon="el-icon-plus"
+                                                @click="newStageDialogVisible = true"
+                                            >
+                                                <!--全新or选择已有阶段继承-->
+                                                建立新的阶段
+                                            </el-button>
+                                            <el-tooltip
+                                                content="注意：新建阶段或公开阶段后，已有阶段不可编辑"
+                                                placement="right"
+                                                effect="light"
+                                            >
+                                                <i class="el-icon-warning-outline" />
+                                            </el-tooltip>
+                                        </span>
+                                        <span v-if="project.status === 'underApprove'">
+                                            <i class="el-icon-s-check" />
+                                            审批期间无法新建阶段，请等待审批完成
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -396,6 +400,11 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        color: #909399;
+
+        i {
+            margin-left: 8px;
+        }
     }
 }
 .content-preview {

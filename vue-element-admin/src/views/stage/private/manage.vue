@@ -235,7 +235,9 @@ export default {
     methods: {
         normalFormatTime,
         toView() {
-            this.$router.push("/course/section/activity/timeline/private/view/" + this.stageID)
+            this.$router.push(
+                "/course/section/activity/timeline/private/stage/view/" + this.stageID
+            )
         },
         getStageInfo() {
             let { stageID } = this
