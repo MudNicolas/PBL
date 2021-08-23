@@ -51,6 +51,39 @@ router.use((req, res, next) => {
     })
 })
 
+function formatActivity(activity, sectionID) {
+    let {
+        name,
+        type,
+        intro,
+        authorType,
+        isTimeLimited,
+        limitTime,
+        isUseCommentTemplate,
+        commentTemplate,
+        isNeedApprove,
+    } = activity
+    let options = {
+        authorType,
+        isTimeLimited,
+        isUseCommentTemplate,
+        isNeedApprove,
+    }
+    if (isTimeLimited) {
+        options.limitTime = [new Date(limitTime[0]), new Date(limitTime[1])]
+    }
+    if (isUseCommentTemplate) {
+        options.commentTemplate = commentTemplate
+    }
+    return {
+        name,
+        intro,
+        options,
+        type,
+        sectionID,
+    }
+}
+
 function validateActivity(activity) {
     let {
         name,
@@ -98,39 +131,6 @@ function validateActivity(activity) {
         return true
     }
     return false
-}
-
-function formatActivity(activity, sectionID) {
-    let {
-        name,
-        type,
-        intro,
-        authorType,
-        isTimeLimited,
-        limitTime,
-        isUseCommentTemplate,
-        commentTemplate,
-        isNeedApprove,
-    } = activity
-    let options = {
-        authorType,
-        isTimeLimited,
-        isUseCommentTemplate,
-        isNeedApprove,
-    }
-    if (isTimeLimited) {
-        options.limitTime = [new Date(limitTime[0]), new Date(limitTime[1])]
-    }
-    if (isUseCommentTemplate) {
-        options.commentTemplate = commentTemplate
-    }
-    return {
-        name,
-        intro,
-        options,
-        type,
-        sectionID,
-    }
 }
 
 router.post("/create", (req, res) => {

@@ -15,3 +15,11 @@ export function getActivityInfo(query) {
         params: query,
     })
 }
+
+export function submitEditActivity(data) {
+    return request({
+        url: "/activity/manage/info/submit",
+        method: "post",
+        data,
+    })
+}

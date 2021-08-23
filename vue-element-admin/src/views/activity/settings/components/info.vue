@@ -93,71 +93,76 @@
                             <el-radio-button :label="false">不使用</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item
-                        v-if="activity.isUseCommentTemplate && !updateCommentTemplate"
-                        label="当前模板"
-                    >
-                        <el-form style="padding-top: 6px">
-                            <el-form-item
-                                v-for="entry of activity.commentTemplate"
-                                :key="'perview' + entry"
-                                style="margin-bottom: 12px"
-                            >
-                                <el-input placeholder="具体评论...">
-                                    <template slot="prepend">
-                                        {{ entry }}
-                                    </template>
-                                </el-input>
-                            </el-form-item>
-                        </el-form>
-                        <el-button @click="updateCommentTemplate = true">更换发言模板</el-button>
-                    </el-form-item>
-                    <el-form-item
-                        v-if="activity.isUseCommentTemplate && updateCommentTemplate"
-                        label="更换新模板"
-                        :rules="{
-                            required: true,
-                        }"
-                    >
-                        <el-select
-                            v-model="activity.commentTemplate"
-                            placeholder="请选择"
-                            :loading="templateGetting"
+                    <span v-if="activity.isUseCommentTemplate">
+                        <el-form-item
+                            v-if="!updateCommentTemplate && activity.commentTemplate"
+                            label="当前模板"
                         >
-                            <el-option
-                                v-for="item in commentTemplates"
-                                :key="item._id"
-                                :label="item.name"
-                                :value="item.template"
-                            >
-                                <span style="float: left">{{ item.name }}</span>
-                                <span style="float: right; color: #8492a6">
-                                    <el-popover placement="right" trigger="hover">
-                                        <el-form style="padding-top: 16px">
-                                            <el-form-item
-                                                v-for="entry of item.template"
-                                                :key="'perview' + entry"
-                                            >
-                                                <el-input placeholder="具体评论...">
-                                                    <template slot="prepend">
-                                                        {{ entry }}
-                                                    </template>
-                                                </el-input>
-                                            </el-form-item>
-                                        </el-form>
-                                        <i slot="reference" class="el-icon-view" />
-                                    </el-popover>
-                                </span>
-                            </el-option>
-                        </el-select>
-                        <el-button
-                            style="margin-left: 10px"
-                            icon="el-icon-plus"
-                            @click="newCommentTemplateDialogVisible = true"
+                            <el-form style="padding-top: 6px">
+                                <el-form-item
+                                    v-for="entry of activity.commentTemplate"
+                                    :key="'perview' + entry"
+                                    style="margin-bottom: 12px"
+                                >
+                                    <el-input placeholder="具体评论...">
+                                        <template slot="prepend">
+                                            {{ entry }}
+                                        </template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-form>
+                            <el-button @click="updateCommentTemplate = true">
+                                更换发言模板
+                            </el-button>
+                        </el-form-item>
+                        <el-form-item
+                            v-else
+                            label="选择模板"
+                            :rules="{
+                                required: true,
+                            }"
                         >
-                            添加发言模板
-                        </el-button>
-                    </el-form-item>
+                            <el-select
+                                v-model="activity.commentTemplate"
+                                placeholder="请选择"
+                                :loading="templateGetting"
+                                :change="(updateCommentTemplate = true)"
+                            >
+                                <el-option
+                                    v-for="item in commentTemplates"
+                                    :key="item._id"
+                                    :label="item.name"
+                                    :value="item.template"
+                                >
+                                    <span style="float: left">{{ item.name }}</span>
+                                    <span style="float: right; color: #8492a6">
+                                        <el-popover placement="right" trigger="hover">
+                                            <el-form style="padding-top: 16px">
+                                                <el-form-item
+                                                    v-for="entry of item.template"
+                                                    :key="'perview' + entry"
+                                                >
+                                                    <el-input placeholder="具体评论...">
+                                                        <template slot="prepend">
+                                                            {{ entry }}
+                                                        </template>
+                                                    </el-input>
+                                                </el-form-item>
+                                            </el-form>
+                                            <i slot="reference" class="el-icon-view" />
+                                        </el-popover>
+                                    </span>
+                                </el-option>
+                            </el-select>
+                            <el-button
+                                style="margin-left: 10px"
+                                icon="el-icon-plus"
+                                @click="newCommentTemplateDialogVisible = true"
+                            >
+                                添加发言模板
+                            </el-button>
+                        </el-form-item>
+                    </span>
                     <el-form-item
                         label="项目审批"
                         :rules="{
@@ -363,7 +368,7 @@
 </template>
 
 <script>
-import { getActivityInfo } from "@/api/activityManage"
+import { getActivityInfo, submitEditActivity } from "@/api/activityManage"
 import { activityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
 
 export default {
@@ -489,6 +494,7 @@ export default {
                 },
             },
             sectionID: "",
+            templateGetting: false,
         }
     },
     watch: {
@@ -544,7 +550,7 @@ export default {
             }
         },
         submitTemplate(formName) {
-            this.formValidate(formName)
+            this.entryValidate(formName)
                 .then(temp => {
                     this.newTemplateSubmitting = true
                     newActivitySubmitNewCommentTemplate({
@@ -565,7 +571,9 @@ export default {
                             this.newTemplateSubmitting = false
                         })
                 })
-                .catch()
+                .catch(err => {
+                    console.log(err)
+                })
         },
         addEntry() {
             this.newCommentTemplate.entry.push({
@@ -584,20 +592,22 @@ export default {
             this.submit(data)
         },
         submit(data) {
-            let sectionID = this.sectionID
-            let activity = data
+            let activityInfo = data
+            let { activityID } = this
             this.submitting = true
-            submitCreateActivity({ sectionID, activity })
-                .then(res => {
+            submitEditActivity({ activityID, activityInfo })
+                .then(() => {
                     this.submitting = false
-                    this.activityID = res.data.activityID
-                    this.stage = 2
+                    this.$message.success("信息修改成功")
+                    this.getInfo()
+                    this.editable = false
                 })
-                .catch(() => {
+                .catch(err => {
+                    console.log(err)
                     this.submitting = false
                 })
         },
-        formValidate(formName) {
+        entryValidate(formName) {
             return new Promise((resolve, reject) => {
                 this[formName].name = this[formName].name.trim()
                 this[formName].entry.forEach(e => {
@@ -624,29 +634,36 @@ export default {
                 })
             })
         },
-        transformData() {
+        formValidate() {
+            this.activity.name = this.activity.name.trim()
+            if (!this.activity.name) {
+                return false
+            }
+
+            let type = this.activity.type
+            if (type === "TimeLineProject") {
+                let { isTimeLimited, limitTime } = this.activity
+                if (isTimeLimited && !limitTime) {
+                    return false
+                }
+
+                let { isUseCommentTemplate, commentTemplate } = this.activity
+                if (isUseCommentTemplate && !Array.isArray(commentTemplate)) {
+                    return false
+                }
+            }
+            return true
+        },
+        transformData(type) {
             let data = {}
-            let {
-                name,
-                intro,
-                type,
-                authorType,
-                isTimeLimited,
-                limitTime,
-                isUseCommentTemplate,
-                commentTemplate,
-                isNeedApprove,
-                evaluation,
-            } = this.activity
+            let { name, intro, isTimeLimited, limitTime, isUseCommentTemplate, commentTemplate } =
+                this.activity
             if (type === "TimeLineProject") {
                 data = {
                     name,
                     intro,
-                    type,
-                    authorType,
                     isTimeLimited,
                     isUseCommentTemplate,
-                    isNeedApprove,
                 }
                 if (isTimeLimited) {
                     data.limitTime = limitTime

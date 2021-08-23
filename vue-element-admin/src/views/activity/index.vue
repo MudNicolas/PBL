@@ -57,7 +57,7 @@ export default {
             return map[val] || val
         },
         valueFilter: function (val) {
-            if (typeof val === "object") {
+            if (Array.isArray(val)) {
                 //formattime
                 if (
                     val[0] &&
