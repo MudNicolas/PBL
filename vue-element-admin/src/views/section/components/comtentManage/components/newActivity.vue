@@ -383,7 +383,7 @@
 </template>
 
 <script>
-import { newActivityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
+import { activityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
 import { submitCreateActivity } from "@/api/activity"
 export default {
     name: "CreateActivity",
@@ -538,7 +538,7 @@ export default {
     methods: {
         getCommentTemplate() {
             this.templateGetting = true
-            newActivityGetCommentTemplate({ sectionID: this.sectionID })
+            activityGetCommentTemplate({ sectionID: this.sectionID })
                 .then(res => {
                     this.templateGetting = false
                     this.commentTemplates = res.data

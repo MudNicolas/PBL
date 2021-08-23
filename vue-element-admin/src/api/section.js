@@ -99,7 +99,7 @@ export function deleteFile(data) {
     })
 }
 
-export function newActivityGetCommentTemplate(query) {
+export function activityGetCommentTemplate(query) {
     return request({
         url: "/section/manage/activity/commentTemplate/get",
         method: "get",
