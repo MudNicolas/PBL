@@ -383,7 +383,7 @@
 </template>
 
 <script>
-import { newActivityGetCommentTemplate, newActivitySubmitNewCommentTemplate } from "@/api/section"
+import { activityGetCommentTemplate, inActivitySubmitNewCommentTemplate } from "@/api/section"
 import { submitCreateActivity } from "@/api/activity"
 export default {
     name: "CreateActivity",
@@ -538,7 +538,7 @@ export default {
     methods: {
         getCommentTemplate() {
             this.templateGetting = true
-            newActivityGetCommentTemplate({ sectionID: this.sectionID })
+            activityGetCommentTemplate({ sectionID: this.sectionID })
                 .then(res => {
                     this.templateGetting = false
                     this.commentTemplates = res.data
@@ -558,7 +558,7 @@ export default {
                 this.newCommentTemplate.entry.splice(index, 1)
             }
         },
-        formValidate(formName) {
+        entryValidate(formName) {
             return new Promise((resolve, reject) => {
                 this[formName].name = this[formName].name.trim()
                 this[formName].entry.forEach(e => {
@@ -586,10 +586,10 @@ export default {
             })
         },
         submitTemplate(formName) {
-            this.formValidate(formName)
+            this.entryValidate(formName)
                 .then(temp => {
                     this.newTemplateSubmitting = true
-                    newActivitySubmitNewCommentTemplate({
+                    inActivitySubmitNewCommentTemplate({
                         sectionID: this.sectionID,
                         template: temp,
                     })
@@ -607,7 +607,7 @@ export default {
                             this.newTemplateSubmitting = false
                         })
                 })
-                .catch()
+                .catch(() => {})
         },
         addEntry() {
             this.newCommentTemplate.entry.push({
@@ -654,7 +654,7 @@ export default {
                     return false
                 }
                 let { isUseCommentTemplate, commentTemplate } = this.activity
-                if (isUseCommentTemplate && !commentTemplate) {
+                if (isUseCommentTemplate && !Array.isArray(commentTemplate)) {
                     return false
                 }
             }

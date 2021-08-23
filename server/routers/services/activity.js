@@ -6,7 +6,9 @@ import Activity from "#models/Activity.js"
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 
 import view from "./activityView.js"
+import manage from "./activityManage.js"
 router.use("/view", view)
+router.use("/manage", manage)
 
 //验证此section的course是否具有访问权限(无activityID时)
 router.use((req, res, next) => {
@@ -48,6 +50,39 @@ router.use((req, res, next) => {
             })
     })
 })
+
+function formatActivity(activity, sectionID) {
+    let {
+        name,
+        type,
+        intro,
+        authorType,
+        isTimeLimited,
+        limitTime,
+        isUseCommentTemplate,
+        commentTemplate,
+        isNeedApprove,
+    } = activity
+    let options = {
+        authorType,
+        isTimeLimited,
+        isUseCommentTemplate,
+        isNeedApprove,
+    }
+    if (isTimeLimited) {
+        options.limitTime = [new Date(limitTime[0]), new Date(limitTime[1])]
+    }
+    if (isUseCommentTemplate) {
+        options.commentTemplate = commentTemplate
+    }
+    return {
+        name,
+        intro,
+        options,
+        type,
+        sectionID,
+    }
+}
 
 function validateActivity(activity) {
     let {
@@ -96,39 +131,6 @@ function validateActivity(activity) {
         return true
     }
     return false
-}
-
-function formatActivity(activity, sectionID) {
-    let {
-        name,
-        type,
-        intro,
-        authorType,
-        isTimeLimited,
-        limitTime,
-        isUseCommentTemplate,
-        commentTemplate,
-        isNeedApprove,
-    } = activity
-    let options = {
-        authorType,
-        isTimeLimited,
-        isUseCommentTemplate,
-        isNeedApprove,
-    }
-    if (isTimeLimited) {
-        options.limitTime = [new Date(limitTime[0]), new Date(limitTime[1])]
-    }
-    if (isUseCommentTemplate) {
-        options.commentTemplate = commentTemplate
-    }
-    return {
-        name,
-        intro,
-        options,
-        type,
-        sectionID,
-    }
 }
 
 router.post("/create", (req, res) => {

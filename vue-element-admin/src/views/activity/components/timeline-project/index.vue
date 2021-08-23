@@ -44,7 +44,8 @@ export default {
             components: [
                 { name: "privateSpace", label: "私有空间", role: ["student"] },
                 { name: "publicSpace", label: "公共空间", role: ["student", "teacher"] },
-                { name: "statistics", label: "信息统计", role: ["student", "teacher"] },
+                { name: "statistics", label: "信息统计", role: ["student"] },
+                { name: "overview", label: "项目总览", role: ["teacher"] },
             ],
         }
     },
