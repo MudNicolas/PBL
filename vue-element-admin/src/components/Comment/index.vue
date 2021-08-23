@@ -46,14 +46,17 @@
                         <span class="name">
                             {{ comment.commentUser.name }}
                         </span>
-                        <el-tag size="mini" v-if="comment.commentUserRole">
+                        <el-tag
+                            size="mini"
+                            v-if="comment.commentUserRole && comment.commentUserRole !== 'student'"
+                        >
                             {{ comment.commentUserRole | roleFilter }}
                         </el-tag>
                         <span class="time">
                             {{ comment.time | timeFormat }}
                         </span>
                     </span>
-                    <span class="right-panel">
+                    <span class="right-panel" v-if="commentable || checkPermission(['teacher'])">
                         <span
                             class="remove-comment"
                             v-if="uid === comment.commentUser._id || checkPermission(['teacher'])"
@@ -80,7 +83,7 @@
                             <editor-viewer :content="comment.comment[0].content" />
                         </span>
                         <span v-else>
-                            <el-tabs type="card" v-if="entry.length > 0">
+                            <el-tabs type="card">
                                 <el-tab-pane
                                     v-for="c of comment.comment"
                                     :label="c.entry"
@@ -91,32 +94,34 @@
                             </el-tabs>
                         </span>
                     </div>
-                    <div class="tool">
-                        <el-button
-                            type="text"
-                            icon="el-icon-s-comment"
-                            @click="showReplayArea(comment._id)"
-                        >
-                            回复
-                        </el-button>
-                    </div>
-                    <div class="reply-area" v-if="replyTo === comment._id">
-                        <el-input
-                            type="textarea"
-                            :autosize="{ minRows: 2 }"
-                            :placeholder="`回复@${comment.commentUser.name}:`"
-                            v-model="myReply"
-                        ></el-input>
+                    <span v-if="commentable || checkPermission(['teacher'])">
+                        <div class="tool">
+                            <el-button
+                                type="text"
+                                icon="el-icon-s-comment"
+                                @click="showReplayArea(comment._id)"
+                            >
+                                回复
+                            </el-button>
+                        </div>
+                        <div class="reply-area" v-if="replyTo === comment._id">
+                            <el-input
+                                type="textarea"
+                                :autosize="{ minRows: 2 }"
+                                :placeholder="`回复@${comment.commentUser.name}:`"
+                                v-model="myReply"
+                            ></el-input>
 
-                        <el-button
-                            type="primary"
-                            style="margin-top: 12px"
-                            @click="handleReply(comment._id)"
-                            :loading="replying"
-                        >
-                            回复
-                        </el-button>
-                    </div>
+                            <el-button
+                                type="primary"
+                                style="margin-top: 12px"
+                                @click="handleReply(comment._id)"
+                                :loading="replying"
+                            >
+                                回复
+                            </el-button>
+                        </div>
+                    </span>
                     <div class="replies">
                         <div v-for="reply of comment.reply" class="reply" :key="reply._id">
                             <div class="header">
@@ -144,14 +149,22 @@
                                     <span class="name">
                                         {{ reply.fromUser.name }}
                                     </span>
-                                    <el-tag size="mini" v-if="reply.fromUserRole">
+                                    <el-tag
+                                        size="mini"
+                                        v-if="
+                                            reply.fromUserRole && reply.fromUserRole !== 'student'
+                                        "
+                                    >
                                         {{ reply.fromUserRole | roleFilter }}
                                     </el-tag>
                                     <span class="time">
                                         {{ reply.time | timeFormat }}
                                     </span>
                                 </span>
-                                <span class="right-panel">
+                                <span
+                                    class="right-panel"
+                                    v-if="commentable || checkPermission(['teacher'])"
+                                >
                                     <span
                                         class="remove-comment"
                                         v-if="
@@ -186,38 +199,40 @@
                             <div class="comment">
                                 <span v-if="reply.toReply">回复 @{{ reply.toUser.name }}：</span>
                                 {{ reply.content }}
-                                <div class="tool">
-                                    <el-button
-                                        type="text"
-                                        icon="el-icon-s-comment"
-                                        @click="showReplayArea(reply._id)"
-                                    >
-                                        回复
-                                    </el-button>
-                                </div>
-                                <div class="reply-area" v-if="replyTo === reply._id">
-                                    <el-input
-                                        type="textarea"
-                                        :autosize="{ minRows: 2 }"
-                                        :placeholder="`回复@${reply.fromUser.name}:`"
-                                        v-model="myReply"
-                                    ></el-input>
+                                <span v-if="commentable || checkPermission(['teacher'])">
+                                    <div class="tool">
+                                        <el-button
+                                            type="text"
+                                            icon="el-icon-s-comment"
+                                            @click="showReplayArea(reply._id)"
+                                        >
+                                            回复
+                                        </el-button>
+                                    </div>
+                                    <div class="reply-area" v-if="replyTo === reply._id">
+                                        <el-input
+                                            type="textarea"
+                                            :autosize="{ minRows: 2 }"
+                                            :placeholder="`回复@${reply.fromUser.name}:`"
+                                            v-model="myReply"
+                                        ></el-input>
 
-                                    <el-button
-                                        type="primary"
-                                        style="margin-top: 12px"
-                                        @click="handleReply(comment._id, reply._id)"
-                                        :loading="replying"
-                                    >
-                                        回复
-                                    </el-button>
-                                </div>
+                                        <el-button
+                                            type="primary"
+                                            style="margin-top: 12px"
+                                            @click="handleReply(comment._id, reply._id)"
+                                            :loading="replying"
+                                        >
+                                            回复
+                                        </el-button>
+                                    </div>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <el-form>
+            <el-form v-if="commentable || checkPermission(['teacher'])">
                 <el-form-item style="margin-top: 60px">
                     <!--多条目的制作-->
                     <el-tabs type="card" v-if="entry.length > 0">
@@ -298,6 +313,10 @@ export default {
             default: () => [],
         },
         position: Object,
+        commentable: {
+            type: Boolean,
+            default: true,
+        },
     },
     filters: {
         timeFormat: val => {

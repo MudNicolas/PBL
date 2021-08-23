@@ -128,7 +128,7 @@
                 <el-col :span="18" :offset="3">
                     <el-divider />
 
-                    <!--TODO:老师标签在加持显示-->
+                    <!--TODO:老师能访问私有空间以及老师标签在私有空间的加持显示-->
                     <div id="commentList">
                         <el-skeleton
                             :rows="6"
@@ -168,6 +168,7 @@
                                     v-if="commentsData.comments"
                                     :position="{ stageID }"
                                     :entry="entry"
+                                    :commentable="!stage.timeout"
                                 />
                             </slot>
                         </el-skeleton>

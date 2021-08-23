@@ -3,7 +3,10 @@
         <div class="header">
             <div class="title">
                 {{ activity.name }}
-                <router-link :to="'/course/section/activity/manage/' + activityID">
+                <router-link
+                    v-if="checkPermission(['teacher'])"
+                    :to="'/course/section/activity/manage/' + activityID"
+                >
                     <el-button style="float: right" icon="el-icon-setting">管理</el-button>
                 </router-link>
             </div>
@@ -35,6 +38,8 @@
 import TimeLineProject from "./components/timeline-project"
 import { getActivityInfo } from "@/api/activity"
 import { normalFormatTime } from "@/utils/index.js"
+import checkPermission from "@/utils/permission" // 权限判断函数
+
 export default {
     name: "ActivityView",
     components: { TimeLineProject },
@@ -65,8 +70,8 @@ export default {
                     new Date(val[0]).toString() !== "Invalid Date" &&
                     new Date(val[1]).toString() !== "Invalid Date"
                 ) {
-                    return `${normalFormatTime(new Date(val[0]), "{y}年{m}月{d}日 {h}点{i}分")} 至
-                        ${normalFormatTime(new Date(val[1]), "{y}年{m}月{d} {h}点{i}分")}`
+                    return `${normalFormatTime(new Date(val[0]), "{y}年{m}月{d}日{h}点{i}分")} 至
+                        ${normalFormatTime(new Date(val[1]), "{y}年{m}月{d}日{h}点{i}分")}`
                 }
                 return val.join("，")
             }
@@ -91,6 +96,7 @@ export default {
             },
         }
     },
+
     created() {
         this.activityID = this.$route.params.id
         this.getInfo()
@@ -112,6 +118,7 @@ export default {
                 })
                 .catch()
         },
+        checkPermission,
     },
 }
 </script>
