@@ -38,6 +38,7 @@
                             </el-button>
                         </div>
                     </el-form-item>
+                    <el-divider />
                     <el-form-item>
                         <h2 style="font-weight: 400; margin-bottom: 8px">Danger Zone</h2>
                         <div class="danger-zone">

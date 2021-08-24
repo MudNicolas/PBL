@@ -56,10 +56,10 @@
                             {{ comment.time | timeFormat }}
                         </span>
                     </span>
-                    <span class="right-panel" v-if="commentable || checkPermission(['teacher'])">
+                    <span class="right-panel" v-if="commentable || !checkPermission(['student'])">
                         <span
                             class="remove-comment"
-                            v-if="uid === comment.commentUser._id || checkPermission(['teacher'])"
+                            v-if="uid === comment.commentUser._id || !checkPermission(['student'])"
                         >
                             <el-dropdown
                                 trigger="click"
@@ -94,7 +94,7 @@
                             </el-tabs>
                         </span>
                     </div>
-                    <span v-if="commentable || checkPermission(['teacher'])">
+                    <span v-if="commentable || !checkPermission(['student'])">
                         <div class="tool">
                             <el-button
                                 type="text"
@@ -163,13 +163,13 @@
                                 </span>
                                 <span
                                     class="right-panel"
-                                    v-if="commentable || checkPermission(['teacher'])"
+                                    v-if="commentable || !checkPermission(['student'])"
                                 >
                                     <span
                                         class="remove-comment"
                                         v-if="
                                             uid === reply.fromUser._id ||
-                                            checkPermission(['teacher'])
+                                            !checkPermission(['student'])
                                         "
                                     >
                                         <el-dropdown
@@ -199,7 +199,7 @@
                             <div class="comment">
                                 <span v-if="reply.toReply">回复 @{{ reply.toUser.name }}：</span>
                                 {{ reply.content }}
-                                <span v-if="commentable || checkPermission(['teacher'])">
+                                <span v-if="commentable || !checkPermission(['student'])">
                                     <div class="tool">
                                         <el-button
                                             type="text"
@@ -232,7 +232,7 @@
                     </div>
                 </div>
             </div>
-            <el-form v-if="commentable || checkPermission(['teacher'])">
+            <el-form v-if="commentable || !checkPermission(['student'])">
                 <el-form-item style="margin-top: 60px">
                     <!--多条目的制作-->
                     <el-tabs type="card" v-if="entry.length > 0">

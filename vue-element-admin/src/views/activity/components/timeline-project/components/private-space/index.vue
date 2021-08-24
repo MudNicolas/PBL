@@ -26,6 +26,7 @@
                     :project="project"
                     :stages="stages"
                     @editIntroSuccess="handleEditIntroSuccess"
+                    :private="true"
                 />
             </div>
         </div>
@@ -35,7 +36,7 @@
 <script>
 import { getPrivateTimeline } from "@/api/activity"
 import createProject from "./components/create-project.vue"
-import workspace from "./components/workspace.vue"
+import workspace from "../components/workspace.vue"
 export default {
     props: ["activityId"],
     components: { createProject, workspace },

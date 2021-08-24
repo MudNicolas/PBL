@@ -226,8 +226,17 @@ export const asyncRoutes = [
             },
             {
                 path: "section/activity/manage/:id([a-f0-9]{24})",
-                component: () => import("@/views/activity/settings"),
+                component: () => import("@/views/activityManage"),
                 name: "ActivityManage",
+                hidden: true,
+                meta: {
+                    roles: ["teacher"],
+                },
+            },
+            {
+                path: "section/activity/timelineProject/stage/approve/:id([a-f0-9]{24})",
+                component: () => import("@/views/approve"),
+                name: "Approve",
                 hidden: true,
                 meta: {
                     roles: ["teacher"],
@@ -281,7 +290,7 @@ export const asyncRoutes = [
                 path: "view/:id([a-f0-9]{24})",
                 component: () =>
                     import(
-                        "@/views/activity/components/timeline-project/components/public-space/workspace"
+                        "@/views/activity/components/timeline-project/components/public-space/publicWorkSpace"
                     ),
                 name: "PublicTimelineProjectView",
             },

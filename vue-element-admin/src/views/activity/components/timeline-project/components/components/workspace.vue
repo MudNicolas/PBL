@@ -15,25 +15,41 @@
                                 {{ project.status | statusFilter }}
                             </el-tag>
                         </span>
-                        <span v-else key="editProjectName">
-                            <el-input v-model="editData.name" placeholder="项目名称" />
+                        <span v-if="private" style="margin-left: auto; padding-left: 6px">
+                            <span v-if="isIntroEdit" key="editProjectName">
+                                <el-input v-model="editData.name" placeholder="项目名称" />
+                            </span>
+                            <el-button type="text" @click="handleEditButtonClick">
+                                <span v-if="!isIntroEdit">编辑</span>
+                                <span v-else key="cancel">取消</span>
+                            </el-button>
                         </span>
-                        <el-button
-                            style="margin-left: auto; padding-left: 6px"
-                            type="text"
-                            @click="handleEditButtonClick"
-                        >
-                            <span v-if="!isIntroEdit">编辑</span>
-                            <span v-else key="cancel">取消</span>
-                        </el-button>
                     </div>
                     <div class="intro">
-                        <div
-                            v-if="!isIntroEdit"
-                            key="intro"
-                            class="text"
-                            @dblclick="handleEditButtonClick"
-                        >
+                        <div v-if="isIntroEdit && private">
+                            <el-form>
+                                <el-form-item>
+                                    <el-input
+                                        v-model="editData.intro"
+                                        type="textarea"
+                                        autosize
+                                        placeholder="项目简述"
+                                    />
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button
+                                        type="primary"
+                                        style="float: right"
+                                        size="mini"
+                                        @click="handleSubmitEditIntro"
+                                        :loading="introEditSubmitting"
+                                    >
+                                        提交
+                                    </el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <div v-else key="intro" class="text" @dblclick="handleEditButtonClick">
                             {{ project.intro | noIntro }}
                             <div class="author-area">
                                 <div v-for="user of project.authors" :key="user._id">
@@ -62,29 +78,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-else>
-                            <el-form>
-                                <el-form-item>
-                                    <el-input
-                                        v-model="editData.intro"
-                                        type="textarea"
-                                        autosize
-                                        placeholder="项目简述"
-                                    />
-                                </el-form-item>
-                                <el-form-item>
-                                    <el-button
-                                        type="primary"
-                                        style="float: right"
-                                        size="mini"
-                                        @click="handleSubmitEditIntro"
-                                        :loading="introEditSubmitting"
-                                    >
-                                        提交
-                                    </el-button>
-                                </el-form-item>
-                            </el-form>
-                        </div>
                     </div>
                 </el-card>
             </el-col>
@@ -100,9 +93,11 @@
                         <el-card>
                             <div class="subjuct-name" slot="header">
                                 <router-link
-                                    :to="{
-                                        path: `/course/section/activity/timeline/private/stage/view/${e._id}`,
-                                    }"
+                                    :to="
+                                        private
+                                            ? `/course/section/activity/timeline/private/stage/view/${e._id}`
+                                            : `/course/section/activity/timeline/public/stage/view/${e._id}`
+                                    "
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
                                 </router-link>
@@ -113,6 +108,14 @@
                                     v-if="e.status === 'abandoned'"
                                 >
                                     已废弃
+                                </el-tag>
+                                <el-tag
+                                    size="mini"
+                                    style="margin-left: 4px"
+                                    type="success"
+                                    v-if="e.status === 'approved'"
+                                >
+                                    审核通过
                                 </el-tag>
                                 <el-tag
                                     size="mini"
@@ -141,6 +144,7 @@
                     <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
+                        v-if="private"
                     >
                         <el-card>
                             <div class="stage-wrapper">
@@ -284,7 +288,11 @@ import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 
 export default {
-    props: ["project", "stages"],
+    props: {
+        project: Object,
+        stages: Array,
+        private: Boolean,
+    },
     components: { ProfilePopover },
     filters: {
         noIntro,
@@ -376,7 +384,7 @@ export default {
 }
 </script>
 
-<style lang='scss' >
+<style lang='scss' scoped>
 .clearfix {
     font-size: 20px;
     display: flex;

@@ -5,7 +5,10 @@
                 {{ activity.name }}
                 <router-link
                     v-if="checkPermission(['teacher'])"
-                    :to="'/course/section/activity/manage/' + activityID"
+                    :to="{
+                        path: '/course/section/activity/manage/' + activityID,
+                        query: { type: activeComponent },
+                    }"
                 >
                     <el-button style="float: right" icon="el-icon-setting">管理</el-button>
                 </router-link>
@@ -53,7 +56,7 @@ export default {
         keyFilter: function (val) {
             let map = {
                 authorType: "作者类型",
-                isTimeLimited: "是否限时", //TODO: 限时功能的完善，限时外无法创建项目，编辑项目，建立阶段，编辑阶段，公布阶段，废弃阶段，讨论（均为前台限制）
+                isTimeLimited: "是否限时",
                 limitTime: "限时",
                 isUseCommentTemplate: "是否使用发言模板",
                 commentTemplate: "发言模板",
