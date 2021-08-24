@@ -40,9 +40,10 @@ app.use(
 app.use(
     express.urlencoded({
         extended: true,
+        limit: "8000mb",
     })
 )
-app.use(express.json())
+app.use(express.json({ limit: "8000mb" }))
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 app.use("/public", express.static(path.join(__dirname, "public")))

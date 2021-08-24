@@ -39,3 +39,11 @@ export function getPendingApproveProjectStage(query) {
         params: query,
     })
 }
+
+export function getProjectUnderApproveStage(query) {
+    return request({
+        url: "/activity/manage/timelineProject/approve/single/get",
+        method: "get",
+        params: query,
+    })
+}

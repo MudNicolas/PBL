@@ -61,7 +61,6 @@ router.get("/approve/get", (req, res) => {
 
                 return Stage.find({
                     timelineProjectID: TLProject._id,
-                    isPublic: true,
                     status: { $in: ["underApprove", "approved"] },
                 })
                     .select("submitAuditTime subjectName")
@@ -107,6 +106,35 @@ router.get("/approve/get", (req, res) => {
         .catch(err => {
             console.log(err)
         })
+})
+
+router.get("/approve/single/get", async (req, res) => {
+    let _stage = req.stage
+    let _project = req.project
+    _stage = await _stage.execPopulate([
+        { path: "authorUID", select: "name avatar" },
+        { path: "files", select: "originalFilename size" },
+    ])
+
+    let { name, intro, status } = _project
+    let { authorUID, subjectName, files, content, sketch } = _stage
+    let project = {
+        name,
+        intro,
+        authors: authorUID,
+        status,
+    }
+    let stage = {
+        subjectName,
+        files,
+        status,
+        content,
+        sketch,
+    }
+    res.json({
+        code: 20000,
+        data: { project, stage },
+    })
 })
 
 export default router

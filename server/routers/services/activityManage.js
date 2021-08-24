@@ -2,9 +2,85 @@ import Router from "express"
 let router = Router()
 import { CheckCourseAvailableAndReqUserHasPermission } from "#services/tools.js"
 import Activity from "#models/Activity.js"
+import TimeLineProject from "#models/TimeLineProject.js"
+import Stage from "#models/Stage.js"
+
+//验证stage的timeline的activity是否有权限访问
+router.use((req, res, next) => {
+    let stageID = req.body.stageID || req.query.stageID
+
+    if (!stageID) {
+        return next()
+    }
+
+    let validate = /^[a-fA-F0-9]{24}$/.test(stageID)
+    if (!validate) {
+        res.json({
+            code: 404,
+            message: "stage不存在",
+        })
+        return
+    }
+    Stage.findById(stageID).then((stage, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        if (!stage) {
+            res.json({
+                code: 404,
+                message: "stage不存在",
+            })
+            return
+        }
+
+        req.projectID = stage.timelineProjectID
+        req.stage = stage
+        next()
+    })
+})
+
+//验证带id的timeline的activity是否有权限访问
+router.use((req, res, next) => {
+    let projectID = req.body.projectID || req.query.projectID || req.projectID
+    if (!projectID) {
+        return next()
+    }
+    let validate = /^[a-fA-F0-9]{24}$/.test(projectID)
+    if (!validate) {
+        res.json({
+            code: 404,
+            message: "不存在此项目",
+        })
+        return
+    }
+    TimeLineProject.findById(projectID).then((proj, err) => {
+        if (err) {
+            res.json({
+                code: 30001,
+                message: "DataBase Error",
+            })
+            return
+        }
+        if (!proj) {
+            res.json({
+                code: 404,
+                message: "不存在此项目",
+            })
+            return
+        }
+
+        req.activityID = proj.activityID
+        req.project = proj
+        next()
+    })
+})
 
 router.use((req, res, next) => {
-    let activityID = req.body.activityID || req.query.activityID
+    let activityID = req.body.activityID || req.query.activityID || req.activityID
     let validate = /^[a-fA-F0-9]{24}$/.test(activityID)
     if (!validate) {
         res.json({
