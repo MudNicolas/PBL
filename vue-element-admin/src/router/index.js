@@ -281,7 +281,7 @@ export const asyncRoutes = [
                 path: "view/:id([a-f0-9]{24})",
                 component: () =>
                     import(
-                        "@/views/activity/components/timeline-project/components/public-space/workspace"
+                        "@/views/activity/components/timeline-project/components/public-space/publicWorkSpace"
                     ),
                 name: "PublicTimelineProjectView",
             },

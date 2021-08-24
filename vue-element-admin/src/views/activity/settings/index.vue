@@ -1,7 +1,7 @@
 <template>
     <!--TODO： stage审批-->
     <!--TODO： timelineproject管理（状态重置等）-->
-    <!--TODO： activity基础信息设置-->
+
     <div class="container" v-loading="loading">
         <el-tabs type="border-card" v-model="activeName">
             <el-tab-pane
@@ -23,10 +23,11 @@
 
 <script>
 import info from "./components/info"
+import approve from "./components/approve"
 import { getAvtivityType } from "@/api/activityManage"
 
 export default {
-    components: { info },
+    components: { info, approve },
     name: "ManageCourse",
 
     data() {
@@ -41,6 +42,26 @@ export default {
     created() {
         // init the default selected tab
         const tab = this.$route.query.tab
+        const type = this.$route.query.type
+        this.activityType = type
+        let { activityType, components } = this
+        if (activityType === "TimeLineProject") {
+            let addition = [
+                {
+                    name: "approve",
+                    label: "项目审批",
+                },
+                {
+                    name: "projectManage",
+                    label: "项目管理",
+                },
+                {
+                    name: "statistics",
+                    label: "信息统计",
+                },
+            ]
+            this.components = [...components, ...addition]
+        }
         if (tab) {
             this.activeName = tab
         }
@@ -52,31 +73,15 @@ export default {
             let { activityID } = this
             getAvtivityType({ activityID })
                 .then(res => {
-                    this.activityType = res.data.type
-                    this.handleTabs()
                     this.loading = false
+                    console.log(this.activityType, res.data.type)
+                    if (this.activityType !== res.data.type) {
+                        this.$router.replace("/404")
+                    }
                 })
-                .catch(() => {})
-        },
-        handleTabs() {
-            let { activityType, components } = this
-            if (activityType === "TimeLineProject") {
-                let addition = [
-                    {
-                        name: "approve",
-                        label: "项目审批",
-                    },
-                    {
-                        name: "projectManage",
-                        label: "项目管理",
-                    },
-                    {
-                        name: "statistics",
-                        label: "信息统计",
-                    },
-                ]
-                this.components = [...components, ...addition]
-            }
+                .catch(err => {
+                    console.log(err)
+                })
         },
     },
     watch: {
@@ -87,7 +92,10 @@ export default {
                     return e.name === val
                 })
             ) {
-                this.$router.push(`${this.$route.path}?tab=${val}`)
+                this.$router.push({
+                    path: this.$route.path,
+                    query: { tab: val, type: this.activityType },
+                })
             } else {
                 this.activeName = "info"
             }

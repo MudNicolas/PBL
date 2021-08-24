@@ -31,3 +31,11 @@ export function submitRemoveActivity(data) {
         data,
     })
 }
+
+export function getPendingApproveProjectStage(query) {
+    return request({
+        url: "/activity/manage/timelineProject/approve/get",
+        method: "get",
+        params: query,
+    })
+}

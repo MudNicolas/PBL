@@ -182,4 +182,7 @@ router.delete("/remove/submit", (req, res) => {
     })
 })
 
+import timeline from "./modules/activityManage/timeline.js"
+router.use("/timelineProject", timeline)
+
 export default router

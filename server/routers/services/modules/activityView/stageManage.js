@@ -145,7 +145,9 @@ router.post("/danger/submit", (req, res) => {
     if (type === "approve") {
         let { project } = req
         stage.status = "underApprove"
+        stage.submitAuditTime = new Date()
         project.status = "underApprove"
+
         project.save(err => {
             if (err) {
                 console.log(err)

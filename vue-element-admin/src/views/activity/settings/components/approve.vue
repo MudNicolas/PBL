@@ -1,5 +1,6 @@
 <template>
-    <div class="container" v-loading="loading">
+    <div class="wrapper" v-loading="loading">
+        <el-empty description="本活动无需审批" v-if="!isNeedApprove"></el-empty>
         <el-table :data="projects" style="width: 100%">
             <el-table-column
                 label="项目名称"
@@ -61,14 +62,14 @@
             </el-table-column>
 
             <el-table-column
-                prop="publicStageNumber"
-                label="已公开的阶段数"
+                prop="submitForApproveNumber"
+                label="提交审批次数"
                 sortable
                 align="center"
             ></el-table-column>
-            <el-table-column label="最新公开时间" sortable align="center">
+            <el-table-column label="最新提审时间" sortable align="center">
                 <template slot-scope="scope">
-                    {{ scope.row.latestPublicTime | normalFormatTime }}
+                    {{ scope.row.latestSubmitAuditTime | normalFormatTime }}
                 </template>
             </el-table-column>
             <el-table-column>
@@ -83,12 +84,13 @@
 </template>
 
 <script>
-import { getPubProjects } from "@/api/timeline-project"
+import { getPendingApproveProjectStage } from "@/api/activityManage"
+import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import { tagTypeFilter, statusFilter } from "@/utils/timelineFilters"
 import { normalFormatTime } from "@/utils/index.js"
-import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 
 export default {
+    name: "approve",
     props: ["activityId"],
     components: { ProfilePopover },
     filters: {
@@ -109,24 +111,33 @@ export default {
 
     data() {
         return {
-            loading: true,
+            activityID: this.activityId,
+            loading: false,
+            isNeedApprove: false,
             projects: [],
             showUpPopoverKey: "",
         }
     },
     created() {
-        this.getPubProjects()
+        this.getPendingApproveProjectStage()
     },
     methods: {
-        getPubProjects() {
+        getPendingApproveProjectStage() {
             this.loading = true
-            let activityID = this.activityId
-            getPubProjects({ activityID })
+            let { activityID } = this
+            getPendingApproveProjectStage({ activityID })
                 .then(res => {
-                    this.projects = res.data
+                    let { isNeedApprove } = res.data
+                    this.isNeedApprove = isNeedApprove
+                    if (isNeedApprove) {
+                        let { projects } = res.data
+                        this.projects = projects
+                    }
                     this.loading = false
                 })
-                .catch(() => {})
+                .catch(err => {
+                    console.log(err)
+                })
         },
         filterHandleProjectExist(value, row, column) {
             return value === !!row.projectName
@@ -142,8 +153,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.container {
-    min-height: 40vh;
-    padding-top: 20px;
+.wrapper {
+    padding-top: 30px;
 }
 </style>

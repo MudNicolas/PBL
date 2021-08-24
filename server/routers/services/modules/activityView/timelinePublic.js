@@ -158,6 +158,7 @@ router.get("/stage/get", (req, res) => {
                 }
             })
 
+			//只有学生受template影响
             let entry = []
             if (req.role === "student") {
                 let { options } = activity
