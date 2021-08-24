@@ -68,15 +68,17 @@ router.get("/approve/get", (req, res) => {
                     .then(async stages => {
                         let latestSubmitAuditTime
                         let submitForApproveNumber = stages.length
+                        let stageID = ""
 
                         if (submitForApproveNumber > 0) {
                             latestSubmitAuditTime = stages[stages.length - 1].submitAuditTime
+                            stageID = stages[stages.length - 1]._id
                         }
 
                         let { status } = TLProject
                         let projectName = TLProject.name
                         return {
-                            _id: TLProject._id,
+                            stageID,
                             projectName,
                             authors,
                             latestSubmitAuditTime,

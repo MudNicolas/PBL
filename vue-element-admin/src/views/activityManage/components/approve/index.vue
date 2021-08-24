@@ -42,10 +42,8 @@
                 label="当前状态"
                 align="center"
                 :filters="[
-                    { text: '待审核', value: 'beforeApprove' },
+                    { text: '审批通过', value: 'approved' },
                     { text: '审批中', value: 'underApprove' },
-                    { text: '行进中', value: 'normal' },
-                    { text: '结题', value: 'conclude' },
                 ]"
                 :filter-method="filterHandleProjectStatus"
             >
@@ -74,8 +72,12 @@
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
-                    <el-button :disabled="!scope.row._id" @click="handleToPage(scope.row._id)">
-                        查看
+                    <el-button
+                        :disabled="!scope.row.stageID"
+                        @click="handleToPage(scope.row.stageID)"
+                    >
+                        <span v-if="scope.row.status === 'underApprove'">审批</span>
+                        <span v-else>查看</span>
                     </el-button>
                 </template>
             </el-table-column>
@@ -146,7 +148,7 @@ export default {
             return value === row.status
         },
         handleToPage(id) {
-            this.$router.push(`/course/section/activity/timeline/public/view/${id}`)
+            this.$router.push(`/course/section/activity/timelineProject/stage/approve/${id}`)
         },
     },
 }

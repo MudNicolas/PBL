@@ -9,7 +9,7 @@ export function tagTypeFilter(val) {
         //审批中
         underApprove: "warning",
         //待审批
-        beforeApprove: "warning",
+        beforeApprove: "danger",
         normal: "",
         conclude: "success",
         rejected: "danger",
@@ -21,7 +21,7 @@ export function statusFilter(val) {
         //审批中
         underApprove: "审批中",
         //待审批
-        beforeApprove: "待审批",
+        beforeApprove: "待提审",
         normal: "行进中",
         conclude: "结题",
     }

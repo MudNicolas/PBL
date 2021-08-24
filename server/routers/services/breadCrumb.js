@@ -199,10 +199,36 @@ class routeTree {
             },
         },
         ActivityManage: {
-            path: "/course/section/activity/setting/",
+            name: "ActivityManage",
+            path: "/course/section/activity/manage/",
             parent: "ActivityView",
             meta: {
                 title: "管理",
+            },
+        },
+        Approve: {
+            path: "/course/section/activity/timelineProject/stage/approve/",
+            parent: "ActivityManage",
+            parentQuery: {
+                type: "TimeLineProject",
+                tab: "approve",
+            },
+            meta: {
+                title: async id => {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        return await Stage.findById(id)
+                            .select("timelineProjectID subjectName")
+                            .populate("timelineProjectID")
+                            .then(project => {
+                                if (project) {
+                                    return {
+                                        name: project.timelineProjectID.name || "暂无项目名",
+                                        parentID: project.timelineProjectID.activityID,
+                                    }
+                                }
+                            })
+                    }
+                },
             },
         },
     }
@@ -227,15 +253,37 @@ async function generateBreadCrumb(name, id) {
     }
     //parentID不断传递更新
     let fid = id
+
+    //处理path query
+    let queryHandler = {
+        query: {},
+        name: "",
+    }
+
     for (let f of gen) {
         if (typeof f.path === "function") {
             let func = f.path
             f.path = func(fid)
         }
+        f.path += fid
+
+        if (f.name === queryHandler.name) {
+            f.path = {
+                path: f.path,
+                query: queryHandler.query,
+            }
+        }
+
+        if (f.parentQuery) {
+            queryHandler = {
+                query: f.parentQuery,
+                name: f.parent,
+            }
+        }
+
         if (f.meta && f.meta.title && typeof f.meta.title === "function") {
-            f.path += fid
             let func = f.meta.title
-            let funcTitle = await func(fid)
+            let funcTitle = await func(fid) //
             if (funcTitle && funcTitle.name) {
                 f.meta.title = funcTitle.name
                 if (funcTitle.parentID) {

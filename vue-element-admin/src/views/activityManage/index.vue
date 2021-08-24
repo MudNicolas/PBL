@@ -23,7 +23,7 @@
 
 <script>
 import info from "./components/info"
-import approve from "./components/approve"
+import approve from "./components/approve/index"
 import { getAvtivityType } from "@/api/activityManage"
 
 export default {
@@ -74,8 +74,8 @@ export default {
             getAvtivityType({ activityID })
                 .then(res => {
                     this.loading = false
-                    console.log(this.activityType, res.data.type)
-                    if (this.activityType !== res.data.type) {
+
+                    if (this.activityType && this.activityType !== res.data.type) {
                         this.$router.replace("/404")
                     }
                 })
