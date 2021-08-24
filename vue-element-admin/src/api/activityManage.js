@@ -47,3 +47,11 @@ export function getProjectUnderApproveStage(query) {
         params: query,
     })
 }
+
+export function submitApprovement(data) {
+    return request({
+        url: "/activity/manage/timelineProject/approve/single/submit",
+        method: "post",
+        data,
+    })
+}

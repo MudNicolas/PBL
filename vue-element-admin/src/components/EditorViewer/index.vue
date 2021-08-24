@@ -1,12 +1,12 @@
 <template>
     <div class="view-wrapper">
-        <div class="fr-box fr-basic">
-            <froalaView v-model="content"></froalaView>
-        </div>
+        <froalaView v-model="content"></froalaView>
     </div>
 </template>
 
 <script>
+import "froala-editor/css/froala_style.min.css"
+
 export default {
     props: ["content"],
 }

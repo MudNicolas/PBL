@@ -24,6 +24,8 @@ export function statusFilter(val) {
         beforeApprove: "待提审",
         normal: "行进中",
         conclude: "结题",
+        rejected: "审核驳回",
+        approved: "审核通过",
     }
     return map[val] || ""
 }

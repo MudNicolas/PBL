@@ -53,6 +53,22 @@
                     <el-form-item>
                         <div class="subject-name">
                             {{ stage.subjectName | subjectNameFilter }}
+                            <el-tag
+                                size="mini"
+                                style="margin-left: 4px"
+                                type="success"
+                                v-if="stage.status === 'approved'"
+                            >
+                                审核通过
+                            </el-tag>
+                            <el-tag
+                                size="mini"
+                                style="margin-left: 4px"
+                                type="danger"
+                                v-if="stage.status === 'rejected'"
+                            >
+                                审核驳回
+                            </el-tag>
                         </div>
                         <div class="sketch">
                             {{ stage.sketch }}
@@ -111,20 +127,65 @@
                             </el-table-column>
                         </el-table>
                     </el-form-item>
+                    <el-form-item></el-form-item>
                     <el-divider />
+                    <span v-if="!approvement._id">
+                        <el-form-item>
+                            <el-radio-group v-model="approvement.status">
+                                <el-radio label="approved">通过</el-radio>
+                                <el-radio label="rejected">驳回</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input
+                                type="textarea"
+                                :autosize="{ minRows: 3 }"
+                                placeholder="审批理由"
+                                v-model="approvement.reason"
+                            />
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button
+                                type="primary"
+                                :disabled="!approvement.status"
+                                @click="handleSubmit"
+                                :loading="submitting"
+                            >
+                                提交
+                            </el-button>
+                            <el-button
+                                @click="
+                                    $router.push(
+                                        `/course/section/activity/manage/${activityID}?type=TimeLineProject&tab=approve`
+                                    )
+                                "
+                            >
+                                返回
+                            </el-button>
+                        </el-form-item>
+                    </span>
+                    <span v-else>
+                        <el-descriptions title="项目审批" direction="vertical" border>
+                            <el-descriptions-item label="审批者">
+                                {{ approvement.approver.name }}
+                            </el-descriptions-item>
+                            <el-descriptions-item label="审批结果">
+                                {{ approvement.status | statusFilter }}
+                            </el-descriptions-item>
 
-                    <el-form-item>
-                        <el-radio-group>
-                            <el-radio :label="3">通过</el-radio>
-                            <el-radio :label="6">驳回</el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-input type="textarea" :autosize="{ minRows: 3 }" />
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary">提交</el-button>
-                    </el-form-item>
+                            <el-descriptions-item label="审批时间">
+                                {{
+                                    normalFormatTime(
+                                        new Date(approvement.time),
+                                        "{y}-{m}-{d} {h}:{i}"
+                                    )
+                                }}
+                            </el-descriptions-item>
+                            <el-descriptions-item label="理由">
+                                {{ approvement.reason }}
+                            </el-descriptions-item>
+                        </el-descriptions>
+                    </span>
                 </el-form>
             </el-col>
         </el-row>
@@ -132,12 +193,13 @@
 </template>
 
 <script>
-import { getProjectUnderApproveStage } from "@/api/activityManage"
+import { getProjectUnderApproveStage, submitApprovement } from "@/api/activityManage"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import EditorViewer from "@/components/EditorViewer"
 import download from "@/utils/download"
 import { fileType, fileIcon } from "@/utils/fileType"
+import { normalFormatTime } from "@/utils/index.js"
 
 export default {
     name: "Approve",
@@ -178,9 +240,15 @@ export default {
             stage: {
                 files: [],
             },
+            activityID: "",
+            approvement: {
+                status: "",
+                reason: "",
+            },
             showUpPopoverKey: "",
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             loading: false,
+            submitting: false,
             stageID: this.$route.params.id,
         }
     },
@@ -193,10 +261,14 @@ export default {
             let { stageID } = this
             getProjectUnderApproveStage({ stageID })
                 .then(res => {
-                    let { project, stage, approvement } = res.data
+                    let { project, stage, approvement, activityID } = res.data
                     this.project = project
                     this.stage = stage
-                    this.approvement = approvement
+                    this.approvement = approvement || {
+                        status: "",
+                        reason: "",
+                    }
+                    this.activityID = activityID
                     this.loading = false
                 })
                 .catch(err => console.log(err))
@@ -204,6 +276,24 @@ export default {
         download(_id) {
             download(_id)
         },
+        handleSubmit() {
+            let { approvement } = this
+            if (!approvement.status) {
+                return
+            }
+            this.submitting = true
+            let { stageID } = this
+            submitApprovement({ stageID, approvement })
+                .then(() => {
+                    this.$message.success("提交成功")
+                    this.getProjectUnderApproveStage()
+                })
+                .catch(err => {
+                    console.log(err)
+                    this.submitting = false
+                })
+        },
+        normalFormatTime,
     },
 }
 </script>
@@ -254,5 +344,44 @@ export default {
 }
 .author {
     margin-right: 6px;
+}
+.clearfix {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    color: #303133;
+}
+.intro {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #606266;
+
+    .text {
+        line-height: 1.5;
+    }
+}
+.stage-wrapper {
+    height: 86px;
+
+    .create-stage-card-wrapper {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #909399;
+
+        i {
+            margin-left: 8px;
+        }
+    }
+}
+
+.author-area {
+    display: flex;
+    margin-top: 12px;
+
+    .author {
+        margin-right: 6px;
+    }
 }
 </style>

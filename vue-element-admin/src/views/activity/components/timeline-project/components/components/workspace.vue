@@ -384,7 +384,7 @@ export default {
 }
 </script>
 
-<style lang='scss' >
+<style lang='scss' scoped>
 .clearfix {
     font-size: 20px;
     display: flex;

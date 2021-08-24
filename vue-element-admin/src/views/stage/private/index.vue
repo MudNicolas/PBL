@@ -28,6 +28,14 @@
                     >
                         审核中
                     </el-tag>
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        type="success"
+                        v-if="stage.status === 'approved'"
+                    >
+                        审核通过
+                    </el-tag>
                     <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
                         已公开
                     </el-tag>
