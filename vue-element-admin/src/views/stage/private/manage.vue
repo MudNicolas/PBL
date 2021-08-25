@@ -4,33 +4,7 @@
             <el-col :span="16" :offset="4">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="info"
-                        v-if="stage.status === 'abandoned'"
-                    >
-                        已废弃
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="danger"
-                        v-if="stage.status === 'rejected'"
-                    >
-                        审核驳回
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="warning"
-                        v-if="stage.status === 'underApprove'"
-                    >
-                        审核中
-                    </el-tag>
-                    <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
-                        已公开
-                    </el-tag>
+                    <status-tag :stage="stage" />
 
                     <el-button style="margin-left: auto" icon="el-icon-view" @click="toView">
                         详情
@@ -154,6 +128,30 @@
                                         </el-button>
                                     </div>
                                 </div>
+                                <div
+                                    class="item"
+                                    v-if="['normal', 'underConcludeApprove'].includes(stage.status)"
+                                >
+                                    <div class="text">
+                                        <div class="title">申请结题</div>
+                                        <div class="info">
+                                            将本阶段作为本项目的最终成果进行结题申请，只有最新阶段可以提交申请。提交申请后本阶段内容不可修改，无法废弃本阶段，无法新建阶段。申请通过后本项目将被封存，无法做任何更改。
+                                        </div>
+                                    </div>
+                                    <div class="button">
+                                        <el-button
+                                            type="primary"
+                                            plain
+                                            @click="handleDangerOperation('concludeApprove')"
+                                            :disabled="
+                                                stage.status === 'underConcludeApprove' ||
+                                                !stage.isLast
+                                            "
+                                        >
+                                            申请
+                                        </el-button>
+                                    </div>
+                                </div>
                                 <div class="item">
                                     <div class="text">
                                         <div class="title">废弃</div>
@@ -207,10 +205,11 @@ import {
 } from "@/api/timeline-project"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import { normalFormatTime } from "@/utils/index.js"
+import StatusTag from "@/components/StatusTag"
 
 export default {
     name: "StageManage",
-    components: { ProfilePopover },
+    components: { ProfilePopover, StatusTag },
 
     data() {
         return {
@@ -288,6 +287,7 @@ export default {
                 public: "确定将本阶段公开？",
                 approve: "确定将本阶段提交审核？",
                 abandon: "确定废弃本阶段？",
+                concludeApprove: "确定进行结题申请？",
             }
             let message = tip[type] || "error"
             this.$confirm(message, "提示", {

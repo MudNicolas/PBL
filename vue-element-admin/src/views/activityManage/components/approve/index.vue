@@ -1,7 +1,22 @@
 <template>
     <div class="wrapper" v-loading="loading">
-        <el-empty description="本活动无需审批" v-if="!isNeedApprove"></el-empty>
         <el-table :data="projects" style="width: 100%">
+            <el-table-column width="30">
+                <template slot-scope="scope">
+                    <el-tooltip content="查看项目详情" placement="right" effect="light">
+                        <el-button
+                            v-if="scope.row.projectID"
+                            icon="el-icon-view"
+                            type="text"
+                            @click="
+                                $router.push(
+                                    `/course/section/activity/manage/timeline/private/${scope.row.projectID}`
+                                )
+                            "
+                        ></el-button>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
             <el-table-column
                 label="项目名称"
                 align="center"
@@ -39,11 +54,13 @@
                 </template>
             </el-table-column>
             <el-table-column
-                label="当前状态"
+                label="项目状态"
                 align="center"
                 :filters="[
                     { text: '审批通过', value: 'approved' },
                     { text: '审批中', value: 'underApprove' },
+                    { text: '结题申请', value: 'underConcludeApprove' },
+                    { text: '结题', value: 'conclude' },
                 ]"
                 :filter-method="filterHandleProjectStatus"
             >
@@ -51,33 +68,59 @@
                     <el-tag
                         size="mini"
                         style="margin-left: 4px"
-                        :type="scope.row.status | tagTypeFilter"
-                        v-if="scope.row.status"
+                        :type="scope.row.projectStatus | tagTypeFilter"
+                        v-if="scope.row.projectStatus"
                     >
-                        {{ scope.row.status | statusFilter }}
+                        {{ scope.row.projectStatus | statusFilter }}
                     </el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column
-                prop="submitForApproveNumber"
-                label="提交审批次数"
-                sortable
+                label="审批状态"
                 align="center"
-            ></el-table-column>
-            <el-table-column label="最新提审时间" sortable align="center">
+                :filters="[
+                    { text: '审核通过', value: 'approved' },
+                    { text: '审核驳回', value: 'rejected' },
+                ]"
+                :filter-method="filterHandleProjectStatus"
+            >
                 <template slot-scope="scope">
-                    {{ scope.row.latestSubmitAuditTime | normalFormatTime }}
+                    <el-tag
+                        size="mini"
+                        style="margin-left: 4px"
+                        :type="scope.row.stageStatus | tagTypeFilter"
+                        v-if="scope.row.stageStatus"
+                    >
+                        {{ scope.row.stageStatus | statusFilter }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column label="申请时间" sortable align="center">
+                <template slot-scope="scope">
+                    {{ scope.row.submitTime | normalFormatTime }}
                 </template>
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
                     <el-button
-                        :disabled="!scope.row.stageID"
-                        @click="handleToPage(scope.row.stageID)"
+                        v-if="scope.row.stageID"
+                        @click="
+                            $router.push(
+                                `/course/section/activity/timelineProject/stage/approve/${scope.row.stageID}`
+                            )
+                        "
+                        type="primary"
                     >
-                        <span v-if="scope.row.status === 'underApprove'">审批</span>
-                        <span v-else>查看</span>
+                        <span
+                            v-if="
+                                ['underApprove', 'underConcludeApprove'].includes(scope.row.status)
+                            "
+                        >
+                            审批
+                        </span>
+                        <span v-else>查看结果</span>
                     </el-button>
                 </template>
             </el-table-column>
@@ -100,7 +143,7 @@ export default {
         tagTypeFilter,
         normalFormatTime: val => {
             if (val) {
-                return normalFormatTime(new Date(val))
+                return normalFormatTime(new Date(val), "{y}-{m}-{d} {h}:{i}")
             }
         },
         projectNameFilter: val => {
@@ -115,7 +158,6 @@ export default {
         return {
             activityID: this.activityId,
             loading: false,
-            isNeedApprove: false,
             projects: [],
             showUpPopoverKey: "",
         }
@@ -129,12 +171,8 @@ export default {
             let { activityID } = this
             getPendingApproveProjectStage({ activityID })
                 .then(res => {
-                    let { isNeedApprove } = res.data
-                    this.isNeedApprove = isNeedApprove
-                    if (isNeedApprove) {
-                        let { projects } = res.data
-                        this.projects = projects
-                    }
+                    let { projects } = res.data
+                    this.projects = projects
                     this.loading = false
                 })
                 .catch(err => {
@@ -146,9 +184,6 @@ export default {
         },
         filterHandleProjectStatus(value, row, column) {
             return value === row.status
-        },
-        handleToPage(id) {
-            this.$router.push(`/course/section/activity/timelineProject/stage/approve/${id}`)
         },
     },
 }

@@ -4,41 +4,7 @@
             <el-col :span="18" :offset="3">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="info"
-                        v-if="stage.status === 'abandoned'"
-                    >
-                        已废弃
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="danger"
-                        v-if="stage.status === 'rejected'"
-                    >
-                        审核驳回
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="warning"
-                        v-if="stage.status === 'underApprove'"
-                    >
-                        审核中
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="success"
-                        v-if="stage.status === 'approved'"
-                    >
-                        审核通过
-                    </el-tag>
-                    <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
-                        已公开
-                    </el-tag>
+                    <status-tag :stage="stage" />
 
                     <el-button style="margin-left: auto" icon="el-icon-s-tools" @click="toManage">
                         管理
@@ -258,10 +224,11 @@ import download from "@/utils/download"
 import { fileType, fileIcon } from "@/utils/fileType"
 import Comment from "@/components/Comment"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+import StatusTag from "@/components/StatusTag"
 
 export default {
     name: "TimeLineStage",
-    components: { Editor, uploadFile, EditorViewer, Comment, ProfilePopover },
+    components: { Editor, uploadFile, EditorViewer, Comment, ProfilePopover, StatusTag },
     filters: {
         subjectNameFilter: val => {
             return val || "暂无阶段名"

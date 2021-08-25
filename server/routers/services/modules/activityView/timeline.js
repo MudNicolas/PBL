@@ -219,6 +219,13 @@ router.post("/private/project/stage/new", async (req, res) => {
     let { stageOptions } = req.body
     let { project } = req
 
+    if (["underApprove", "underConcludeApprove", "conclude"].includes(project.status)) {
+        res.json({
+            code: "当前不可新建阶段",
+        })
+        return
+    }
+
     let status = project.status
 
     let time = new Date()

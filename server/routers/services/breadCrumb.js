@@ -206,13 +206,20 @@ class routeTree {
                 title: "管理",
             },
         },
+        ApproveNoDirect: {
+            path: "*",
+            parent: "ActivityManage",
+            redirect: "noRedirect",
+            meta: { title: "项目审批" },
+        },
         Approve: {
             path: "/course/section/activity/timelineProject/stage/approve/",
-            parent: "ActivityManage",
+            parent: "ApproveNoDirect",
             parentQuery: {
                 type: "TimeLineProject",
                 tab: "approve",
             },
+            queryParentName: "ActivityManage",
             meta: {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
@@ -224,6 +231,37 @@ class routeTree {
                                     return {
                                         name: project.timelineProjectID.name || "暂无项目名",
                                         parentID: project.timelineProjectID.activityID,
+                                    }
+                                }
+                            })
+                    }
+                },
+            },
+        },
+        TimeLineProjectDetail: {
+            path: "*",
+            parent: "ActivityManage",
+            redirect: "noRedirect",
+            meta: { title: "项目详情" },
+        },
+        TeacherViewPrivateTimeline: {
+            path: "/course/section/activity/manage/timeline/",
+            parent: "TimeLineProjectDetail",
+            parentQuery: {
+                type: "TimeLineProject",
+                tab: "approve",
+            },
+            queryParentName: "ActivityManage",
+            meta: {
+                title: async id => {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        return await TimeLineProject.findById(id)
+                            .select("activityID name")
+                            .then(project => {
+                                if (project) {
+                                    return {
+                                        name: project.name || "暂无项目名",
+                                        parentID: project.activityID,
                                     }
                                 }
                             })
@@ -277,7 +315,7 @@ async function generateBreadCrumb(name, id) {
         if (f.parentQuery) {
             queryHandler = {
                 query: f.parentQuery,
-                name: f.parent,
+                name: f.queryParentName,
             }
         }
 

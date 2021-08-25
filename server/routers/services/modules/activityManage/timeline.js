@@ -6,16 +6,52 @@ import Stage from "#models/Stage.js"
 import User from "#models/User.js"
 import Approvement from "#models/Approvement.js"
 
+router.get("/private/get", async (req, res) => {
+    let { activity, project } = req
+
+    let authorID = req.uid
+    if (activity.options.authorType === "group") {
+        let { group } = req
+        authorID = group._id
+    }
+
+    let { authorType } = project
+    let authorsUID
+    if (authorType === "personal") {
+        authorsUID = [authorID]
+    } else {
+        let { course } = req
+        let { group } = course
+        let g = group.find(e => e._id.toString() === authorID.toString())
+        authorsUID = g.groupMember
+    }
+
+    let authors = await User.find({
+        _id: { $in: authorsUID },
+    })
+        .select("name avatar")
+        .then(u => {
+            return u
+        })
+
+    project = project.toJSON()
+
+    project.authors = authors
+
+    Stage.find({
+        timelineProjectID: project._id,
+    })
+        .select("subjectName sketch createTime isPublic status isUsed")
+        .then(stages => {
+            res.json({
+                code: 20000,
+                data: { project, stages },
+            })
+        })
+})
+
 router.get("/approve/get", (req, res) => {
     let { activity, course } = req
-
-    if (!activity.options.isNeedApprove) {
-        res.json({
-            code: 20000,
-            data: { needApprove: false },
-        })
-        return
-    }
 
     let { authorType } = activity.options
     let activityID = activity._id
@@ -62,28 +98,43 @@ router.get("/approve/get", (req, res) => {
 
                 return Stage.find({
                     timelineProjectID: TLProject._id,
-                    status: { $in: ["underApprove", "approved"] },
+                    status: {
+                        $in: [
+                            "underApprove",
+                            "approved",
+                            "rejected",
+                            "underConcludeApprove",
+                            "conclude",
+                            "concludeRejected",
+                        ],
+                    },
                 })
-                    .select("submitAuditTime subjectName")
+                    .select("submitAuditTime subjectName submitConcludeTime status")
                     .then(async stages => {
-                        let latestSubmitAuditTime
-                        let submitForApproveNumber = stages.length
+                        let submitTime
                         let stageID = ""
 
-                        if (submitForApproveNumber > 0) {
-                            latestSubmitAuditTime = stages[stages.length - 1].submitAuditTime
+                        let stageStatus
+                        if (stages.length > 0) {
+                            submitTime =
+                                stages[stages.length - 1].submitAuditTime ||
+                                stages[stages.length - 1].submitConcludeTime
                             stageID = stages[stages.length - 1]._id
+                            stageStatus = stages[stages.length - 1].status
                         }
 
-                        let { status } = TLProject
+                        let projectStatus = TLProject.status
+
                         let projectName = TLProject.name
+                        let projectID = TLProject._id
                         return {
                             stageID,
+                            projectID,
                             projectName,
                             authors,
-                            latestSubmitAuditTime,
-                            status,
-                            submitForApproveNumber,
+                            submitTime,
+                            projectStatus,
+                            stageStatus,
                         }
                     })
             })
@@ -100,13 +151,32 @@ router.get("/approve/get", (req, res) => {
                 code: 20000,
                 data: {
                     projects,
-                    isNeedApprove: true,
                 },
             })
         })
         .catch(err => {
             console.log(err)
         })
+})
+
+router.use((req, res, next) => {
+    let { stage } = req
+    if (
+        ![
+            "underApprove",
+            "approved",
+            "rejected",
+            "underConcludeApprove",
+            "conclude",
+            "concludeRejected",
+        ].includes(stage.status)
+    ) {
+        res.json({
+            code: 404,
+        })
+        return
+    }
+    next()
 })
 
 router.get("/approve/single/get", async (req, res) => {
@@ -153,10 +223,9 @@ router.get("/approve/single/get", async (req, res) => {
 
 router.use((req, res, next) => {
     let { stage } = req
-    if (stage.status !== "underApprove") {
+    if (!["underApprove", "underConcludeApprove"].includes(stage.status)) {
         res.json({
             code: 404,
-            message: "该阶段非待审批阶段",
         })
         return
     }
@@ -182,11 +251,24 @@ router.post("/approve/single/submit", (req, res) => {
 
     let { stage, project } = req
 
-    if (status === "rejected") {
-        stage.status = status
+    //前期审批
+    if (stage.status === "underApprove") {
+        if (status === "rejected") {
+            stage.status = "rejected"
+            project.status = "beforeApprove"
+        } else {
+            stage.status = "approved"
+            project.status = "normal"
+        }
     } else {
-        stage.status = status
-        project.status = "normal"
+        //结题审批
+        if (status === "rejected") {
+            stage.status = "concludeRejected"
+            project.status = "normal"
+        } else {
+            stage.status = "conclude"
+            project.status = "conclude"
+        }
     }
 
     stage
