@@ -68,18 +68,8 @@
                 align="center"
             ></el-table-column>
 
-            <el-table-column>
+            <el-table-column fixed="right" label="查看" align="center">
                 <template slot-scope="scope">
-                    <el-button
-                        :disabled="!scope.row._id"
-                        @click="
-                            $router.push(
-                                `/course/section/activity/timeline/public/view/${scope.row._id}`
-                            )
-                        "
-                    >
-                        查看公开阶段
-                    </el-button>
                     <el-button
                         :disabled="!scope.row._id"
                         @click="
@@ -88,7 +78,7 @@
                             )
                         "
                     >
-                        查看私有阶段
+                        私有空间
                     </el-button>
                 </template>
             </el-table-column>

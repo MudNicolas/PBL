@@ -242,7 +242,6 @@ export const asyncRoutes = [
                     roles: ["teacher"],
                 },
             },
-
             {
                 path: "section/activity/timeline/private/teacher/view/:id([a-f0-9]{24})",
                 component: () =>
@@ -272,7 +271,7 @@ export const asyncRoutes = [
         component: Layout,
         hidden: true,
         meta: {
-            roles: ["teacher", "student"],
+            roles: ["student"],
             title: "私有空间",
         },
         children: [
@@ -285,7 +284,6 @@ export const asyncRoutes = [
                 path: "stage/manage/:id([a-f0-9]{24})",
                 component: () => import("@/views/stage/private/manage"),
                 name: "StageManage",
-                roles: ["student"],
             },
         ],
     },
