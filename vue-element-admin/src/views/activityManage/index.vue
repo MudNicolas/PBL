@@ -44,24 +44,7 @@ export default {
         const tab = this.$route.query.tab
         const type = this.$route.query.type
         this.activityType = type
-        let { activityType, components } = this
-        if (activityType === "TimeLineProject") {
-            let addition = [
-                {
-                    name: "approve",
-                    label: "项目审批",
-                },
-                {
-                    name: "projectManage",
-                    label: "项目管理",
-                },
-                {
-                    name: "statistics",
-                    label: "信息统计",
-                },
-            ]
-            this.components = [...components, ...addition]
-        }
+        this.handlePane()
         if (tab) {
             this.activeName = tab
         }
@@ -78,10 +61,35 @@ export default {
                     if (this.activityType && this.activityType !== res.data.type) {
                         this.$router.replace("/404")
                     }
+
+                    if (!this.activityType) {
+                        this.activityType = res.data.type
+                        this.handlePane()
+                    }
                 })
                 .catch(err => {
                     console.log(err)
                 })
+        },
+        handlePane() {
+            let { activityType, components } = this
+            if (activityType === "TimeLineProject") {
+                let addition = [
+                    {
+                        name: "approve",
+                        label: "项目审批",
+                    },
+                    {
+                        name: "projectManage",
+                        label: "项目管理",
+                    },
+                    {
+                        name: "statistics",
+                        label: "信息统计",
+                    },
+                ]
+                this.components = [...components, ...addition]
+            }
         },
     },
     watch: {

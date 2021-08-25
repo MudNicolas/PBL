@@ -41,10 +41,11 @@
                 label="当前状态"
                 align="center"
                 :filters="[
-                    { text: '待审核', value: 'beforeApprove' },
+                    { text: '待提审', value: 'beforeApprove' },
                     { text: '审批中', value: 'underApprove' },
                     { text: '行进中', value: 'normal' },
-                    { text: '结题', value: 'conclude' },
+                    { text: '申请结题中', value: 'underConcludeApprove' },
+                    { text: '已结题', value: 'conclude' },
                 ]"
                 :filter-method="filterHandleProjectStatus"
             >

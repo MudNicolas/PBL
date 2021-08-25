@@ -125,6 +125,13 @@ router.use(async (req, res, next) => {
         }
     }
 
+    if (type === "concludeApprove" && !["normal"].includes(stage.status)) {
+        res.json({
+            message: "该阶段不可提交结题申请",
+        })
+        return
+    }
+
     if (type === "abandon" && stage.status === "underApprove") {
         res.json({
             message: "当前阶段不可被废弃",
@@ -137,33 +144,34 @@ router.use(async (req, res, next) => {
 
 router.post("/danger/submit", (req, res) => {
     let { type } = req.body
-    let { stage } = req
+    let { stage, project } = req
     if (type === "public") {
         stage.isPublic = true
         stage.publicTime = new Date()
     }
     if (type === "approve") {
-        let { project } = req
         stage.status = "underApprove"
         stage.submitAuditTime = new Date()
         project.status = "underApprove"
-
-        project.save(err => {
-            if (err) {
-                console.log(err)
-                return
-            }
-        })
     }
+
+    if (type === "concludeApprove") {
+        stage.status = "underConcludeApprove"
+        stage.submitConcludeTime = new Date()
+        project.status = "underConcludeApprove"
+    }
+
     if (type === "abandon") {
         stage.status = "abandoned"
     }
+
     stage.editable = false
 
     let operation = {
         public: "公开",
         approve: "提交审核",
         abandon: "废弃",
+        concludeApprove: "申请结题",
     }
 
     stage.editLog.push({
@@ -172,18 +180,23 @@ router.post("/danger/submit", (req, res) => {
         operation: operation[type],
     })
 
-    stage.save(err => {
-        if (err) {
+    stage
+        .save()
+        .then(() => {
+            project.save().then(() => {
+                res.json({
+                    code: 20000,
+                })
+            })
+        })
+        .catch(err => {
+            console.log(err)
             res.json({
                 code: 30001,
                 message: "DataBase Error",
             })
             return
-        }
-        res.json({
-            code: 20000,
         })
-    })
 })
 
 export default router

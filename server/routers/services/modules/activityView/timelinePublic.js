@@ -141,6 +141,13 @@ router.get("/getSingle", (req, res) => {
 router.get("/stage/get", (req, res) => {
     let { stage, activity } = req
 
+    if (!stage.isPublic && req.role === "student") {
+        res.json({
+            code: 401,
+        })
+        return
+    }
+
     stage
         .execPopulate([
             { path: "authorUID", select: "name avatar" },
@@ -158,7 +165,7 @@ router.get("/stage/get", (req, res) => {
                 }
             })
 
-			//只有学生受template影响
+            //只有学生受template影响
             let entry = []
             if (req.role === "student") {
                 let { options } = activity

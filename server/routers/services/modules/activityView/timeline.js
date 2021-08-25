@@ -6,7 +6,9 @@ import User from "#models/User.js"
 import { copySources, transNewContentSourceUrl } from "#services/tools.js"
 
 import p from "./timelinePublic.js"
+import teacher from "./teacher.js"
 router.use("/public", p)
+router.use("/teacher", teacher)
 
 function findStudentGroup(group, sid) {
     return group.find(g => g.groupMember.some(m => m.toString() === sid.toString()))
@@ -170,13 +172,44 @@ router.post("/private/project/create", (req, res) => {
     })
 })
 
+//教师可get，不可post
+router.get("*", (req, res, next) => {
+    let { project } = req
+
+    if (req.role === "student") {
+        //个人项目，作者id与uid不匹配
+        if (
+            project.authorType === "personal" &&
+            project.authorID.toString() !== req.uid.toString()
+        ) {
+            res.json({
+                code: 401,
+            })
+            return
+        }
+        //小组项目，小组内无uid
+        if (project.authorType === "group") {
+            let { group } = req
+            let valid = group.groupMember.some(m => m.toString() === req.uid.toString())
+
+            if (!valid) {
+                res.json({
+                    code: 401,
+                })
+                return
+            }
+        }
+    }
+    next()
+})
+
 //高级操作验权限
-router.use((req, res, next) => {
+router.post("*", (req, res, next) => {
     let { project } = req
     //个人项目，作者id与uid不匹配
     if (project.authorType === "personal" && project.authorID.toString() !== req.uid.toString()) {
         res.json({
-            code: "401",
+            code: 401,
         })
         return
     }
@@ -187,7 +220,7 @@ router.use((req, res, next) => {
 
         if (!valid) {
             res.json({
-                code: "401",
+                code: 401,
             })
             return
         }
@@ -218,6 +251,13 @@ router.post("/private/project/edit", (req, res) => {
 router.post("/private/project/stage/new", async (req, res) => {
     let { stageOptions } = req.body
     let { project } = req
+
+    if (["underApprove", "underConcludeApprove", "conclude"].includes(project.status)) {
+        res.json({
+            code: "当前不可新建阶段",
+        })
+        return
+    }
 
     let status = project.status
 

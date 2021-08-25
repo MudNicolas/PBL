@@ -2,8 +2,10 @@ import Router from "express"
 let router = Router()
 import { editorImageUpload, editorVideoUpload, processContentSource } from "#services/tools.js"
 import File from "#models/File.js"
+import Approvement from "#models/Approvement.js"
+import manage from "./stageManage.js"
 
-router.get("/get", async (req, res) => {
+router.get("/get", (req, res) => {
     let { stage, activity } = req
 
     stage
@@ -11,7 +13,7 @@ router.get("/get", async (req, res) => {
             { path: "authorUID", select: "name avatar" },
             { path: "files", select: "originalFilename size" },
         ])
-        .then(_stage => {
+        .then(async _stage => {
             let {
                 content,
                 authorUID,
@@ -55,6 +57,11 @@ router.get("/get", async (req, res) => {
                 }
             }
 
+            data.approvement = await Approvement.findOne({ stageID: _id })
+                .select("time approver status reason")
+                .populate({ path: "approver", select: "name" })
+                .exec()
+
             res.json({
                 code: 20000,
                 data,
@@ -62,7 +69,6 @@ router.get("/get", async (req, res) => {
         })
 })
 
-import manage from "./stageManage.js"
 router.use("/manage", manage)
 
 router.use((req, res, next) => {

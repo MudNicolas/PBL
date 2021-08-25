@@ -95,3 +95,11 @@ export function getPubicStage(query) {
         params: query,
     })
 }
+
+export function teacherGetAllProject(query) {
+    return request({
+        url: "/activity/view/timeline/teacher/getAll",
+        method: "get",
+        params: query,
+    })
+}

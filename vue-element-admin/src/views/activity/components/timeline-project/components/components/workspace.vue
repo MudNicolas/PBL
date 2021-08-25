@@ -15,7 +15,10 @@
                                 {{ project.status | statusFilter }}
                             </el-tag>
                         </span>
-                        <span v-if="private" style="margin-left: auto; padding-left: 6px">
+                        <span
+                            v-if="private && ['beforeApprove', 'normal'].includes(project.status)"
+                            style="margin-left: auto; padding-left: 6px"
+                        >
                             <span v-if="isIntroEdit" key="editProjectName">
                                 <el-input v-model="editData.name" placeholder="项目名称" />
                             </span>
@@ -26,7 +29,13 @@
                         </span>
                     </div>
                     <div class="intro">
-                        <div v-if="isIntroEdit && private">
+                        <div
+                            v-if="
+                                isIntroEdit &&
+                                private &&
+                                ['beforeApprove', 'normal'].includes(project.status)
+                            "
+                        >
                             <el-form>
                                 <el-form-item>
                                     <el-input
@@ -94,45 +103,16 @@
                             <div class="subjuct-name" slot="header">
                                 <router-link
                                     :to="
-                                        private
+                                        checkPermission(['teacher'])
+                                            ? `/course/section/activity/timeline/stage/private/teacher/view/${e._id}`
+                                            : private
                                             ? `/course/section/activity/timeline/private/stage/view/${e._id}`
                                             : `/course/section/activity/timeline/public/stage/view/${e._id}`
                                     "
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
                                 </router-link>
-                                <el-tag
-                                    size="mini"
-                                    style="margin-left: 4px"
-                                    type="info"
-                                    v-if="e.status === 'abandoned'"
-                                >
-                                    已废弃
-                                </el-tag>
-                                <el-tag
-                                    size="mini"
-                                    style="margin-left: 4px"
-                                    type="success"
-                                    v-if="e.status === 'approved'"
-                                >
-                                    审核通过
-                                </el-tag>
-                                <el-tag
-                                    size="mini"
-                                    style="margin-left: 4px"
-                                    type="danger"
-                                    v-if="e.status === 'rejected'"
-                                >
-                                    审核驳回
-                                </el-tag>
-                                <el-tag
-                                    size="mini"
-                                    style="margin-left: 4px"
-                                    type="warning"
-                                    v-if="e.status === 'underApprove'"
-                                >
-                                    审核中
-                                </el-tag>
+                                <status-tag :status="e.status" />
                                 <el-tag size="mini" style="margin-left: 4px" v-if="e.isPublic">
                                     已公开
                                 </el-tag>
@@ -144,7 +124,7 @@
                     <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
-                        v-if="private"
+                        v-if="private && project.status !== 'conclude'"
                     >
                         <el-card>
                             <div class="stage-wrapper">
@@ -154,7 +134,13 @@
                                         当前已不在限定时间内
                                     </span>
                                     <span v-else>
-                                        <span v-if="project.status !== 'underApprove'">
+                                        <span
+                                            v-if="
+                                                !['underApprove', 'underConcludeApprove'].includes(
+                                                    project.status
+                                                )
+                                            "
+                                        >
                                             <el-button
                                                 type="text"
                                                 icon="el-icon-plus"
@@ -171,11 +157,24 @@
                                                 <i class="el-icon-warning-outline" />
                                             </el-tooltip>
                                         </span>
-                                        <span v-if="project.status === 'underApprove'">
+                                        <span v-else>
                                             <i class="el-icon-s-check" />
                                             审批期间无法新建阶段，请等待审批完成
                                         </span>
                                     </span>
+                                </div>
+                            </div>
+                        </el-card>
+                    </el-timeline-item>
+                    <el-timeline-item
+                        :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
+                        placement="top"
+                        v-if="!private && stages.length === 0"
+                    >
+                        <el-card>
+                            <div class="stage-wrapper">
+                                <div class="create-stage-card-wrapper">
+                                    <span>暂无阶段</span>
                                 </div>
                             </div>
                         </el-card>
@@ -286,6 +285,8 @@ import { submitEditIntro, newStageSubmit } from "@/api/timeline-project"
 import { normalFormatTime } from "@/utils/index.js"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+import StatusTag from "@/components/StatusTag"
+import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     props: {
@@ -293,7 +294,7 @@ export default {
         stages: Array,
         private: Boolean,
     },
-    components: { ProfilePopover },
+    components: { ProfilePopover, StatusTag },
     filters: {
         noIntro,
         tagTypeFilter,
@@ -326,9 +327,15 @@ export default {
     },
     methods: {
         handleEditButtonClick() {
-            this.isIntroEdit = !this.isIntroEdit
-            this.editData.intro = this.project.intro
-            this.editData.name = this.project.name
+            if (
+                this.isIntroEdit &&
+                ["beforeApprove", "normal"].includes(project.status) &&
+                this.private
+            ) {
+                this.isIntroEdit = !this.isIntroEdit
+                this.editData.intro = this.project.intro
+                this.editData.name = this.project.name
+            }
         },
         handleSubmitEditIntro() {
             let projectID = this.project._id
@@ -351,6 +358,7 @@ export default {
                 })
         },
         normalFormatTime,
+        checkPermission,
         chooseStageType(method) {
             this.newStageData.creatMethod = method
         },

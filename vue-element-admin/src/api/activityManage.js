@@ -55,3 +55,11 @@ export function submitApprovement(data) {
         data,
     })
 }
+
+export function getPrivateTimeline(query) {
+    return request({
+        url: "/activity/manage/timelineProject/private/get",
+        method: "get",
+        params: query,
+    })
+}

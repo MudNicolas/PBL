@@ -24,11 +24,12 @@ import { mapGetters } from "vuex"
 import privateSpace from "./components/private-space"
 import publicSpace from "./components/public-space"
 import statistics from "./components/statistics.vue"
+import overview from "./components/overview"
 
 export default {
     name: "TimeLineProjectActivity",
     props: ["type", "activityId"],
-    components: { privateSpace, publicSpace, statistics },
+    components: { privateSpace, publicSpace, statistics, overview },
     data() {
         let activeName
         if (this.checkPermission(["student"])) {

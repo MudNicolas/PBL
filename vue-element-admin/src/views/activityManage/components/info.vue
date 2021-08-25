@@ -438,7 +438,7 @@ export default {
             updateCommentTemplate: false,
             activityID: this.activityId,
             newCommentTemplateDialogVisible: false,
-            loading: false,
+            loading: true,
             newCommentTemplate: {
                 name: "",
                 entry: [{ value: "" }],

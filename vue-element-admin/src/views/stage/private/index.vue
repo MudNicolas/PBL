@@ -4,43 +4,17 @@
             <el-col :span="18" :offset="3">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="info"
-                        v-if="stage.status === 'abandoned'"
-                    >
-                        已废弃
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="danger"
-                        v-if="stage.status === 'rejected'"
-                    >
-                        审核驳回
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="warning"
-                        v-if="stage.status === 'underApprove'"
-                    >
-                        审核中
-                    </el-tag>
-                    <el-tag
-                        size="mini"
-                        style="margin-left: 4px"
-                        type="success"
-                        v-if="stage.status === 'approved'"
-                    >
-                        审核通过
-                    </el-tag>
+                    <status-tag :status="stage.status" />
                     <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
                         已公开
                     </el-tag>
 
-                    <el-button style="margin-left: auto" icon="el-icon-s-tools" @click="toManage">
+                    <el-button
+                        v-if="checkPermission(['student'])"
+                        style="margin-left: auto"
+                        icon="el-icon-s-tools"
+                        @click="toManage"
+                    >
                         管理
                     </el-button>
                 </div>
@@ -77,7 +51,7 @@
             <el-row>
                 <el-col :span="18" :offset="3">
                     <el-form>
-                        <span v-if="stage.editable && !preview">
+                        <span v-if="stage.editable && !preview && checkPermission(['student'])">
                             <el-form-item>
                                 <el-input v-model="stage.subjectName" placeholder="阶段名" />
                             </el-form-item>
@@ -182,7 +156,7 @@
                                 </el-table>
                             </el-form-item>
                         </span>
-                        <el-form-item v-if="stage.editable">
+                        <el-form-item v-if="stage.editable && checkPermission(['student'])">
                             <el-button type="primary" @click="togglePreviewPage">
                                 {{ previewButtonText }}
                             </el-button>
@@ -192,6 +166,12 @@
                             </el-button>
                         </el-form-item>
                     </el-form>
+                </el-col>
+            </el-row>
+            <el-row style="margin-top: 20px" v-if="stage.approvement">
+                <el-col :span="18" :offset="3">
+                    <el-divider />
+                    <approve-description :approvement="stage.approvement" />
                 </el-col>
             </el-row>
             <el-row style="margin-top: 20px">
@@ -258,11 +238,25 @@ import download from "@/utils/download"
 import { fileType, fileIcon } from "@/utils/fileType"
 import Comment from "@/components/Comment"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+import StatusTag from "@/components/StatusTag"
+import { statusFilter } from "@/utils/timelineFilters"
+import { normalFormatTime } from "@/utils/index.js"
+import ApproveDescription from "@/components/ApproveDescription"
+import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     name: "TimeLineStage",
-    components: { Editor, uploadFile, EditorViewer, Comment, ProfilePopover },
+    components: {
+        Editor,
+        uploadFile,
+        EditorViewer,
+        Comment,
+        ProfilePopover,
+        StatusTag,
+        ApproveDescription,
+    },
     filters: {
+        statusFilter,
         subjectNameFilter: val => {
             return val || "暂无阶段名"
         },
@@ -318,6 +312,8 @@ export default {
         this.getStage()
     },
     methods: {
+        normalFormatTime,
+        checkPermission,
         getStage() {
             let { stageID } = this
             this.loading = true
