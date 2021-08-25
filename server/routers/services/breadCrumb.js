@@ -93,6 +93,7 @@ class routeTree {
         ActivityView: {
             path: "/course/section/activity/view/",
             parent: "SectionView",
+            name: "ActivityView",
             meta: {
                 title: async function (id) {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
@@ -244,14 +245,19 @@ class routeTree {
             redirect: "noRedirect",
             meta: { title: "项目详情" },
         },
+        TeacherPrivateNoDirect: {
+            path: "*",
+            parent: "ActivityView",
+            redirect: "noRedirect",
+            meta: { title: "私有空间" },
+        },
         TeacherViewPrivateTimeline: {
-            path: "/course/section/activity/manage/timeline/",
-            parent: "TimeLineProjectDetail",
+            path: "/course/section/activity/timeline/private/teacher/view/",
+            parent: "TeacherPrivateNoDirect",
             parentQuery: {
-                type: "TimeLineProject",
-                tab: "approve",
+                tab: "overview",
             },
-            queryParentName: "ActivityManage",
+            queryParentName: "ActivityView",
             meta: {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
@@ -262,6 +268,26 @@ class routeTree {
                                     return {
                                         name: project.name || "暂无项目名",
                                         parentID: project.activityID,
+                                    }
+                                }
+                            })
+                    }
+                },
+            },
+        },
+        TeacherViewPrivateStage: {
+            path: "/course/section/activity/timeline/stage/private/teacher/view/",
+            parent: "TeacherViewPrivateTimeline",
+            meta: {
+                title: async id => {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        return await Stage.findById(id)
+                            .select("timelineProjectID subjectName")
+                            .then(project => {
+                                if (project) {
+                                    return {
+                                        name: project.subjectName || "暂无阶段名",
+                                        parentID: project.timelineProjectID,
                                     }
                                 }
                             })
@@ -303,7 +329,9 @@ async function generateBreadCrumb(name, id) {
             let func = f.path
             f.path = func(fid)
         }
-        f.path += fid
+        if (f.path !== "*") {
+            f.path += fid
+        }
 
         if (f.name === queryHandler.name) {
             f.path = {

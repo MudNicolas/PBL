@@ -4,7 +4,10 @@
             <el-col :span="18" :offset="3">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
-                    <status-tag :stage="stage" />
+                    <status-tag :status="stage.status" />
+                    <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
+                        已公开
+                    </el-tag>
                 </div>
                 <div class="author-area">
                     <div v-for="user of stage.authorUID" :key="user._id">

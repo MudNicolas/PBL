@@ -4,7 +4,10 @@
             <el-col :span="16" :offset="4">
                 <div class="subject-name">
                     {{ stage.subjectName | subjectNameFilter }}
-                    <status-tag :stage="stage" />
+                    <status-tag :status="stage.status" />
+                    <el-tag size="mini" style="margin-left: 4px" v-if="stage.isPublic">
+                        已公开
+                    </el-tag>
 
                     <el-button style="margin-left: auto" icon="el-icon-view" @click="toView">
                         详情

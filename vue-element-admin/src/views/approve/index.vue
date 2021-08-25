@@ -165,26 +165,7 @@
                         </el-form-item>
                     </span>
                     <span v-else>
-                        <el-descriptions title="项目审批" direction="vertical" border>
-                            <el-descriptions-item label="审批者">
-                                {{ approvement.approver.name }}
-                            </el-descriptions-item>
-                            <el-descriptions-item label="审批结果">
-                                {{ approvement.status | statusFilter }}
-                            </el-descriptions-item>
-
-                            <el-descriptions-item label="审批时间">
-                                {{
-                                    normalFormatTime(
-                                        new Date(approvement.time),
-                                        "{y}-{m}-{d} {h}:{i}"
-                                    )
-                                }}
-                            </el-descriptions-item>
-                            <el-descriptions-item label="理由">
-                                {{ approvement.reason }}
-                            </el-descriptions-item>
-                        </el-descriptions>
+                        <approve-description :approvement="approvement" />
                     </span>
                 </el-form>
             </el-col>
@@ -199,11 +180,11 @@ import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import EditorViewer from "@/components/EditorViewer"
 import download from "@/utils/download"
 import { fileType, fileIcon } from "@/utils/fileType"
-import { normalFormatTime } from "@/utils/index.js"
+import ApproveDescription from "@/components/ApproveDescription"
 
 export default {
     name: "Approve",
-    components: { ProfilePopover, EditorViewer },
+    components: { ProfilePopover, EditorViewer, ApproveDescription },
     filters: {
         noIntro,
         tagTypeFilter,
@@ -293,7 +274,6 @@ export default {
                     this.submitting = false
                 })
         },
-        normalFormatTime,
     },
 }
 </script>

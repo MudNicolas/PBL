@@ -103,14 +103,19 @@
                             <div class="subjuct-name" slot="header">
                                 <router-link
                                     :to="
-                                        private
+                                        checkPermission(['teacher'])
+                                            ? `/course/section/activity/timeline/stage/private/teacher/view/${e._id}`
+                                            : private
                                             ? `/course/section/activity/timeline/private/stage/view/${e._id}`
                                             : `/course/section/activity/timeline/public/stage/view/${e._id}`
                                     "
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
                                 </router-link>
-                                <status-tag :stage="e" />
+                                <status-tag :status="e.status" />
+                                <el-tag size="mini" style="margin-left: 4px" v-if="e.isPublic">
+                                    已公开
+                                </el-tag>
                             </div>
                             <div class="content-preview">{{ e.sketch | sketchFilter }}</div>
                         </el-card>
@@ -119,7 +124,7 @@
                     <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
-                        v-if="private"
+                        v-if="private && project.status !== 'conclude'"
                     >
                         <el-card>
                             <div class="stage-wrapper">
@@ -281,6 +286,7 @@ import { normalFormatTime } from "@/utils/index.js"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import StatusTag from "@/components/StatusTag"
+import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     props: {
@@ -352,6 +358,7 @@ export default {
                 })
         },
         normalFormatTime,
+        checkPermission,
         chooseStageType(method) {
             this.newStageData.creatMethod = method
         },

@@ -1,22 +1,6 @@
 <template>
-    <div class="wrapper" v-loading="loading">
+    <div class="container" v-loading="loading">
         <el-table :data="projects" style="width: 100%">
-            <el-table-column width="30">
-                <template slot-scope="scope">
-                    <el-tooltip content="查看项目私有空间详情" placement="right" effect="light">
-                        <el-button
-                            v-if="scope.row.projectID"
-                            icon="el-icon-view"
-                            type="text"
-                            @click="
-                                $router.push(
-                                    `/course/section/activity/timeline/private/teacher/view/${scope.row.projectID}`
-                                )
-                            "
-                        ></el-button>
-                    </el-tooltip>
-                </template>
-            </el-table-column>
             <el-table-column
                 label="项目名称"
                 align="center"
@@ -54,7 +38,7 @@
                 </template>
             </el-table-column>
             <el-table-column
-                label="项目状态"
+                label="当前状态"
                 align="center"
                 :filters="[
                     { text: '待提审', value: 'beforeApprove' },
@@ -69,58 +53,42 @@
                     <el-tag
                         size="mini"
                         style="margin-left: 4px"
-                        :type="scope.row.projectStatus | tagTypeFilter"
-                        v-if="scope.row.projectStatus"
+                        :type="scope.row.status | tagTypeFilter"
+                        v-if="scope.row.status"
                     >
-                        {{ scope.row.projectStatus | statusFilter }}
+                        {{ scope.row.status | statusFilter }}
                     </el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column
-                label="审批状态"
+                prop="stageNumber"
+                label="总阶段数"
+                sortable
                 align="center"
-                :filters="[
-                    { text: '待提审', value: 'beforeApprove' },
-                    { text: '审批中', value: 'underApprove' },
-                    { text: '审核驳回', value: 'rejected' },
-                    { text: '审核通过', value: 'approved' },
-                    { text: '行进中', value: 'normal' },
-                    { text: '申请结题中', value: 'underConcludeApprove' },
-                    { text: '结题申请驳回', value: 'concludeRejected' },
-                    { text: '已结题', value: 'conclude' },
-                ]"
-                :filter-method="filterHandleProjectStatus"
-            >
-                <template slot-scope="scope">
-                    <status-tag :status="scope.row.stageStatus" />
-                </template>
-            </el-table-column>
+            ></el-table-column>
 
-            <el-table-column label="申请时间" sortable align="center">
-                <template slot-scope="scope">
-                    {{ scope.row.submitTime | normalFormatTime }}
-                </template>
-            </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
                     <el-button
-                        v-if="scope.row.stageID"
+                        :disabled="!scope.row._id"
                         @click="
                             $router.push(
-                                `/course/section/activity/timelineProject/stage/approve/${scope.row.stageID}`
+                                `/course/section/activity/timeline/public/view/${scope.row._id}`
                             )
                         "
-                        type="primary"
                     >
-                        <span
-                            v-if="
-                                ['underApprove', 'underConcludeApprove'].includes(scope.row.status)
-                            "
-                        >
-                            审批
-                        </span>
-                        <span v-else>查看结果</span>
+                        查看公开阶段
+                    </el-button>
+                    <el-button
+                        :disabled="!scope.row._id"
+                        @click="
+                            $router.push(
+                                `/course/section/activity/timeline/private/teacher/view/${scope.row._id}`
+                            )
+                        "
+                    >
+                        查看私有阶段
                     </el-button>
                 </template>
             </el-table-column>
@@ -129,22 +97,20 @@
 </template>
 
 <script>
-import { getPendingApproveProjectStage } from "@/api/activityManage"
-import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
+import { teacherGetAllProject } from "@/api/timeline-project"
 import { tagTypeFilter, statusFilter } from "@/utils/timelineFilters"
 import { normalFormatTime } from "@/utils/index.js"
-import StatusTag from "@/components/StatusTag"
+import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 
 export default {
-    name: "approve",
     props: ["activityId"],
-    components: { ProfilePopover, StatusTag },
+    components: { ProfilePopover },
     filters: {
         statusFilter,
         tagTypeFilter,
         normalFormatTime: val => {
             if (val) {
-                return normalFormatTime(new Date(val), "{y}-{m}-{d} {h}:{i}")
+                return normalFormatTime(new Date(val))
             }
         },
         projectNameFilter: val => {
@@ -157,28 +123,24 @@ export default {
 
     data() {
         return {
-            activityID: this.activityId,
-            loading: false,
+            loading: true,
             projects: [],
             showUpPopoverKey: "",
         }
     },
     created() {
-        this.getPendingApproveProjectStage()
+        this.teacherGetAllProject()
     },
     methods: {
-        getPendingApproveProjectStage() {
+        teacherGetAllProject() {
             this.loading = true
-            let { activityID } = this
-            getPendingApproveProjectStage({ activityID })
+            let activityID = this.activityId
+            teacherGetAllProject({ activityID })
                 .then(res => {
-                    let { projects } = res.data
-                    this.projects = projects
+                    this.projects = res.data
                     this.loading = false
                 })
-                .catch(err => {
-                    console.log(err)
-                })
+                .catch(() => {})
         },
         filterHandleProjectExist(value, row, column) {
             return value === !!row.projectName
@@ -191,7 +153,8 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.wrapper {
-    padding-top: 30px;
+.container {
+    min-height: 40vh;
+    padding-top: 20px;
 }
 </style>
