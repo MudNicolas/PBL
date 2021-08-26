@@ -38,7 +38,7 @@ router.get("/private/get", async (req, res) => {
     Stage.find({
         timelineProjectID: project._id,
     })
-        .select("subjectName sketch createTime isPublic status isUsed")
+        .select("subjectName sketch createTime isPublic status isUsed notification")
         .then(stages => {
             res.json({
                 code: 20000,

@@ -101,7 +101,7 @@ router.get("/private/get", (req, res) => {
             Stage.find({
                 timelineProjectID: project._id,
             })
-                .select("subjectName sketch createTime isPublic status isUsed")
+                .select("subjectName sketch createTime isPublic status isUsed notification")
                 .then(stages => {
                     res.json({
                         code: 20000,
@@ -269,7 +269,12 @@ router.post("/private/project/stage/new", async (req, res) => {
     //继承时，复制content、contentImage、contentVideo、file
     if (stageOptions.creatMethod === "inheritance") {
         let stageID = stageOptions.inhertStageID
-        let originStage = await Stage.findById(stageID)
+        let originStage = await Stage.findOne({
+            _id: stageID,
+            notification: {
+                $exists: false,
+            },
+        })
             .populate([
                 {
                     path: "images",

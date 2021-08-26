@@ -438,7 +438,9 @@ export default {
                         done()
                     }
                 },
-            }).catch(() => {})
+            }).catch(err => {
+                console.log(err)
+            })
         },
         handleRemoveReply(e) {
             this.$confirm("确定移除这条回复？", "提示", {

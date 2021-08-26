@@ -30,6 +30,7 @@
                     :stages="stages"
                     @editIntroSuccess="handleEditIntroSuccess"
                     :private="true"
+                    @resetStatusSuccess="getPrivateTimeline"
                 />
             </div>
         </div>

@@ -63,7 +63,7 @@ export default mongoose.model("Stage", {
     submitAuditTime: Date, //提审时间
     submitConcludeTime: Date, //结题申请时间
     status: String, //beforeApprove审批前,underApprove审批中,approved通过审批,normal,underConcludeApprove,conclude,rejected,abandoned 正式阶段,结题，驳回，废弃
-
+    notification: String, //通知类stageCard
     editLog: [
         {
             uid: {
