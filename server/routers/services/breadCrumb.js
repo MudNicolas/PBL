@@ -114,7 +114,10 @@ class routeTree {
         },
         PrivateSpace: {
             path: id => {
-                return `/course/section/activity/view/${id}?tab=privateSpace`
+                return {
+                    path: `/course/section/activity/view/${id}`,
+                    query: { tab: "privateSpace" },
+                }
             },
             parent: "ActivityView",
             meta: {
@@ -123,7 +126,10 @@ class routeTree {
         },
         PublicSpace: {
             path: id => {
-                return `/course/section/activity/view/${id}?tab=publicSpace`
+                return {
+                    path: `/course/section/activity/view/${id}`,
+                    query: { tab: "publicSpace" },
+                }
             },
             parent: "ActivityView",
             meta: {
@@ -239,25 +245,23 @@ class routeTree {
                 },
             },
         },
-        TimeLineProjectDetail: {
-            path: "*",
-            parent: "ActivityManage",
-            redirect: "noRedirect",
-            meta: { title: "项目详情" },
-        },
-        TeacherPrivateNoDirect: {
-            path: "*",
+
+        TeacherPrivateSpace: {
+            path: id => {
+                return {
+                    path: `/course/section/activity/view/${id}`,
+                    query: {
+                        tab: "overview",
+                    },
+                }
+            },
             parent: "ActivityView",
-            redirect: "noRedirect",
             meta: { title: "私有空间" },
         },
         TeacherViewPrivateTimeline: {
             path: "/course/section/activity/timeline/private/teacher/view/",
-            parent: "TeacherPrivateNoDirect",
-            parentQuery: {
-                tab: "overview",
-            },
-            queryParentName: "ActivityView",
+            parent: "TeacherPrivateSpace",
+
             meta: {
                 title: async id => {
                     if (/^[a-fA-F0-9]{24}$/.test(id)) {
@@ -329,7 +333,7 @@ async function generateBreadCrumb(name, id) {
             let func = f.path
             f.path = func(fid)
         }
-        if (f.path !== "*") {
+        if (typeof f.path === "string" && f.path !== "*") {
             f.path += fid
         }
 

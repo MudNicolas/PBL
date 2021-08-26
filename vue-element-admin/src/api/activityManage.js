@@ -56,7 +56,7 @@ export function submitApprovement(data) {
     })
 }
 
-export function getPrivateTimeline(query) {
+export function teacherGetPrivateTimeline(query) {
     return request({
         url: "/activity/manage/timelineProject/private/get",
         method: "get",
