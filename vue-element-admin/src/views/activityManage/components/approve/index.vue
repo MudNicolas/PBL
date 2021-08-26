@@ -10,7 +10,7 @@
                             type="text"
                             @click="
                                 $router.push(
-                                    `/course/section/activity/timeline/private/teacher/view/${scope.row.projectID}`
+                                    `/course/section/activity/timeline/overview/private/view/${scope.row.projectID}`
                                 )
                             "
                         ></el-button>

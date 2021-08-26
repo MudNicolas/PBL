@@ -108,7 +108,7 @@
                                             ? `/course/section/activity/timeline/public/stage/view/${e._id}`
                                             : checkPermission(['student'])
                                             ? `/course/section/activity/timeline/private/stage/view/${e._id}`
-                                            : `/course/section/activity/timeline/stage/private/teacher/view/${e._id}`
+                                            : `/course/section/activity/timeline/stage/overview/private/view/${e._id}`
                                     "
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
