@@ -22,7 +22,12 @@ router.use((req, res, next) => {
         })
         return
     }
-    Stage.findById(stageID).then((stage, err) => {
+    Stage.findOne({
+        _id: stageID,
+        notification: {
+            $exists: false,
+        },
+    }).then((stage, err) => {
         if (err) {
             res.json({
                 code: 30001,

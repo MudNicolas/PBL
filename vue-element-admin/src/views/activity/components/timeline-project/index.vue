@@ -46,7 +46,7 @@ export default {
                 { name: "privateSpace", label: "私有空间", role: ["student"] },
                 { name: "publicSpace", label: "公共空间", role: ["student", "teacher"] },
                 { name: "statistics", label: "信息统计", role: ["student"] },
-                { name: "overview", label: "私有空间总览", role: ["teacher"] },
+                { name: "overview", label: "私有空间总览与状态管理", role: ["teacher"] },
             ],
         }
     },

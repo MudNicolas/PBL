@@ -103,3 +103,11 @@ export function teacherGetAllProject(query) {
         params: query,
     })
 }
+
+export function resetStatus(data) {
+    return request({
+        url: "/activity/view/timeline/teacher/manage/status/reset",
+        method: "post",
+        data,
+    })
+}

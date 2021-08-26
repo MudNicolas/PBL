@@ -74,7 +74,7 @@
                         :disabled="!scope.row._id"
                         @click="
                             $router.push(
-                                `/course/section/activity/timeline/private/teacher/view/${scope.row._id}`
+                                `/course/section/activity/timeline/overview/private/view/${scope.row._id}`
                             )
                         "
                     >

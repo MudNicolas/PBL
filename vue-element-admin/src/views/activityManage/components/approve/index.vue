@@ -1,22 +1,6 @@
 <template>
     <div class="wrapper" v-loading="loading">
         <el-table :data="projects" style="width: 100%">
-            <el-table-column width="30">
-                <template slot-scope="scope">
-                    <el-tooltip content="查看项目私有空间详情" placement="right" effect="light">
-                        <el-button
-                            v-if="scope.row.projectID"
-                            icon="el-icon-view"
-                            type="text"
-                            @click="
-                                $router.push(
-                                    `/course/section/activity/timeline/private/teacher/view/${scope.row.projectID}`
-                                )
-                            "
-                        ></el-button>
-                    </el-tooltip>
-                </template>
-            </el-table-column>
             <el-table-column
                 label="项目名称"
                 align="center"
@@ -102,7 +86,23 @@
                     {{ scope.row.submitTime | normalFormatTime }}
                 </template>
             </el-table-column>
-            <el-table-column>
+            <el-table-column label="查看项目" align="center">
+                <template slot-scope="scope">
+                    <el-tooltip content="查看项目私有空间详情" placement="right" effect="light">
+                        <el-button
+                            v-if="scope.row.projectID"
+                            icon="el-icon-view"
+                            type="text"
+                            @click="
+                                $router.push(
+                                    `/course/section/activity/timeline/overview/private/view/${scope.row.projectID}`
+                                )
+                            "
+                        ></el-button>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column label="审批" align="center">
                 <template slot-scope="scope">
                     <el-button
                         v-if="scope.row.stageID"

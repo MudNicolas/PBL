@@ -102,7 +102,7 @@ router.get("/getSingle", (req, res) => {
         timelineProjectID: _id,
         isPublic: true,
     })
-        .select("subjectName sketch createTime isPublic status isUsed")
+        .select("subjectName sketch createTime isPublic status isUsed notification")
         .then(async stages => {
             let { _id, name, intro, authorID, status, authorType } = _project
 

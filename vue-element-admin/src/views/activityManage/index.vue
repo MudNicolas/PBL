@@ -22,7 +22,7 @@
 
 <script>
 import info from "./components/info"
-import approve from "./components/approve/index"
+import approve from "./components/approve"
 import { getAvtivityType } from "@/api/activityManage"
 
 export default {
@@ -78,10 +78,7 @@ export default {
                         name: "approve",
                         label: "项目审批",
                     },
-                    {
-                        name: "projectManage",
-                        label: "项目管理",
-                    },
+
                     {
                         name: "statistics",
                         label: "信息统计",

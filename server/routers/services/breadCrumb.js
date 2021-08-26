@@ -259,7 +259,7 @@ class routeTree {
             meta: { title: "私有空间" },
         },
         TeacherViewPrivateTimeline: {
-            path: "/course/section/activity/timeline/private/teacher/view/",
+            path: "/course/section/activity/timeline/overview/private/view/",
             parent: "TeacherPrivateSpace",
 
             meta: {
@@ -280,7 +280,7 @@ class routeTree {
             },
         },
         TeacherViewPrivateStage: {
-            path: "/course/section/activity/timeline/stage/private/teacher/view/",
+            path: "/course/section/activity/timeline/stage/overview/private/view/",
             parent: "TeacherViewPrivateTimeline",
             meta: {
                 title: async id => {

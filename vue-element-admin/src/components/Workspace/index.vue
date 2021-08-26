@@ -1,5 +1,83 @@
 <template>
     <div>
+        <el-row :gutter="20" v-if="checkPermission(['teacher'])">
+            <el-col>
+                <div class="tools-wrapper">
+                    <el-button
+                        plain
+                        v-show="isStatusManage"
+                        icon="el-icon-s-tools"
+                        @click="statusManagerVisible = true"
+                    >
+                        状态重置
+                    </el-button>
+
+                    <div class="right-wrapper">
+                        <el-switch v-model="isStatusManage" active-text="项目状态管理"></el-switch>
+                    </div>
+                    <el-dialog title="状态重置" :visible.sync="statusManagerVisible">
+                        <div style="padding: 20px">
+                            <el-form>
+                                <el-form-item>
+                                    注意：状态重置可将项目状态重置为“待提审”或“行进中”，适用于项目走向或后续审查时出现异常等情况。状态重置
+                                    <b>不会</b>
+                                    影响项目的已有阶段。
+                                </el-form-item>
+                                <el-form-item>
+                                    <div class="danger-zone">
+                                        <div class="item">
+                                            <div class="text">
+                                                <div class="title">
+                                                    重置“行进中”、“已结题”为“待提审”
+                                                </div>
+                                                <div class="info">
+                                                    将本项目的状态重置为“待提审”，需重新提交审批以进行后续发展。
+                                                </div>
+                                            </div>
+                                            <div class="button">
+                                                <el-button
+                                                    type="danger"
+                                                    plain
+                                                    @click="resetStatus('beforeApprove')"
+                                                    :disabled="
+                                                        !['normal', 'conclude'].includes(
+                                                            project.status
+                                                        )
+                                                    "
+                                                >
+                                                    重置
+                                                </el-button>
+                                            </div>
+                                        </div>
+
+                                        <div class="item">
+                                            <div class="text">
+                                                <div class="title">重置“已结题”为“行进中”</div>
+                                                <div class="info">
+                                                    将“已结题”的项目重置为“行进中”。
+                                                </div>
+                                            </div>
+                                            <div class="button">
+                                                <el-button
+                                                    type="danger"
+                                                    @click="resetStatus('normal')"
+                                                    plain
+                                                    :disabled="
+                                                        !['conclude'].includes(project.status)
+                                                    "
+                                                >
+                                                    重置
+                                                </el-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-dialog>
+                </div>
+            </el-col>
+        </el-row>
         <el-row>
             <el-col :span="5">
                 <el-card>
@@ -100,7 +178,17 @@
                         :key="e._id"
                         :color="e.status | stageColorFilter"
                     >
-                        <el-card>
+                        <el-card v-if="e.notification">
+                            <div class="stage-wrapper">
+                                <div class="create-stage-card-wrapper">
+                                    <span>
+                                        <i class="el-icon-warning-outline" />
+                                        {{ e.notification }}
+                                    </span>
+                                </div>
+                            </div>
+                        </el-card>
+                        <el-card v-else>
                             <div class="subjuct-name" slot="header">
                                 <router-link
                                     :to="
@@ -108,7 +196,7 @@
                                             ? `/course/section/activity/timeline/public/stage/view/${e._id}`
                                             : checkPermission(['student'])
                                             ? `/course/section/activity/timeline/private/stage/view/${e._id}`
-                                            : `/course/section/activity/timeline/stage/private/teacher/view/${e._id}`
+                                            : `/course/section/activity/timeline/stage/overview/private/view/${e._id}`
                                     "
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
@@ -259,7 +347,7 @@
                             placeholder="请选择将要继承的阶段"
                         >
                             <el-option
-                                v-for="item in stages"
+                                v-for="item in stages.filter(e => !e.notification)"
                                 :key="item._id"
                                 :label="item.subjectName || '暂无阶段名'"
                                 :value="item._id"
@@ -282,7 +370,7 @@
 </template>
 
 <script>
-import { submitEditIntro, newStageSubmit } from "@/api/timeline-project"
+import { submitEditIntro, newStageSubmit, resetStatus } from "@/api/timeline-project"
 import { normalFormatTime } from "@/utils/index.js"
 import { noIntro, tagTypeFilter, statusFilter, stageColorFilter } from "@/utils/timelineFilters"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
@@ -324,6 +412,8 @@ export default {
             newStageSubmitting: false,
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             showUpPopoverKey: "",
+            isStatusManage: false,
+            statusManagerVisible: false,
         }
     },
     methods: {
@@ -385,11 +475,53 @@ export default {
                     this.newStageSubmitting = false
                 })
         },
+        resetStatus(status) {
+            this.$prompt("请输入重置理由", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                inputPattern: /\s*\S+?/,
+                inputErrorMessage: "请输入重置理由",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        let notification = instance.inputValue
+                        let projectID = this.project._id
+                        resetStatus({ status, projectID, notification })
+                            .then(() => {
+                                this.$message.success("重置成功")
+                                this.$emit("resetStatusSuccess")
+                                this.statusManagerVisible = false
+                                this.isStatusManage = false
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                            })
+                    } else {
+                        done()
+                    }
+                },
+            }).catch(err => {
+                console.log(err)
+            })
+        },
     },
 }
 </script>
 
 <style lang='scss' scoped>
+.tools-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-direction: row;
+    justify-content: flex-start;
+
+    .right-wrapper {
+        margin-left: auto;
+    }
+}
 .clearfix {
     font-size: 20px;
     display: flex;
@@ -478,6 +610,35 @@ export default {
 
     .author {
         margin-right: 6px;
+    }
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+
+    color: #303133;
+
+    .title {
+        font-size: 16px;
+    }
+
+    .info {
+        line-height: 1.5715;
+    }
+
+    .button {
+        margin-left: auto;
+    }
+}
+
+.danger-zone {
+    border: 1px solid #f56c6c;
+    border-radius: 6px;
+
+    .item:not(:last-child) {
+        border-bottom: 1px solid #e4e7ed;
     }
 }
 </style>
