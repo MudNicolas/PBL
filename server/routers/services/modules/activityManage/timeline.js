@@ -7,13 +7,9 @@ import User from "#models/User.js"
 import Approvement from "#models/Approvement.js"
 
 router.get("/private/get", async (req, res) => {
-    let { activity, project } = req
+    let { project } = req
 
-    let authorID = req.uid
-    if (activity.options.authorType === "group") {
-        let { group } = req
-        authorID = group._id
-    }
+    let authorID = project.authorID
 
     let { authorType } = project
     let authorsUID
@@ -37,6 +33,7 @@ router.get("/private/get", async (req, res) => {
     project = project.toJSON()
 
     project.authors = authors
+    project.own = false
 
     Stage.find({
         timelineProjectID: project._id,

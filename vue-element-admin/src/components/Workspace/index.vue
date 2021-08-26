@@ -4,7 +4,7 @@
             <el-col :span="5">
                 <el-card>
                     <div slot="header" class="clearfix">
-                        <span v-if="!isIntroEdit" style="display: flex; align-items: center">
+                        <span v-if="!isIntroEdit">
                             {{ project.name }}
                             <el-tag
                                 size="mini"
@@ -14,13 +14,15 @@
                                 {{ project.status | statusFilter }}
                             </el-tag>
                         </span>
+                        <span v-if="isIntroEdit" key="editProjectName">
+                            <el-input v-model="editData.name" placeholder="项目名称" />
+                        </span>
                         <span
-                            v-if="private && ['beforeApprove', 'normal'].includes(project.status)"
+                            v-if="
+                                project.own && ['beforeApprove', 'normal'].includes(project.status)
+                            "
                             style="margin-left: auto; padding-left: 6px"
                         >
-                            <span v-if="isIntroEdit" key="editProjectName">
-                                <el-input v-model="editData.name" placeholder="项目名称" />
-                            </span>
                             <el-button type="text" @click="handleEditButtonClick">
                                 <span v-if="!isIntroEdit">编辑</span>
                                 <span v-else key="cancel">取消</span>
@@ -31,7 +33,7 @@
                         <div
                             v-if="
                                 isIntroEdit &&
-                                private &&
+                                project.own &&
                                 ['beforeApprove', 'normal'].includes(project.status)
                             "
                         >
@@ -102,11 +104,11 @@
                             <div class="subjuct-name" slot="header">
                                 <router-link
                                     :to="
-                                        checkPermission(['teacher'])
-                                            ? `/course/section/activity/timeline/stage/private/teacher/view/${e._id}`
-                                            : private
+                                        !private
+                                            ? `/course/section/activity/timeline/public/stage/view/${e._id}`
+                                            : checkPermission(['student'])
                                             ? `/course/section/activity/timeline/private/stage/view/${e._id}`
-                                            : `/course/section/activity/timeline/public/stage/view/${e._id}`
+                                            : `/course/section/activity/timeline/stage/private/teacher/view/${e._id}`
                                     "
                                 >
                                     {{ e.subjectName | subjectNameFilter }}
@@ -123,7 +125,7 @@
                     <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
-                        v-if="private && project.status !== 'conclude'"
+                        v-if="private && project.status !== 'conclude' && project.own"
                     >
                         <el-card>
                             <div class="stage-wrapper">
@@ -168,7 +170,7 @@
                     <el-timeline-item
                         :timestamp="normalFormatTime(new Date(), '{y}-{m}-{d} {h}:{i}')"
                         placement="top"
-                        v-if="!private && stages.length === 0"
+                        v-if="!project.own && stages.length === 0"
                     >
                         <el-card>
                             <div class="stage-wrapper">
@@ -326,11 +328,7 @@ export default {
     },
     methods: {
         handleEditButtonClick() {
-            if (
-                this.isIntroEdit &&
-                ["beforeApprove", "normal"].includes(project.status) &&
-                this.private
-            ) {
+            if (["beforeApprove", "normal"].includes(this.project.status) && this.project.own) {
                 this.isIntroEdit = !this.isIntroEdit
                 this.editData.intro = this.project.intro
                 this.editData.name = this.project.name

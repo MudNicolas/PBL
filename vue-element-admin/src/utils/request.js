@@ -61,7 +61,7 @@ service.interceptors.response.use(
 
             //401 404
             if (res.code === 401 || res.code === 404) {
-                router.replace(`/${res.code}`)
+                router.push(`/${res.code}`)
             }
 
             // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;

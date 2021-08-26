@@ -16,7 +16,7 @@ function findStudentGroup(group, sid) {
 
 router.use((req, res, next) => {
     let { activity, uid } = req
-    if (activity.options.authorType === "group") {
+    if (activity.options.authorType === "group" && req.role === "student") {
         let { group } = req.course
         let userGroup = findStudentGroup(group, uid)
         if (!userGroup) {
@@ -96,6 +96,8 @@ router.get("/private/get", (req, res) => {
                 }
             }
 
+            project.own = true
+
             Stage.find({
                 timelineProjectID: project._id,
             })
@@ -131,6 +133,12 @@ router.post("/private/project/create", (req, res) => {
     if (!name) {
         res.json({
             message: "项目名称不能为空",
+        })
+        return
+    }
+    if (req.role !== "student") {
+        res.json({
+            message: "你的角色不能创建project",
         })
         return
     }
@@ -172,39 +180,12 @@ router.post("/private/project/create", (req, res) => {
     })
 })
 
-//教师可get，不可post
-router.get("*", (req, res, next) => {
-    let { project } = req
-
-    if (req.role === "student") {
-        //个人项目，作者id与uid不匹配
-        if (
-            project.authorType === "personal" &&
-            project.authorID.toString() !== req.uid.toString()
-        ) {
-            res.json({
-                code: 401,
-            })
-            return
-        }
-        //小组项目，小组内无uid
-        if (project.authorType === "group") {
-            let { group } = req
-            let valid = group.groupMember.some(m => m.toString() === req.uid.toString())
-
-            if (!valid) {
-                res.json({
-                    code: 401,
-                })
-                return
-            }
-        }
-    }
-    next()
-})
-
 //高级操作验权限
 router.post("*", (req, res, next) => {
+    //教师可get，不可post
+    if (req.method === "GET" && req.role === "teacher") {
+        return next()
+    }
     let { project } = req
     //个人项目，作者id与uid不匹配
     if (project.authorType === "personal" && project.authorID.toString() !== req.uid.toString()) {

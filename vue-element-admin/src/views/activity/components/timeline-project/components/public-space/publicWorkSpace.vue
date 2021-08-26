@@ -6,7 +6,7 @@
 
 
 <script>
-import workspace from "../components/workspace.vue"
+import workspace from "@/components/Workspace"
 import { getPubicProject } from "@/api/timeline-project"
 
 export default {
