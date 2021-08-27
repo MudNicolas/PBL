@@ -1,12 +1,12 @@
 {
-	"compilerOptions": {
-		"baseUrl": "./",
-		"paths": {
-			"#root/*": ["*"],
-			"#models/*": ["models/*"],
-			"#services/*":["routers/services/*"]
-		}
-	},
-	"exclude": ["node_modules"],
-	"allowJS":true
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "#services/*": ["routers/services/*"],
+            "#models/*": ["models/*"],
+            "#root/*": ["*"]
+        }
+    },
+    "exclude": ["node_modules"],
+    "allowJS": true
 }

@@ -2,14 +2,14 @@ import Router from "express"
 
 var router = Router()
 
-import pretreat from "#services/pretreat.js"
-import user from "#services/user.js"
-import theme from "#services/theme.js"
-import course from "#services/course.js"
-import breadCrumb from "#services/breadCrumb.js"
-import section from "#services/section.js"
-import files from "#services/files.js"
-import activity from "#services/activity.js"
+import pretreat from "#services/pretreat/index.js"
+import user from "#services/user/index.js"
+import theme from "#services/theme/index.js"
+import course from "#services/course/index.js"
+import breadCrumb from "#services/breadCrumb/index.js"
+import section from "#services/section/index.js"
+import files from "#services/files/index.js"
+import activity from "#services/activity/index.js"
 
 router.use(pretreat)
 router.use("/user", user)
