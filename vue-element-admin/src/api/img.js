@@ -3,7 +3,7 @@ import request from "@/utils/request"
 export function uploadImg(data, imgType, cb) {
     let url = ""
     if (imgType == "avatar") {
-        url = "/user/uploadAvatar"
+        url = "/user/avatar/upload"
     }
     if (imgType == "courseCover") {
         url = "/course/create/cover"

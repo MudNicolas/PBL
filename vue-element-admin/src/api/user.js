@@ -10,7 +10,7 @@ export function login(data) {
 
 export function getInfo() {
     return request({
-        url: "/user/info",
+        url: "/user/info/get",
         method: "get",
     })
 }
@@ -24,7 +24,7 @@ export function logout() {
 
 export function changeInfo(data) {
     return request({
-        url: "/user/changeInfo",
+        url: "/user/info/change",
         method: "post",
         data,
     })
@@ -32,7 +32,7 @@ export function changeInfo(data) {
 
 export function sendPWD(data) {
     return request({
-        url: "/user/updatePWD",
+        url: "/user/password/update",
         method: "post",
         data,
     })
@@ -40,7 +40,7 @@ export function sendPWD(data) {
 
 export function getProfilePopoverInfo(query) {
     return request({
-        url: "/user/getProfilePopoverInfo",
+        url: "/user/profilePopoverInfo/get",
         method: "get",
         params: query,
     })

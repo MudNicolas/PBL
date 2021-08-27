@@ -13,17 +13,12 @@
             <div class="user-bio">
                 <div class="user-education user-bio-section">
                     <div class="user-bio-section-header">
-                        <svg-icon icon-class="education" /><span
-                            >Introduction</span
-                        >
+                        <svg-icon icon-class="education" />
+                        <span>Introduction</span>
                     </div>
                     <div class="user-bio-section-body">
                         <div class="text-muted">
-                            {{
-                                profile.introduction
-                                    ? profile.introduction
-                                    : "暂无简介"
-                            }}
+                            {{ profile.introduction ? profile.introduction : "暂无简介" }}
                         </div>
                     </div>
                 </div>
@@ -33,8 +28,8 @@
 </template>
 
 <script>
-import { getProfilePopoverInfo } from "@/api/user";
-import EmitMessageButton from "@/components/EmitMessageButton";
+import { getProfilePopoverInfo } from "@/api/user"
+import EmitMessageButton from "@/components/EmitMessageButton"
 export default {
     name: "ProfilePopover",
     props: ["uid", "showUpPopoverKey"],
@@ -47,33 +42,31 @@ export default {
                 introduction: "",
                 avatar: "",
             },
-            path:
-                process.env.VUE_APP_PUBLIC_PATH +
-                process.env.VUE_APP_AVATAR_PATH,
+            path: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             created: false,
-        };
+        }
     },
     watch: {
         showUpPopoverKey(val) {
             if (val === this.uid && !this.created) {
-                this.getProfilePopoverInfo();
-                this.created = true;
+                this.getProfilePopoverInfo()
+                this.created = true
             }
         },
     },
 
     methods: {
         getProfilePopoverInfo() {
-            getProfilePopoverInfo({ uid: this.uid }).then((res) => {
-                this.loading = false;
-                this.profile = res.data.profileInfo;
-            });
+            getProfilePopoverInfo({ uid: this.uid }).then(res => {
+                this.loading = false
+                this.profile = res.data
+            })
         },
         handleMessage(uid) {
-            console.log(uid);
+            console.log(uid)
         },
     },
-};
+}
 </script>
 
 <style lang='scss' scoped>
