@@ -212,7 +212,8 @@ export const asyncRoutes = [
                 },
             },
             {
-                path: "section/activity/timeline/stage/overview/private/view/:id([a-f0-9]{24})",
+                path:
+                    "section/activity/timeline/private/stage/overview/private/view/:id([a-f0-9]{24})",
                 component: () => import("@/views/stage/private/index"),
                 name: "TeacherViewPrivateStage",
                 hidden: true,

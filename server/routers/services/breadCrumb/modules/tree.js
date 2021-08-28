@@ -278,7 +278,7 @@ export default class {
             },
         },
         TeacherViewPrivateStage: {
-            path: "/course/section/activity/timeline/stage/overview/private/view/",
+            path: "/course/section/activity/timeline/private/stage/overview/private/view/",
             parent: "TeacherViewPrivateTimeline",
             meta: {
                 title: async id => {

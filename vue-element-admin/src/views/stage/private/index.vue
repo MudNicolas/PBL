@@ -299,13 +299,13 @@ export default {
             showUpPopoverKey: "",
             imageUploadPath:
                 process.env.VUE_APP_BASE_API +
-                "/activity/view/timeline/stage/editor/image/upload?stageID=" +
+                "/activity/view/timeline/private/stage/editor/image/upload?stageID=" +
                 stageID,
             videoUploadPath:
                 process.env.VUE_APP_BASE_API +
-                "/activity/view/timeline/stage/editor/video/upload?stageID=" +
+                "/activity/view/timeline/private/stage/editor/video/upload?stageID=" +
                 stageID,
-            autosavePath: "/activity/view/timeline/stage/editor/autosave",
+            autosavePath: "/activity/view/timeline/private/stage/editor/autosave",
         }
     },
     created() {
