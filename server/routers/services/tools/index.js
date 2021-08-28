@@ -147,7 +147,7 @@ export function InsertUsersReturnIDs(list, role) {
 
 /**
  *
- * @param {_id} courseID
+ * @param {string} courseID
  * @param {number} roles {0->all,1->teacher,2->chiefTeacher}
  * @param {req} req
  */

@@ -148,7 +148,7 @@ export default {
 
         editUrl(_id) {
             this.editDialogVisible = true
-            let e = this.tableData.url.find(e => e._id === _id)
+            let e = this.tableData.urls.find(e => e._id === _id)
             if (e) {
                 this.editUrlData = {
                     _id: _id,

@@ -5,7 +5,7 @@ import User from "#models/User.js"
 let router = Router()
 
 router.use((req, res, next) => {
-    _id = req.query.uid || req.uid
+    let _id = req.query.uid || req.uid
     let validate = /^[a-fA-F0-9]{24}$/.test(_id)
     if (!validate) {
         res.json({
@@ -14,7 +14,7 @@ router.use((req, res, next) => {
         })
         return
     }
-    User.findById(uid).then((user, err) => {
+    User.findById(_id).then((user, err) => {
         if (err) {
             res.json({
                 code: 30001,

@@ -74,7 +74,7 @@ export function submitDangerOperation(data) {
 
 export function getPubProjects(query) {
     return request({
-        url: "/activity/view/timeline/public/getAll",
+        url: "/activity/view/timeline/public/all/get",
         method: "get",
         params: query,
     })
@@ -82,7 +82,7 @@ export function getPubProjects(query) {
 
 export function getPubicProject(query) {
     return request({
-        url: "/activity/view/timeline/public/getSingle",
+        url: "/activity/view/timeline/public/single/get",
         method: "get",
         params: query,
     })
@@ -98,7 +98,7 @@ export function getPubicStage(query) {
 
 export function teacherGetAllProject(query) {
     return request({
-        url: "/activity/view/timeline/teacher/getAll",
+        url: "/activity/view/timeline/teacher/all/get",
         method: "get",
         params: query,
     })
