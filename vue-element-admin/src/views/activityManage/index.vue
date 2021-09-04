@@ -1,6 +1,4 @@
 <template>
-    <!--TODO： timelineproject管理（状态重置等）-->
-
     <div class="container" v-loading="loading">
         <el-tabs type="border-card" v-model="activeName">
             <el-tab-pane
