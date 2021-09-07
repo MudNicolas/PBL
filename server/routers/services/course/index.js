@@ -129,7 +129,7 @@ router.get("/route", (req, res, next) => {
 /**以上为course公用权限api */
 /**以下为教师权限api */
 
-router.all("*", (req, res, next) => {
+router.use((req, res, next) => {
     if (req.role != "teacher") {
         res.json({
             code: 60206,

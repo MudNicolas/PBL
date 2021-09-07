@@ -6,6 +6,8 @@ Vue.use(Router)
 /* Layout */
 import Layout from "@/layout"
 
+import adminRouter from "./modules/admin"
+
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -98,19 +100,8 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-    {
-        path: "/icon",
-        component: Layout,
-        hidden: true,
-        children: [
-            {
-                path: "index",
-                component: () => import("@/views/icons/index"),
-                name: "Icons",
-                meta: { title: "Icons", icon: "icon", noCache: true },
-            },
-        ],
-    },
+    adminRouter,
+
     {
         path: "/course",
         component: Layout,
@@ -118,7 +109,6 @@ export const asyncRoutes = [
         alwaysShow: true, //一直显示根路由
         name: "Course",
         meta: {
-            title: "我的课程",
             icon: "el-icon-s-data",
         },
         children: [
@@ -127,7 +117,6 @@ export const asyncRoutes = [
                 component: () => import("@/views/course/create/index"),
                 name: "CreateCourse",
                 meta: {
-                    title: "创建课程",
                     roles: ["teacher"],
                     icon: "el-icon-plus",
                 },
@@ -138,7 +127,6 @@ export const asyncRoutes = [
                 component: () => import("@/views/course/view/index"),
                 name: "CourseView",
                 meta: {
-                    title: "课程",
                     roles: ["teacher", "student"],
                 },
             },
@@ -148,7 +136,6 @@ export const asyncRoutes = [
                 name: "ManageCourse",
                 hidden: true,
                 meta: {
-                    title: "管理",
                     roles: ["teacher"],
                 },
             },
@@ -212,7 +199,8 @@ export const asyncRoutes = [
                 },
             },
             {
-                path: "section/activity/timeline/stage/overview/private/view/:id([a-f0-9]{24})",
+                path:
+                    "section/activity/timeline/private/stage/overview/private/view/:id([a-f0-9]{24})",
                 component: () => import("@/views/stage/private/index"),
                 name: "TeacherViewPrivateStage",
                 hidden: true,
@@ -277,123 +265,6 @@ export const asyncRoutes = [
             title: "身份验证",
         },
         component: () => import("@/views/verificate"),
-    },
-
-    {
-        path: "/error",
-        component: Layout,
-        hidden: true,
-        redirect: "noRedirect",
-        name: "ErrorPages",
-        meta: {
-            title: "Error Pages",
-            icon: "404",
-        },
-        children: [
-            {
-                path: "401",
-                component: () => import("@/views/error-page/401"),
-                name: "Page401",
-                meta: { title: "401", noCache: true },
-            },
-            {
-                path: "404",
-                component: () => import("@/views/error-page/404"),
-                name: "Page404",
-                meta: { title: "404", noCache: true },
-            },
-        ],
-    },
-
-    {
-        path: "/excel",
-        component: Layout,
-        hidden: true,
-        redirect: "/excel/export-excel",
-        name: "Excel",
-        meta: {
-            title: "Excel",
-            icon: "excel",
-        },
-        children: [
-            {
-                path: "export-excel",
-                component: () => import("@/views/excel/export-excel"),
-                name: "ExportExcel",
-                meta: { title: "Export Excel" },
-            },
-            {
-                path: "export-selected-excel",
-                component: () => import("@/views/excel/select-excel"),
-                name: "SelectExcel",
-                meta: { title: "Export Selected" },
-            },
-            {
-                path: "export-merge-header",
-                component: () => import("@/views/excel/merge-header"),
-                name: "MergeHeader",
-                meta: { title: "Merge Header" },
-            },
-            {
-                path: "upload-excel",
-                component: () => import("@/views/excel/upload-excel"),
-                name: "UploadExcel",
-                meta: { title: "Upload Excel" },
-            },
-        ],
-    },
-
-    {
-        path: "/zip",
-        component: Layout,
-        hidden: true,
-        redirect: "/zip/download",
-        alwaysShow: true,
-        name: "Zip",
-        meta: { title: "Zip", icon: "zip" },
-        children: [
-            {
-                path: "download",
-                component: () => import("@/views/zip/index"),
-                name: "ExportZip",
-                meta: { title: "Export Zip" },
-            },
-        ],
-    },
-
-    {
-        path: "/pdf",
-        component: Layout,
-        hidden: true,
-        redirect: "/pdf/index",
-        children: [
-            {
-                path: "index",
-                component: () => import("@/views/pdf/index"),
-                name: "PDF",
-                meta: { title: "PDF", icon: "pdf" },
-            },
-        ],
-    },
-    {
-        path: "/pdf/download",
-        hidden: true,
-        component: () => import("@/views/pdf/download"),
-        hidden: true,
-    },
-
-    {
-        path: "/clipboard",
-        hidden: true,
-        component: Layout,
-        children: [
-            {
-                path: "index",
-                component: () => import("@/views/clipboard/index"),
-                name: "ClipboardDemo",
-                meta: { title: "Clipboard", icon: "clipboard" },
-            },
-        ],
     },
 
     // 404 page must be placed at the end !!!

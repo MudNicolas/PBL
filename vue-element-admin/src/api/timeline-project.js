@@ -26,7 +26,7 @@ export function newStageSubmit(data) {
 
 export function getStage(query) {
     return request({
-        url: "/activity/view/timeline/stage/get",
+        url: "/activity/view/timeline/private/stage/get",
         method: "get",
         params: query,
     })
@@ -34,7 +34,7 @@ export function getStage(query) {
 
 export function saveStage(data) {
     return request({
-        url: "/activity/view/timeline/stage/save",
+        url: "/activity/view/timeline/private/stage/save",
         method: "post",
         data,
     })
@@ -42,7 +42,7 @@ export function saveStage(data) {
 
 export function getStageInfo(query) {
     return request({
-        url: "/activity/view/timeline/stage/manage/info/get",
+        url: "/activity/view/timeline/private/stage/manage/info/get",
         method: "get",
         params: query,
     })
@@ -50,7 +50,7 @@ export function getStageInfo(query) {
 
 export function manageSaveInfo(data) {
     return request({
-        url: "/activity/view/timeline/stage/manage/info/save",
+        url: "/activity/view/timeline/private/stage/manage/info/save",
         method: "post",
         data,
     })
@@ -58,7 +58,7 @@ export function manageSaveInfo(data) {
 
 export function getEditLog(query) {
     return request({
-        url: "/activity/view/timeline/stage/manage/editLog/get",
+        url: "/activity/view/timeline/private/stage/manage/editLog/get",
         method: "get",
         params: query,
     })
@@ -66,7 +66,7 @@ export function getEditLog(query) {
 
 export function submitDangerOperation(data) {
     return request({
-        url: "/activity/view/timeline/stage/manage/danger/submit",
+        url: "/activity/view/timeline/private/stage/manage/danger/submit",
         method: "post",
         data,
     })
