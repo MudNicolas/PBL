@@ -1,4 +1,10 @@
-const SERVER_IP = "http://127.0.0.1"
+const SERVER_IP = () => {
+    if (env === "dev") {
+        return "http://127.0.0.1"
+    } else {
+        return "https://pbl.jinxy.cn"
+    }
+}
 const PORT = 14758
 const SERVER_ADDRESS = `${SERVER_IP}:${PORT}`
 const COVER_PATH = `${SERVER_ADDRESS}/public/img/course/`
