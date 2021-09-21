@@ -6,7 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from "@/layout"
 
-import adminRouter from "./modules/admin"
+//import adminRouter from "./modules/admin"
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -100,7 +100,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-    adminRouter,
+    //adminRouter,
 
     {
         path: "/course",
@@ -110,6 +110,7 @@ export const asyncRoutes = [
         name: "Course",
         meta: {
             icon: "el-icon-s-data",
+            title: "我的课程",
         },
         children: [
             {
