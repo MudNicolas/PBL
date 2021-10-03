@@ -2,6 +2,8 @@ import Router from "express"
 
 import Comment from "#models/Comment.js"
 
+import { processImgAndVideoHostUrl } from "#services/tools/index.js"
+
 let router = Router()
 
 router.get("/", (req, res) => {
@@ -26,7 +28,10 @@ router.get("/", (req, res) => {
                     _id: e._id,
                     commentUser: e.commentUser,
                     commentUserRole: e.commentUserRole,
-                    comment: e.comment,
+                    comment: e.comment.map(c => {
+                        c.content = processImgAndVideoHostUrl(c.content)
+                        return c
+                    }),
                     time: e.time,
                     reply: e.reply.filter(r => r.isUsed),
                 }

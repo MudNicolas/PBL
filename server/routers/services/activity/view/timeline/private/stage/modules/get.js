@@ -2,6 +2,8 @@ import Router from "express"
 
 import Approvement from "#models/Approvement.js"
 
+import { processImgAndVideoHostUrl } from "#services/tools/index.js"
+
 let router = Router()
 
 router.get("/", (req, res) => {
@@ -34,6 +36,8 @@ router.get("/", (req, res) => {
                     size: e.size,
                 }
             })
+
+            content = processImgAndVideoHostUrl(content)
 
             let data = {
                 content,
