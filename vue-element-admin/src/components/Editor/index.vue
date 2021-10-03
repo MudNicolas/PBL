@@ -205,4 +205,11 @@ export default {
 #fr-logo {
     display: none;
 }
+
+a[href="https://froala.com/wysiwyg-editor"], a[href="https://www.froala.com/wysiwyg-editor?k=u"]
+{
+    position: absolute;
+    top: -99999999px;
+    opacity: 0;
+}
 </style>

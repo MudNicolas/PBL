@@ -33,4 +33,10 @@ export default {
     -webkit-user-select: auto;
     user-select: auto;
 }
+
+p[data-f-id="pbf"] {
+    position: absolute;
+    top: -99999999px;
+    opacity: 0;
+}
 </style>
