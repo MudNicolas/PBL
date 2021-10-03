@@ -15,7 +15,7 @@ import TimeLineProject from "#models/TimeLineProject.js"
 import Activity from "#models/Activity.js"
 import Stage from "#models/Stage.js"
 
-import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS } from "#root/settings.js"
+import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS, SERVER_IP } from "#root/settings.js"
 
 const algorithm = "aes128"
 //aes加密解密
@@ -323,6 +323,20 @@ export function transNewContentSourceUrl(
     $("video").each((i, e) => {
         e.attribs.src = videoPath + videoFilenames[i] + "?_id=" + videoIDs[i]
     })
+    return $.html()
+}
+
+export function processImgAndVideoHostUrl(html = "") {
+    let $ = cheerio.load(html)
+    let server_ip = new URL(SERVER_IP)
+    $("img,video").each((i, e) => {
+        let url = new URL(e.attribs.src)
+        url.protocol = server_ip.protocol
+        url.host = server_ip.host
+        url.port = server_ip.port
+        e.attribs.src = url.toString()
+    })
+
     return $.html()
 }
 
