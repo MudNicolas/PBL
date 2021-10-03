@@ -120,6 +120,7 @@ export const asyncRoutes = [
                 meta: {
                     roles: ["teacher"],
                     icon: "el-icon-plus",
+                    title: "新建课程",
                 },
             },
             {
