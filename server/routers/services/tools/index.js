@@ -4,6 +4,7 @@ import multiparty from "multiparty"
 import cheerio from "cheerio"
 import { v1 as uuidv1 } from "uuid"
 import fs from "fs"
+import Path from "path"
 
 import User from "#models/User.js"
 import Course from "#models/Course.js"
@@ -52,7 +53,7 @@ export function UploadImg(path, req) {
                 return
             }
             const imgPath = files.img[0].path
-            var imgFilename = imgPath.split("\\")[imgPath.split("\\").length - 1]
+            var imgFilename = imgPath.split(Path.sep)[imgPath.split(Path.sep).length - 1]
             resolve(imgFilename)
             return
         })
@@ -70,7 +71,7 @@ export function UploadEditorVideo(req) {
                 return
             }
             const videoPath = files.video[0].path
-            var videoFilename = videoPath.split("\\")[videoPath.split("\\").length - 1]
+            var videoFilename = videoPath.split(Path.sep)[videoPath.split(Path.sep).length - 1]
             resolve(videoFilename)
             return
         })
@@ -228,6 +229,7 @@ export function editorImageUpload(req) {
                         })
                         return
                     }
+                    console.log(f.serverFilename)
                     let path =
                         SERVER_ADDRESS + "/public/img/editor/" + f.serverFilename + "?_id=" + f._id
                     resolve({
