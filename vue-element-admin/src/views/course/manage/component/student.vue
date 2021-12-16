@@ -19,14 +19,14 @@
                 导出Excel
             </el-button>
 
-            <el-button
+            <!--   <el-button
                 type="primary"
                 class="filter-item"
                 icon="el-icon-message"
                 @click="handleSendMessagesToSelectedStudent"
             >
                 向选中学生发送私信
-            </el-button>
+            </el-button> -->
         </div>
 
         <el-table

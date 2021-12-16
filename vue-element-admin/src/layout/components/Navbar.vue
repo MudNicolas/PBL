@@ -11,29 +11,17 @@
 
         <div class="right-menu">
             <template v-if="device !== 'mobile'">
-                <notice id="notice" class="right-menu-item hover-effect" />
-                <search
-                    id="header-search"
-                    class="right-menu-item hover-effect"
-                />
+                <!--   <notice id="notice" class="right-menu-item hover-effect" /> -->
+                <search id="header-search" class="right-menu-item hover-effect" />
 
-                <screenfull
-                    id="screenfull"
-                    class="right-menu-item hover-effect"
-                />
+                <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
                 <el-tooltip content="字体大小" effect="dark" placement="bottom">
-                    <size-select
-                        id="size-select"
-                        class="right-menu-item hover-effect"
-                    />
+                    <size-select id="size-select" class="right-menu-item hover-effect" />
                 </el-tooltip>
             </template>
 
-            <el-dropdown
-                class="avatar-container right-menu-item hover-effect"
-                trigger="click"
-            >
+            <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
                 <div class="avatar-wrapper">
                     <img :src="path + avatar" class="user-avatar" />
                     <i class="el-icon-caret-bottom" />
@@ -56,13 +44,13 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import Breadcrumb from "@/components/Breadcrumb";
-import Hamburger from "@/components/Hamburger";
-import Screenfull from "@/components/Screenfull";
-import SizeSelect from "@/components/SizeSelect";
-import Search from "@/components/HeaderSearch";
-import Notice from "@/components/Notice";
+import { mapGetters } from "vuex"
+import Breadcrumb from "@/components/Breadcrumb"
+import Hamburger from "@/components/Hamburger"
+import Screenfull from "@/components/Screenfull"
+import SizeSelect from "@/components/SizeSelect"
+import Search from "@/components/HeaderSearch"
+import Notice from "@/components/Notice"
 
 export default {
     components: {
@@ -79,21 +67,19 @@ export default {
     },
     data() {
         return {
-            path:
-                process.env.VUE_APP_PUBLIC_PATH +
-                process.env.VUE_APP_AVATAR_PATH,
-        };
+            path: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
+        }
     },
     methods: {
         toggleSideBar() {
-            this.$store.dispatch("app/toggleSideBar");
+            this.$store.dispatch("app/toggleSideBar")
         },
         async logout() {
-            await this.$store.dispatch("user/logout");
-            this.$router.push(`/login`);
+            await this.$store.dispatch("user/logout")
+            this.$router.push(`/login`)
         },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

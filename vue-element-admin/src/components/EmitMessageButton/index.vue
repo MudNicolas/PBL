@@ -1,11 +1,11 @@
 <template>
-    <el-button
+    <!-- <el-button
         @click="handleMessage(uid)"
         :size="size"
         style="margin-top: 4px"
         icon="el-icon-message"
         >发送私信</el-button
-    >
+    > -->
 </template>
 
 <script>
@@ -20,10 +20,10 @@ export default {
 
     methods: {
         handleMessage(uid) {
-            console.log(uid);
+            console.log(uid)
         },
     },
-};
+}
 </script>
 
 <style>

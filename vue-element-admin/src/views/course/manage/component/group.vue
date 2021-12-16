@@ -9,14 +9,14 @@
             >
                 添加组
             </el-button>
-            <el-button
+            <!--  <el-button
                 type="primary"
                 class="filter-item"
                 icon="el-icon-message"
                 @click="handleSendMessagesToSelectedGroup"
             >
                 向选中组发送私信
-            </el-button>
+            </el-button> -->
             <span class="info">
                 本课程共 {{ studentNumber }} 名学生， {{ groupedStudentNumber }} 名已分组
             </span>
