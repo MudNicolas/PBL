@@ -1,6 +1,7 @@
 import Router from "express"
 
 import Section from "#models/Section.js"
+import Activity from "#models/Activity.js"
 
 import { COVER_PATH } from "#root/settings.js"
 
@@ -45,8 +46,42 @@ router.get("/", (req, res, next) => {
                 .sort({
                     index: 1,
                 })
-                .select("visible name info")
-                .exec()
+                .select({
+                    visible: 1,
+                    name: 1,
+                    info: 1,
+                    urls: 1,
+                    files: 1,
+                })
+                .populate({
+                    path: "files",
+                    select: {
+                        originalFilename: 1,
+                        _id: 0,
+                    },
+                })
+                .then(async r => {
+                    let result = []
+                    for (let section of r) {
+                        let activities = await Activity.find({ sectionID: section._id })
+                            .select({ name: 1, _id: 0 })
+                            .then(a => {
+                                return a.map(e => e.name)
+                            })
+                        result.push({
+                            _id: section._id,
+                            name: section.name,
+                            info: section.info,
+                            visible: section.visible,
+                            urls: section.urls.map(e => e.name),
+                            files: section.files.map(e => e.originalFilename),
+                            activities,
+                        })
+                    }
+                    return result
+                })
+
+            console.log(sections)
 
             res.json({
                 code: 20000,

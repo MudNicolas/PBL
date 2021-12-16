@@ -44,6 +44,25 @@
                             </div>
                         </div>
                         <div class="section-info">{{ element.info | noInfo }}</div>
+                        <ul class="section-content">
+                            <li v-for="e of element.urls">
+                                <div class="li"></div>
+                                <i class="el-icon-link" />
+                                {{ e }}
+                            </li>
+
+                            <li v-for="e of element.files">
+                                <div class="li"></div>
+                                <i class="el-icon-document" />
+                                {{ e }}
+                            </li>
+
+                            <li v-for="e of element.activities">
+                                <div class="li"></div>
+                                <i class="el-icon-s-cooperation" />
+                                {{ e }}
+                            </li>
+                        </ul>
                     </el-card>
                 </div>
             </transition-group>
@@ -169,6 +188,26 @@ export default {
         font-size: 14px;
         margin-bottom: 18px;
         color: #666;
+    }
+
+    .section-content {
+        list-style-type: none;
+        font-size: 14px;
+        line-height: 18px;
+        padding-left: 0px;
+        color: #666;
+
+        .li {
+            display: inline-block;
+            margin-bottom: 4px;
+            margin-right: 6px;
+            border-top: 1px solid;
+            border-left: 1px solid;
+            border-color: #999;
+            width: 18px;
+            height: 8px;
+            transform: rotate(270deg);
+        }
     }
 }
 
