@@ -38,16 +38,11 @@
         <el-row>
             <el-col :span="16" :offset="4" style="margin-top: 16px">
                 <el-form-item>
-                    <el-button style="margin-top: 12px" @click="prev"
-                        >上一步</el-button
-                    >
+                    <el-button style="margin-top: 12px" @click="prev">上一步</el-button>
 
-                    <el-button
-                        style="margin-top: 12px"
-                        @click="next"
-                        type="primary"
-                        >下一步</el-button
-                    >
+                    <el-button style="margin-top: 12px" @click="next" type="primary">
+                        下一步
+                    </el-button>
                 </el-form-item>
             </el-col>
         </el-row>
@@ -55,7 +50,7 @@
 </template>
 
 <script>
-import UploadExcelComponent from "@/components/UploadExcel/index.vue";
+import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 
 export default {
     name: "uploadStudent",
@@ -65,21 +60,21 @@ export default {
         return {
             infoText: "导入学生，将Excel文件拖到此处，或",
             amount: 0,
-        };
+        }
     },
     methods: {
         beforeUpload(file) {
-            const isLt1M = file.size / 1024 / 1024 < 1;
+            const isLt1M = file.size / 1024 / 1024 < 1
 
             if (isLt1M) {
-                return true;
+                return true
             }
 
             this.$message({
                 message: "文件大小限制1MB",
                 type: "warning",
-            });
-            return false;
+            })
+            return false
         },
         handleSuccess({ results }) {
             //console.log(results);
@@ -88,48 +83,48 @@ export default {
                 this.$message({
                     type: "warning",
                     message: "文件错误，请遵循模板格式填入信息！",
-                });
-                return;
+                })
+                return
             }
             //判断重复
-            let studentNum = [];
-            results.forEach((e) => {
+            let studentNum = []
+            results.forEach(e => {
                 //数组中已有这个学号
-                e["学号"] = e["学号"].toString().trim();
-                e["姓名"] = e["姓名"].trim();
+                e["学号"] = e["学号"].toString().trim()
+                e["姓名"] = e["姓名"].toString().trim()
                 if (e["学号"] === "" || e["姓名"] === "") {
                     this.$message({
                         type: "warning",
                         message: "文件中存在学生学号或姓名为空！",
-                    });
-                    this.course.studentList = [];
-                    return;
+                    })
+                    this.course.studentList = []
+                    return
                 }
                 if (studentNum.indexOf(e["学号"]) !== -1) {
                     this.$message({
                         type: "warning",
                         message: "学生学号存在重复，请检查学生数据",
-                    });
-                    this.course.studentList = [];
-                    return;
+                    })
+                    this.course.studentList = []
+                    return
                 }
-                studentNum.push(e["学号"]);
-            });
+                studentNum.push(e["学号"])
+            })
 
-            this.amount = results.length;
+            this.amount = results.length
             if (this.amount == studentNum.length) {
                 //console.log(studentNum);
-                this.course.studentList = results;
+                this.course.studentList = results
             }
         },
         next() {
-            this.$emit("next");
+            this.$emit("next")
         },
         prev() {
-            this.$emit("prev");
+            this.$emit("prev")
         },
     },
-};
+}
 </script>
 
 <style>

@@ -55,6 +55,15 @@
                         <span class="time">
                             {{ comment.time | timeFormat }}
                         </span>
+                        <span class="viewable">
+                            <el-button
+                                circle
+                                size="mini"
+                                @click="toggleCommentVisiable(comment._id)"
+                            >
+                                <i class="el-icon-view" />
+                            </el-button>
+                        </span>
                     </span>
                     <span class="right-panel" v-if="commentable || !checkPermission(['student'])">
                         <span
@@ -77,7 +86,7 @@
                     </span>
                 </div>
 
-                <div class="comment">
+                <div class="comment" v-show="showCommentsList.indexOf(comment._id) !== -1">
                     <div class="main">
                         <span v-if="comment.comment.length === 1">
                             <editor-viewer :content="comment.comment[0].content" />
@@ -347,7 +356,7 @@ export default {
             autosavePath: "/activity/view/comments/editor/autosave",
             imageUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/image/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
             videoUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/video/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
-
+            showCommentsList: [],
             showUpPopoverKey: "",
             myReply: "",
             replyTo: "",
@@ -485,6 +494,13 @@ export default {
                     this.replying = false
                 })
         },
+        toggleCommentVisiable(commentID) {
+            if (this.showCommentsList.indexOf(commentID) !== -1) {
+                this.showCommentsList.splice(this.showCommentsList.indexOf(commentID), 1)
+            } else {
+                this.showCommentsList.push(commentID)
+            }
+        },
     },
 }
 </script>
@@ -510,6 +526,10 @@ export default {
             color: #bbb;
             font-size: 13px;
         }
+
+        .viewable {
+            margin-left: 8px;
+        }
     }
 
     .right-panel {
@@ -522,10 +542,10 @@ export default {
 }
 
 .single-comment {
+    margin-bottom: 24px;
     > .comment {
         margin-left: 42px;
         color: #303133;
-        margin-bottom: 36px;
         font-size: 14px;
         line-height: 1.5715;
         //border-bottom: 1px solid #e6e6e6;

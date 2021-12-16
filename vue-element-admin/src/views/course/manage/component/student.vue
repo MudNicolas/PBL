@@ -233,7 +233,7 @@ export default {
             results.forEach(e => {
                 //数组中已有这个学号
                 e["学号"] = e["学号"].toString().trim()
-                e["姓名"] = e["姓名"].trim()
+                e["姓名"] = e["姓名"].toString().trim()
                 if (e["学号"] === "" || e["姓名"] === "") {
                     this.$message({
                         type: "warning",
