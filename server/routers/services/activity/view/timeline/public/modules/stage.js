@@ -1,4 +1,7 @@
 import Router from "express"
+
+import { processImgAndVideoHostUrl } from "#services/tools/index.js"
+
 let router = Router()
 
 router.get("/get", (req, res) => {
@@ -36,6 +39,8 @@ router.get("/get", (req, res) => {
                     entry = options.commentTemplate
                 }
             }
+
+            content = processImgAndVideoHostUrl(content)
 
             let stage = {
                 content,
