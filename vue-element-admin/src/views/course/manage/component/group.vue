@@ -34,7 +34,7 @@
         >
             <el-table-column type="selection" width="55"></el-table-column>
 
-            <el-table-column width="50" label="序号" prop="index"></el-table-column>
+            <el-table-column width="50" label="序号" prop="index" align="center"></el-table-column>
             <el-table-column
                 prop="groupName"
                 label="组名"
