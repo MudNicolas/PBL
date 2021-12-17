@@ -81,7 +81,7 @@ router.get("/", (req, res, next) => {
                     return result
                 })
 
-            console.log(sections)
+            //console.log(sections)
 
             res.json({
                 code: 20000,

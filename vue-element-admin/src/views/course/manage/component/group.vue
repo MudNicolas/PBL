@@ -34,7 +34,7 @@
         >
             <el-table-column type="selection" width="55"></el-table-column>
 
-            <el-table-column type="index" width="50" label="序号"></el-table-column>
+            <el-table-column width="50" label="序号" prop="index"></el-table-column>
             <el-table-column
                 prop="groupName"
                 label="组名"
@@ -43,9 +43,10 @@
             ></el-table-column>
             <el-table-column prop="username" label="学号" align="center"></el-table-column>
             <el-table-column prop="name" label="姓名" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="360">
+            <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
-                    <el-button icon="el-icon-message">发送私信</el-button>
+                    <!-- <el-button icon="el-icon-message">发送私信</el-button> -->
+
                     <el-button
                         type="primary"
                         v-if="editAndDeleteActive"
@@ -63,6 +64,7 @@
                         <i class="el-icon-delete" />
                         &nbsp;删除
                     </el-button>
+                    <span style="font-size: 12px; color: grey" v-else>请先启用编辑</span>
                 </template>
             </el-table-column>
         </el-table>
@@ -344,8 +346,10 @@ export default {
         },
         transformGroupData(raw) {
             let tableData = []
+            let index = 0
             for (let group of raw) {
                 let groupMember = group.groupMember
+
                 for (let i = 0; i < groupMember.length; i++) {
                     let member = groupMember[i]
                     let item = {
@@ -357,7 +361,10 @@ export default {
                         item.length = groupMember.length
                         item.groupName = group.name || "无"
                         item.groupID = group._id
+                        index++
+                        item.index = index
                     }
+
                     tableData.push(item)
                 }
             }
