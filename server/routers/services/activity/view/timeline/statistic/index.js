@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 let router = Router()
 
 import Comment from "#models/Comment.js"
+import User from "#models/User.js"
 
 router.get("/get", async (req, res) => {
     let { activity, uid, course } = req
@@ -27,43 +28,69 @@ router.get("/get", async (req, res) => {
         }
     }
 
-    let personalOrGroupData = await getPersonalOrGroupData(activity._id, userQuery, commentTemplate)
-    console.log(personalOrGroupData)
+    let personalOrGroupTotalData = await getpersonalOrGroupTotalData(
+        activity._id,
+        userQuery,
+        commentTemplate
+    )
+    //console.log(personalOrGroupTotalData)
+    let groupMemberData = []
+    if (authorType !== "personal") {
+        groupMemberData = await getGroupMemberData(activity._id, userQuery, commentTemplate)
+    }
+    console.log(groupMemberData)
 })
 
-async function getPersonalOrGroupData(activityID, studentList, commentTemplate) {
+async function getpersonalOrGroupTotalData(activityID, studentList, commentTemplate) {
     //console.log(activityID, studentList, commentTemplate)
-    let { sortCommentNumberList, sortReplyNumberList, sortReplyEntryList } =
+    let { sortCommentNumberList, sortReplyNumberList, sortEntryCommentList } =
         await getCommentAndReplyData(activityID, studentList, commentTemplate)
 
-    //console.log(sortCommentNumberList, sortReplyNumberList, sortReplyEntryList)
+    // console.log(sortCommentNumberList, sortReplyNumberList, sortEntryCommentList)
 
-    let dataGroupCommentNumber = sortCommentNumberList
+    let dataPersonalOrGroupCommentNumber = sortCommentNumberList
         .map(e => e.commentSum)
         .reduce(function (prev, cur) {
             return prev + cur
         }, 0)
 
-    let dataGroupReplyNumber = sortReplyNumberList
+    let dataPersonalOrGroupReplyNumber = sortReplyNumberList
         .map(e => e.replySum)
         .reduce(function (prev, cur) {
             return prev + cur
         }, 0)
 
-    let dataGroupEntryCommentNumber = sortReplyEntryList.map(e => ({
+    let dataPersonalOrGroupEntryCommentNumber = sortEntryCommentList.map(e => ({
         entry: e._id,
-        dataEntryComment: e.replySum,
+        dataEntryComment: e.entryCommentSum,
     }))
 
     return {
-        dataGroupCommentNumber,
-        dataGroupReplyNumber,
-        dataGroupEntryCommentNumber,
+        dataPersonalOrGroupCommentNumber,
+        dataPersonalOrGroupReplyNumber,
+        dataPersonalOrGroupEntryCommentNumber,
     }
 }
 
+async function getGroupMemberData(activityID, studentList, commentTemplate) {
+    let data = []
+    for (let e of studentList) {
+        data.push({
+            name: await User.findById(e)
+                .select({
+                    name: 1,
+                })
+                .then(c => {
+                    return c.name
+                }),
+            ...(await getpersonalOrGroupTotalData(activityID, [e], commentTemplate)),
+        })
+    }
+    return data
+}
+
 async function getClassData(activityID, studentList, commentTemplate) {
-    let { sortCommentNumberList, sortReplyNumberList, sortReplyEntryList } =
+    let { sortCommentNumberList, sortReplyNumberList, sortEntryCommentList } =
         await getCommentAndReplyData(activityID, studentList, commentTemplate)
     //最多评论数
 
@@ -71,9 +98,9 @@ async function getClassData(activityID, studentList, commentTemplate) {
     //最多回复数
     let dataMostReply = sortReplyNumberList[0] ? sortReplyNumberList[0].replySum : 0
     //每条entry最多评论数
-    let dataMostEntryComment = sortReplyEntryList.map(e => ({
+    let dataMostEntryComment = sortEntryCommentList.map(e => ({
         entry: e._id,
-        dataMostEntryComment: e.replySum,
+        dataMostEntryComment: e.entryCommentSum,
     }))
     //学生数
     let numberStudent = studentList.length || 1 //防止没学生时div0
@@ -94,9 +121,9 @@ async function getClassData(activityID, studentList, commentTemplate) {
             }, 0) / numberStudent
     )
     //每条entry的班级平均回复数
-    let avgEntry = sortReplyEntryList.map(e => ({
+    let avgEntry = sortEntryCommentList.map(e => ({
         entry: e._id,
-        dataAvgEntryComment: Math.round(e.replySum / e.user.length),
+        dataAvgEntryComment: Math.round(e.entryCommentSum / e.user.length),
     }))
 
     return {
@@ -185,7 +212,7 @@ async function getCommentAndReplyData(activityID, studentList, commentTemplate) 
      */
     commentTemplate = [...commentTemplate, "default"]
     //按entry区分的评论数，不统计空entry
-    let sortReplyEntryList = await Comment.aggregate([
+    let sortEntryCommentList = await Comment.aggregate([
         {
             $unwind: "$comment",
         },
@@ -213,32 +240,32 @@ async function getCommentAndReplyData(activityID, studentList, commentTemplate) 
         {
             $group: {
                 _id: "$comment.entry",
-                replySum: { $sum: 1 },
+                entryCommentSum: { $sum: 1 },
                 user: { $push: "$commentUser" },
             },
         },
         {
             $sort: {
-                replySum: -1,
+                entryCommentSum: -1,
             },
         },
     ]).exec()
 
     //将没有发言的entry标记为0
     for (let c of commentTemplate) {
-        if (!sortReplyEntryList.find(e => e._id === c.toString())) {
-            sortReplyEntryList.push({
+        if (!sortEntryCommentList.find(e => e._id === c.toString())) {
+            sortEntryCommentList.push({
                 _id: c.toString(),
-                replySum: 0,
+                entryCommentSum: 0,
                 user: [],
             })
         }
     }
-    //console.log(sortCommentNumberList, sortReplyNumberList, sortReplyEntryList)
+    //console.log(sortCommentNumberList, sortReplyNumberList, sortEntryCommentList)
     return {
         sortCommentNumberList,
         sortReplyNumberList,
-        sortReplyEntryList,
+        sortEntryCommentList,
     }
 }
 
