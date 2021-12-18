@@ -8,6 +8,9 @@ let router = Router()
 
 router.get("/", (req, res) => {
     let { stageID, type } = req.query
+    let { activityID } = req
+
+    //console.log(stageID, type, activityID)
 
     let comments = Comment.find({
         activityContentID: stageID,
@@ -53,6 +56,7 @@ router.get("/", (req, res) => {
         if (!temp) {
             temp = await new Comment({
                 activityContentID: stageID,
+                activityID,
                 commentUser: req.uid,
                 type,
             })

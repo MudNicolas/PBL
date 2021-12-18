@@ -2,7 +2,12 @@ import mongoose from "mongoose"
 
 let commentSchemas = new mongoose.Schema({
     activityContentID: {
+        //stageID
         type: mongoose.Schema.Types.ObjectId,
+    },
+    activityID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Activity",
     },
     isSubmit: {
         type: Boolean,

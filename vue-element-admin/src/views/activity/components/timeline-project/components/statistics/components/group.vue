@@ -5,11 +5,11 @@
 <script>
 import * as echarts from "echarts/core"
 import { TitleComponent, TooltipComponent, LegendComponent } from "echarts/components"
-import { PieChart } from "echarts/charts"
+import { RadarChart } from "echarts/charts"
 import { CanvasRenderer } from "echarts/renderers"
 import resize from "./mixins/resize"
 
-echarts.use([TitleComponent, TooltipComponent, LegendComponent, PieChart, CanvasRenderer])
+echarts.use([TitleComponent, TooltipComponent, RadarChart, CanvasRenderer])
 
 export default {
     mixins: [resize],
@@ -44,35 +44,61 @@ export default {
 
             this.chart.setOption({
                 title: {
-                    text: "你的活动数据",
-                    left: "center",
+                    text: "小组成员1发帖统计图",
                 },
-                tooltip: {
-                    trigger: "item",
-                },
+                tooltip: {},
                 legend: {
-                    orient: "vertical",
-                    left: "left",
+                    data: ["小组成员1", "平均互动", "最高互动"],
+                },
+                radar: {
+                    indicator: [
+                        {
+                            name: "sales",
+                        },
+                        {
+                            name: "Administration",
+                        },
+                        {
+                            name: "Information Techology",
+                        },
+                        {
+                            name: "Customer Support",
+                        },
+                        {
+                            name: "Development",
+                        },
+                        {
+                            name: "Marketing",
+                        },
+                    ],
                 },
                 series: [
                     {
-                        name: "访问来源",
-                        type: "pie",
-                        radius: "60%",
+                        name: "预算 vs 开销（Budget vs spending）",
+                        type: "radar",
                         data: [
-                            { value: 1048, name: "搜索引擎" },
-                            { value: 735, name: "直接访问" },
-                            { value: 580, name: "邮件营销" },
-                            { value: 484, name: "联盟广告" },
-                            { value: 300, name: "视频广告" },
-                        ],
-                        emphasis: {
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: "rgba(0, 0, 0, 0.5)",
+                            {
+                                value: [4300, 10000, 28000, 35000, 50000, 19000],
+                                name: "小组成员1",
+                                label: {
+                                    show: true,
+                                },
                             },
-                        },
+                            {
+                                value: [5000, 14000, 28000, 31000, 42000, 21000],
+                                name: "平均互动",
+                                label: {
+                                    show: true,
+                                },
+                            },
+                            {
+                                value: [5000, 14000, 28000, 31000, 42000, 21000],
+                                name: "最高互动",
+                                label: {
+                                    show: true,
+                                },
+                            },
+                        ],
                     },
                 ],
             })
