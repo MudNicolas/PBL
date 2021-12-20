@@ -1,7 +1,22 @@
 <template>
     <!--TODO：可按节显示发言情况，可显示总体发言情况，可显示发言情况排名-->
     <div class="container" v-loading="!dataRecevied">
-        <group-chart v-if="dataRecevied" />
+        <div v-if="dataRecevied">
+            <group-chart
+                v-for="member of groupMemberData"
+                :personalOrGroupTotalData="member.data"
+                :classData="classData"
+                :indicator="indicator"
+                :title="`${member.name}互动情况`"
+                :legend="[member.name, '班级平均互动', '班级最高互动']"
+            />
+            <group-chart
+                :personalOrGroupTotalData="personalOrGroupTotalData"
+                :classData="classData"
+                :indicator="indicator"
+                :legend="['个人或小组总互动', '班级平均互动', '班级最高互动']"
+            />
+        </div>
     </div>
 </template>
 
@@ -15,6 +30,11 @@ export default {
             dataRecevied: false,
             chartData: [],
             activityID: this.$route.params.id,
+            groupMemberData: [],
+            personalOrGroupTotalData: [],
+            classData: [],
+
+            indicator: [], //评论数，回复数，entry评论数，default
         }
     },
     created() {
@@ -24,6 +44,69 @@ export default {
         getData() {
             let activityID = this.activityID
             getTimelineStatisticData({ activityID })
+                .then(res => {
+                    let { data } = res
+                    let { classData, personalOrGroupTotalData, groupMemberData, commentTemplate } =
+                        data
+                    console.log(data)
+                    this.groupMemberData = groupMemberData.map(e => ({
+                        name: e.name,
+                        data: this.processPersonalOrGroupData(e, commentTemplate),
+                    }))
+                    this.personalOrGroupTotalData = this.processPersonalOrGroupData(
+                        personalOrGroupTotalData,
+                        commentTemplate
+                    )
+                    this.classData = this.processClassData(classData, commentTemplate) //this.processPersonalOrGroupData(classData, commentTemplate)
+                    this.indicator = [
+                        {
+                            name: "评论数",
+                        },
+                        {
+                            name: "回复数",
+                        },
+                    ]
+                    this.indicator = this.indicator.concat(commentTemplate.map(e => ({ name: e })))
+                    this.indicator.push({ name: "普通评论" })
+                    this.dataRecevied = true
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        processPersonalOrGroupData(personalOrGroupTotalData, commentTemplate) {
+            let processPersonalOrGroupTotalData = [
+                personalOrGroupTotalData.dataPersonalOrGroupCommentNumber,
+                personalOrGroupTotalData.dataPersonalOrGroupReplyNumber,
+                ...this.processEntryData(
+                    personalOrGroupTotalData.dataPersonalOrGroupEntryCommentNumber,
+                    commentTemplate
+                ),
+            ]
+
+            return processPersonalOrGroupTotalData
+        },
+        processClassData(classData, commentTemplate) {
+            return {
+                avg: [
+                    classData.avg.dataAvgComment,
+                    classData.avg.dataAvgReply,
+                    ...this.processEntryData(classData.avg.dataAvgEntry, commentTemplate),
+                ],
+                most: [
+                    classData.most.dataMostComment,
+                    classData.most.dataMostReply,
+                    ...this.processEntryData(classData.most.dataMostEntryComment, commentTemplate),
+                ],
+            }
+        },
+        processEntryData(EntryCommentNumber, commentTemplate) {
+            return [
+                ...commentTemplate.map(c => {
+                    return EntryCommentNumber.find(e => e.entry === c).dataEntryComment || 0
+                }),
+                EntryCommentNumber.find(e => e.entry === "default").dataEntryComment,
+            ]
         },
     },
 }

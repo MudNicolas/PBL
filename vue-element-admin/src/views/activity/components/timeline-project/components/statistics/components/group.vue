@@ -9,7 +9,7 @@ import { RadarChart } from "echarts/charts"
 import { CanvasRenderer } from "echarts/renderers"
 import resize from "./mixins/resize"
 
-echarts.use([TitleComponent, TooltipComponent, RadarChart, CanvasRenderer])
+echarts.use([TitleComponent, TooltipComponent, RadarChart, CanvasRenderer, LegendComponent])
 
 export default {
     mixins: [resize],
@@ -25,6 +25,34 @@ export default {
         height: {
             type: String,
             default: "500px",
+        },
+        title: {
+            type: String,
+            default: "个人或小组总互动情况",
+        },
+        personalOrGroupTotalData: {
+            type: Array,
+            default: () => [],
+        },
+        classData: {
+            type: Object,
+            default: () => ({
+                avg: [],
+                most: [],
+            }),
+        },
+
+        legend: {
+            type: Array,
+            default: () => [],
+        },
+        indicator: {
+            type: Array,
+            default: () => [],
+        },
+        seriesName: {
+            type: String,
+            default: "个人或小组总互动",
         },
     },
     data() {
@@ -44,56 +72,36 @@ export default {
 
             this.chart.setOption({
                 title: {
-                    text: "小组成员1发帖统计图",
+                    text: this.title,
                 },
                 tooltip: {},
                 legend: {
-                    data: ["小组成员1", "平均互动", "最高互动"],
+                    data: this.legend,
                 },
                 radar: {
-                    indicator: [
-                        {
-                            name: "sales",
-                        },
-                        {
-                            name: "Administration",
-                        },
-                        {
-                            name: "Information Techology",
-                        },
-                        {
-                            name: "Customer Support",
-                        },
-                        {
-                            name: "Development",
-                        },
-                        {
-                            name: "Marketing",
-                        },
-                    ],
+                    indicator: this.indicator,
                 },
                 series: [
                     {
-                        name: "预算 vs 开销（Budget vs spending）",
                         type: "radar",
                         data: [
                             {
-                                value: [4300, 10000, 28000, 35000, 50000, 19000],
-                                name: "小组成员1",
+                                value: this.personalOrGroupTotalData,
+                                name: this.legend[0],
                                 label: {
                                     show: true,
                                 },
                             },
                             {
-                                value: [5000, 14000, 28000, 31000, 42000, 21000],
-                                name: "平均互动",
+                                value: this.classData.avg,
+                                name: "班级平均互动",
                                 label: {
                                     show: true,
                                 },
                             },
                             {
-                                value: [5000, 14000, 28000, 31000, 42000, 21000],
-                                name: "最高互动",
+                                value: this.classData.most,
+                                name: "班级最高互动",
                                 label: {
                                     show: true,
                                 },
