@@ -10,11 +10,17 @@ router.get("/get", async (req, res) => {
     let { activity, uid, course } = req
 
     let authorType = activity.options.authorType
-    let commentTemplate = activity.options.commentTemplate
+    let commentTemplate = activity.options.commentTemplate || []
 
     let { studentList } = course
     //console.log(studentList, "studentlist")
-    let classData = await getClassData(activity._id, studentList, commentTemplate)
+    let classData = await getClassData(
+        activity._id,
+        authorType,
+        studentList,
+        commentTemplate,
+        course.group
+    )
     //console.log(classData)
     //获取组内或个人数据
     let userQuery = []
@@ -28,7 +34,7 @@ router.get("/get", async (req, res) => {
         }
     }
 
-    let personalOrGroupTotalData = await getpersonalOrGroupTotalData(
+    let personalOrGroupTotalData = await getPersonalOrGroupTotalData(
         activity._id,
         userQuery,
         commentTemplate
@@ -38,10 +44,21 @@ router.get("/get", async (req, res) => {
     if (authorType !== "personal") {
         groupMemberData = await getGroupMemberData(activity._id, userQuery, commentTemplate)
     }
-    console.log(groupMemberData)
+    let data = { classData, personalOrGroupTotalData, groupMemberData, commentTemplate }
+    //data.privateData = authorType === "personal" ? [personalOrGroupTotalData] : groupMemberData
+    res.json({
+        code: 20000,
+        data,
+    })
 })
 
-async function getpersonalOrGroupTotalData(activityID, studentList, commentTemplate) {
+/**
+ * @param {ObjectID} activityID
+ * @param {List<ObjectID>} studentList
+ * @param {List<String>} commentTemplate
+ * @description 输入activityID，一个组的studentList，commentTemplate，返回这个组的commentNumber,replyNumber,entryCommentNumber
+ */
+async function getPersonalOrGroupTotalData(activityID, studentList, commentTemplate) {
     //console.log(activityID, studentList, commentTemplate)
     let { sortCommentNumberList, sortReplyNumberList, sortEntryCommentList } =
         await getCommentAndReplyData(activityID, studentList, commentTemplate)
@@ -83,13 +100,86 @@ async function getGroupMemberData(activityID, studentList, commentTemplate) {
                 .then(c => {
                     return c.name
                 }),
-            ...(await getpersonalOrGroupTotalData(activityID, [e], commentTemplate)),
+            ...(await getPersonalOrGroupTotalData(activityID, [e], commentTemplate)),
         })
     }
     return data
 }
 
-async function getClassData(activityID, studentList, commentTemplate) {
+//将classData进行个人和小组data的区分
+async function getClassData(activityID, authorType, studentList, commentTemplate, courseGroup) {
+    if (authorType === "personal") {
+        return await getPersonalTypeClassData(activityID, studentList, commentTemplate)
+    } else {
+        return await getGroupTypeClassData(activityID, courseGroup, commentTemplate)
+    }
+}
+
+async function getGroupTypeClassData(activityID, courseGroup, commentTemplate) {
+    let data = []
+    for (let g of courseGroup) {
+        data.push(await getPersonalOrGroupTotalData(activityID, g.groupMember, commentTemplate))
+    }
+    //console.log(data[0].dataPersonalOrGroupEntryCommentNumber)
+    let dataMostComment = Math.max(...data.map(e => e.dataPersonalOrGroupCommentNumber))
+    let dataMostReply = Math.max(...data.map(e => e.dataPersonalOrGroupReplyNumber))
+    commentTemplate.push("default")
+    let dataMostEntryComment = commentTemplate.map(c => ({
+        entry: c,
+        dataEntryComment: Math.max(
+            ...data.map(
+                e =>
+                    e.dataPersonalOrGroupEntryCommentNumber.find(entry => entry.entry === c)
+                        .dataEntryComment || 0
+            )
+        ),
+    }))
+    //班级小组分组平均评论数
+    let groupNumber = courseGroup.length || 1
+    let dataAvgComment = Math.round(
+        data
+            .map(e => e.dataPersonalOrGroupCommentNumber)
+            .reduce(function (prev, cur) {
+                return prev + cur
+            }, 0) / groupNumber
+    )
+    //班级小组分组平均回复数
+    let dataAvgReply = Math.round(
+        data
+            .map(e => e.dataPersonalOrGroupReplyNumber)
+            .reduce(function (prev, cur) {
+                return prev + cur
+            }, 0) / groupNumber
+    )
+    //每条entry的班级小组分组平均回复数
+    let dataAvgEntry = commentTemplate.map(c => ({
+        entry: c,
+        dataEntryComment:
+            data
+                .map(
+                    e =>
+                        e.dataPersonalOrGroupEntryCommentNumber.find(entry => entry.entry === c)
+                            .dataEntryComment || 0
+                )
+                .reduce(function (prev, cur) {
+                    return prev + cur
+                }, 0) / groupNumber,
+    }))
+    return {
+        most: {
+            dataMostComment,
+            dataMostReply,
+            dataMostEntryComment,
+        },
+        avg: {
+            dataAvgComment,
+            dataAvgReply,
+            dataAvgEntry,
+        },
+    }
+}
+
+async function getPersonalTypeClassData(activityID, studentList, commentTemplate) {
     let { sortCommentNumberList, sortReplyNumberList, sortEntryCommentList } =
         await getCommentAndReplyData(activityID, studentList, commentTemplate)
     //最多评论数
@@ -100,7 +190,7 @@ async function getClassData(activityID, studentList, commentTemplate) {
     //每条entry最多评论数
     let dataMostEntryComment = sortEntryCommentList.map(e => ({
         entry: e._id,
-        dataMostEntryComment: e.entryCommentSum,
+        dataEntryComment: e.entryCommentSum,
     }))
     //学生数
     let numberStudent = studentList.length || 1 //防止没学生时div0
@@ -121,10 +211,11 @@ async function getClassData(activityID, studentList, commentTemplate) {
             }, 0) / numberStudent
     )
     //每条entry的班级平均回复数
-    let avgEntry = sortEntryCommentList.map(e => ({
-        entry: e._id,
-        dataAvgEntryComment: Math.round(e.entryCommentSum / e.user.length),
-    }))
+    let dataAvgEntry =
+        sortEntryCommentList.map(e => ({
+            entry: e._id,
+            dataEntryComment: Math.round(e.entryCommentSum / e.user.length),
+        })) || 0
 
     return {
         most: {
@@ -135,7 +226,7 @@ async function getClassData(activityID, studentList, commentTemplate) {
         avg: {
             dataAvgComment,
             dataAvgReply,
-            avgEntry,
+            dataAvgEntry,
         },
     }
 }
