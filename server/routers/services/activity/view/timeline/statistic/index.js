@@ -11,7 +11,7 @@ router.get("/get", async (req, res) => {
 
     let authorType = activity.options.authorType
     let commentTemplate = activity.options.commentTemplate || []
-
+    commentTemplate.push("default")
     let { studentList } = course
     //console.log(studentList, "studentlist")
     let classData = await getClassData(
@@ -92,14 +92,14 @@ async function getPersonalOrGroupTotalData(activityID, studentList, commentTempl
 async function getGroupMemberData(activityID, studentList, commentTemplate) {
     let data = []
     for (let e of studentList) {
+        let { name, _id } = await User.findById(e)
+            .select({
+                name: 1,
+            })
+            .exec()
         data.push({
-            name: await User.findById(e)
-                .select({
-                    name: 1,
-                })
-                .then(c => {
-                    return c.name
-                }),
+            name,
+            _id,
             ...(await getPersonalOrGroupTotalData(activityID, [e], commentTemplate)),
         })
     }
@@ -123,7 +123,7 @@ async function getGroupTypeClassData(activityID, courseGroup, commentTemplate) {
     //console.log(data[0].dataPersonalOrGroupEntryCommentNumber)
     let dataMostComment = Math.max(...data.map(e => e.dataPersonalOrGroupCommentNumber))
     let dataMostReply = Math.max(...data.map(e => e.dataPersonalOrGroupReplyNumber))
-    commentTemplate.push("default")
+
     let dataMostEntryComment = commentTemplate.map(c => ({
         entry: c,
         dataEntryComment: Math.max(

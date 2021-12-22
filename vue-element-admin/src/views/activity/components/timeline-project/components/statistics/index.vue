@@ -2,8 +2,10 @@
     <!--TODO：可按节显示发言情况，可显示总体发言情况，可显示发言情况排名-->
     <div class="container" v-loading="!dataRecevied">
         <div v-if="dataRecevied">
+            <p>注：default为普通评论，即不受条目制约的评论</p>
             <group-chart
                 v-for="member of groupMemberData"
+                :key="member._id"
                 :personalOrGroupTotalData="member.data"
                 :classData="classData"
                 :indicator="indicator"
@@ -16,6 +18,12 @@
                 :indicator="indicator"
                 :legend="['个人或小组总互动', '班级平均互动', '班级最高互动']"
             />
+            <StatisticTable
+                v-if="groupMemberData.length > 0"
+                :groupData="personalOrGroupTotalData"
+                :classData="classData"
+                :memberData="groupMemberData"
+            />
         </div>
     </div>
 </template>
@@ -23,8 +31,10 @@
 <script>
 import groupChart from "./components/group.vue"
 import { getTimelineStatisticData } from "@/api/statistic"
+import StatisticTable from "@/components/StatisticTable"
+
 export default {
-    components: { groupChart },
+    components: { groupChart, StatisticTable },
     data() {
         return {
             dataRecevied: false,
@@ -48,10 +58,11 @@ export default {
                     let { data } = res
                     let { classData, personalOrGroupTotalData, groupMemberData, commentTemplate } =
                         data
-                    console.log(data)
+                    //console.log(data)
                     this.groupMemberData = groupMemberData.map(e => ({
                         name: e.name,
                         data: this.processPersonalOrGroupData(e, commentTemplate),
+                        _id: e._id,
                     }))
                     this.personalOrGroupTotalData = this.processPersonalOrGroupData(
                         personalOrGroupTotalData,
@@ -67,7 +78,7 @@ export default {
                         },
                     ]
                     this.indicator = this.indicator.concat(commentTemplate.map(e => ({ name: e })))
-                    this.indicator.push({ name: "普通评论" })
+
                     this.dataRecevied = true
                 })
                 .catch(err => {
@@ -116,5 +127,9 @@ export default {
 .container {
     min-height: 40vh;
     padding-top: 20px;
+}
+p {
+    font-size: 14px;
+    margin-bottom: 24px;
 }
 </style>
