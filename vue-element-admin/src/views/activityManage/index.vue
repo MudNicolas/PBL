@@ -21,10 +21,11 @@
 <script>
 import info from "./components/info"
 import approve from "./components/approve"
+import statistics from "./components/statistics.vue"
 import { getAvtivityType } from "@/api/activityManage"
 
 export default {
-    components: { info, approve },
+    components: { info, approve, statistics },
     name: "ManageCourse",
 
     data() {

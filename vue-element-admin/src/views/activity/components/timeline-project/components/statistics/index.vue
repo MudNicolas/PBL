@@ -18,7 +18,6 @@
                 :legend="['个人或小组总互动', '班级平均互动', '班级最高互动']"
             />
             <StatisticTable
-                v-if="groupMemberData.length > 0"
                 :groupData="personalOrGroupTotalData"
                 :classData="classData"
                 :memberData="groupMemberData"

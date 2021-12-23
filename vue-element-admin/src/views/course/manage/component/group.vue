@@ -32,8 +32,6 @@
             style="width: 100%; margin-top: 20px"
             v-loading="loading"
         >
-            <el-table-column type="selection" width="55"></el-table-column>
-
             <el-table-column width="50" label="序号" prop="index" align="center"></el-table-column>
             <el-table-column
                 prop="groupName"
