@@ -30,7 +30,7 @@ export default {
             type: String,
             default: "个人或小组互动总情况",
         },
-        personalOrGroupTotalData: {
+        chartData: {
             type: Array,
             default: () => [],
         },
@@ -49,10 +49,6 @@ export default {
         indicator: {
             type: Array,
             default: () => [],
-        },
-        seriesName: {
-            type: String,
-            default: "个人或小组总互动",
         },
     },
     data() {
@@ -86,7 +82,7 @@ export default {
                         type: "radar",
                         data: [
                             {
-                                value: this.personalOrGroupTotalData,
+                                value: this.chartData,
                                 name: this.legend[0],
                                 label: {
                                     show: true,

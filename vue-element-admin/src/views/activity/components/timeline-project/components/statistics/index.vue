@@ -3,25 +3,20 @@
     <div class="container" v-loading="!dataRecevied">
         <div v-if="dataRecevied">
             <group-chart
-                v-for="member of groupMemberData"
-                :key="member._id"
-                :personalOrGroupTotalData="member.data"
-                :classData="classData"
+                v-for="(s, index) of chartData"
+                :key="s.name"
+                :chartData="s.data"
+                :classData="
+                    authorType === 'group' && index === chartData.length - 1
+                        ? chartClassData.group
+                        : chartClassData.personal
+                "
                 :indicator="indicator"
-                :title="`${member.name}互动情况`"
-                :legend="[member.name, '班级平均互动', '班级最高互动']"
+                :title="s.title"
+                :legend="[s.title, '班级平均互动', '班级最高互动']"
             />
-            <group-chart
-                :personalOrGroupTotalData="personalOrGroupTotalData"
-                :classData="classData"
-                :indicator="indicator"
-                :legend="['个人或小组总互动', '班级平均互动', '班级最高互动']"
-            />
-            <StatisticTable
-                :groupData="personalOrGroupTotalData"
-                :classData="classData"
-                :memberData="groupMemberData"
-            />
+
+            <StatisticTable :tableData="tableData" />
         </div>
     </div>
 </template>
@@ -38,11 +33,10 @@ export default {
             dataRecevied: false,
             chartData: [],
             activityID: this.$route.params.id,
-            groupMemberData: [],
-            personalOrGroupTotalData: [],
-            classData: [],
-
+            chartClassData: [],
+            tableData: [],
             indicator: [], //评论数，回复数，entry评论数，普通评论
+            authorType: "personal",
         }
     },
     created() {
@@ -54,69 +48,17 @@ export default {
             getTimelineStatisticData({ activityID })
                 .then(res => {
                     let { data } = res
-                    let { classData, personalOrGroupTotalData, groupMemberData, commentTemplate } =
-                        data
-                    //console.log(data)
-                    this.groupMemberData = groupMemberData.map(e => ({
-                        name: e.name,
-                        data: this.processPersonalOrGroupData(e, commentTemplate),
-                        _id: e._id,
-                    }))
-                    this.personalOrGroupTotalData = this.processPersonalOrGroupData(
-                        personalOrGroupTotalData,
-                        commentTemplate
-                    )
-                    this.classData = this.processClassData(classData, commentTemplate) //this.processPersonalOrGroupData(classData, commentTemplate)
-                    this.indicator = [
-                        {
-                            name: "评论数",
-                        },
-                        {
-                            name: "回复数",
-                        },
-                    ]
-                    this.indicator = this.indicator.concat(commentTemplate.map(e => ({ name: e })))
-                    this.indicator.pop()
-                    this.indicator.push({ name: "普通评论" })
+                    let { chartClassData, chartData, indicator, tableData, authorType } = data
+                    this.chartClassData = chartClassData
+                    this.chartData = chartData
+                    this.indicator = indicator
+                    this.tableData = tableData
+                    this.authorType = authorType
                     this.dataRecevied = true
                 })
                 .catch(err => {
                     console.log(err)
                 })
-        },
-        processPersonalOrGroupData(personalOrGroupTotalData, commentTemplate) {
-            let processPersonalOrGroupTotalData = [
-                personalOrGroupTotalData.dataPersonalOrGroupCommentNumber,
-                personalOrGroupTotalData.dataPersonalOrGroupReplyNumber,
-                ...this.processEntryData(
-                    personalOrGroupTotalData.dataPersonalOrGroupEntryCommentNumber,
-                    commentTemplate
-                ),
-            ]
-
-            return processPersonalOrGroupTotalData
-        },
-        processClassData(classData, commentTemplate) {
-            return {
-                avg: [
-                    classData.avg.dataAvgComment,
-                    classData.avg.dataAvgReply,
-                    ...this.processEntryData(classData.avg.dataAvgEntry, commentTemplate),
-                ],
-                most: [
-                    classData.most.dataMostComment,
-                    classData.most.dataMostReply,
-                    ...this.processEntryData(classData.most.dataMostEntryComment, commentTemplate),
-                ],
-            }
-        },
-        processEntryData(EntryCommentNumber, commentTemplate) {
-            return [
-                ...commentTemplate.map(c => {
-                    return EntryCommentNumber.find(e => e.entry === c).dataEntryComment || 0
-                }),
-                EntryCommentNumber.find(e => e.entry === "default").dataEntryComment,
-            ]
         },
     },
 }
