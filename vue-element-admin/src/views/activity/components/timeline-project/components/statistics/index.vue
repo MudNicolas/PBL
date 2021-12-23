@@ -2,7 +2,6 @@
     <!--TODO：可按节显示发言情况，可显示总体发言情况，可显示发言情况排名-->
     <div class="container" v-loading="!dataRecevied">
         <div v-if="dataRecevied">
-            <p>注：default为普通评论，即不受条目制约的评论</p>
             <group-chart
                 v-for="member of groupMemberData"
                 :key="member._id"
@@ -44,7 +43,7 @@ export default {
             personalOrGroupTotalData: [],
             classData: [],
 
-            indicator: [], //评论数，回复数，entry评论数，default
+            indicator: [], //评论数，回复数，entry评论数，普通评论
         }
     },
     created() {
@@ -78,7 +77,8 @@ export default {
                         },
                     ]
                     this.indicator = this.indicator.concat(commentTemplate.map(e => ({ name: e })))
-
+                    this.indicator.pop()
+                    this.indicator.push({ name: "普通评论" })
                     this.dataRecevied = true
                 })
                 .catch(err => {

@@ -28,7 +28,7 @@ export default {
         },
         title: {
             type: String,
-            default: "个人或小组总互动情况",
+            default: "个人或小组互动总情况",
         },
         personalOrGroupTotalData: {
             type: Array,
