@@ -5,7 +5,7 @@
         border
         style="width: 100%; margin-top: 20px"
     >
-        <el-table-column label="项目" align="center">
+        <el-table-column label="项目类别" align="center">
             <template slot-scope="scope">
                 {{ scope.row.authorType | type }}
             </template>
