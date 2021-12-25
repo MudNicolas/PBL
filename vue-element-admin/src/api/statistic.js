@@ -7,3 +7,11 @@ export function getTimelineStatisticData(query) {
         params: query,
     })
 }
+
+export function teacherGetAllStatistics(query) {
+    return request({
+        url: "/activity/view/timeline/statistic/teacher/get/all",
+        method: "get",
+        params: query,
+    })
+}

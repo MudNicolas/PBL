@@ -62,7 +62,7 @@
             </el-table-column>
 
             <el-table-column
-                label="审批状态"
+                label="上次审批状态"
                 align="center"
                 :filters="[
                     { text: '待提审', value: 'beforeApprove' },

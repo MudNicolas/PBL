@@ -29,23 +29,13 @@
                     <i class="el-icon-edit" />
                     &nbsp;编辑
                 </el-button>
-                <el-button
-                    type="danger"
-                    v-if="editAndDeleteActive"
-                    :disabled="deleteSubmitting"
-                    @click="deleteGroup(scope.row)"
-                >
-                    <i class="el-icon-delete" />
-                    &nbsp;删除
-                </el-button>
-                <span style="font-size: 12px; color: grey" v-else>请先启用编辑</span>
             </template>
         </el-table-column>
     </el-table>
 </template>
 
 <script>
-import { getGroup, getUnGroupedStudents } from "@/api/course"
+import { teacherGetAllStatistics } from "@/api/statistic"
 
 export default {
     props: ["activityId"],
@@ -59,10 +49,12 @@ export default {
         }
     },
     created() {
-        //this.getGroup()
+        this.getData()
     },
     methods: {
-        //新建组时，获取未分组学生
+        getData() {
+            teacherGetAllStatistics({ activityID: this.activityId })
+        },
 
         //表合并
         objectSpanMethod({ row, column, rowIndex, columnIndex }) {

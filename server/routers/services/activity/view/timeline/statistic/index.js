@@ -60,6 +60,68 @@ router.get("/get", async (req, res) => {
     })
 })
 
+router.use((req, res, next) => {
+    if (req.role === "teacher") {
+        next()
+    }
+})
+
+router.get("/teacher/get/all", async (req, res) => {
+    let { activity, course } = req
+    let authorType = activity.options.authorType
+    let commentTemplate = activity.options.commentTemplate || []
+    let { studentList } = course
+    let activityID = activity._id
+    commentTemplate.push("default")
+    let classData = await getClassData(
+        activity._id,
+        authorType,
+        studentList,
+        commentTemplate,
+        course.group
+    )
+    let studentQuery
+    if (authorType === "group") {
+        studentQuery = course.group.map(e => ({
+            name: e.name,
+            member: e.groupMember,
+        }))
+    } else {
+        studentQuery = (
+            await course.execPopulate({
+                path: "studentList",
+                select: "name username",
+            })
+        ).studentList.map(e => ({
+            name: e.name,
+            member: [e._id],
+        }))
+    }
+    //console.log(studentQuery)
+    let rawData = []
+    for (let i of studentQuery) {
+        let item = {
+            groupName: i.name,
+            totalData: [],
+            memberData: [],
+        }
+        item.totalData = await getTotalDataOfStudentList(activityID, i.member, commentTemplate)
+        item.memberData = await getMemberDetailOfStudentList(activityID, i.member, commentTemplate)
+        rawData.push(item)
+    }
+    let processedData = []
+    for (let i of rawData) {
+        processedData.push({
+            groupName: i.groupName,
+            ...processData(classData, i.totalData, i.memberData, commentTemplate, authorType),
+        })
+    }
+    res.json({
+        code: 20000,
+        data: processedData,
+    })
+})
+
 function processData(
     classData,
     userQueryTotalData,
