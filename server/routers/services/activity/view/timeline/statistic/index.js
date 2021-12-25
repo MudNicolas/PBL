@@ -355,15 +355,16 @@ async function getGroupTypeClassData(activityID, courseGroup, commentTemplate) {
 async function getPersonalTypeClassData(activityID, studentList, commentTemplate) {
     let { sortCommentNumberList, sortReplyNumberList, sortEntryCommentList } =
         await getCommentAndReplyData(activityID, studentList, commentTemplate)
-    //最多评论数
 
+    //console.log(sortCommentNumberList, sortReplyNumberList, sortEntryCommentList)
+    //最多评论数
     let mostComment = sortCommentNumberList[0] ? sortCommentNumberList[0].commentSum : 0
     //最多回复数
     let mostReply = sortReplyNumberList[0] ? sortReplyNumberList[0].replySum : 0
     //每条entry最多评论数
     let mostEntryComment = sortEntryCommentList.map(e => ({
         entry: e._id,
-        commentNumber: e.entryCommentSum,
+        commentNumber: maxCountElement(e.user),
     }))
     //学生数
     let numberStudent = studentList.length || 1 //防止没学生时div0
@@ -398,6 +399,29 @@ async function getPersonalTypeClassData(activityID, studentList, commentTemplate
         avgReply,
         avgEntryComment,
     }
+}
+
+function maxCountElement(arr) {
+    var obj = {}
+    for (var i = 0; i < arr.length; i++) {
+        var key = arr[i]
+        if (obj[key]) {
+            undefined
+            obj[key]++
+        } else {
+            obj[key] = 1
+        }
+    }
+
+    var maxCount = 0
+    var maxElement = arr[0]
+    for (var key in obj) {
+        if (maxCount < obj[key]) {
+            maxCount = obj[key]
+            maxElement = key
+        }
+    }
+    return maxCount
 }
 
 async function getCommentAndReplyData(activityID, studentList, commentTemplate) {

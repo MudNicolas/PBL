@@ -93,7 +93,7 @@ export default {
                         e.tableData[0].index = index
                         this.tableData = [...this.tableData, ...e.tableData]
                     })
-                    console.log(this.zipData, this.tableData)
+                    //console.log(this.zipData, this.tableData)
                     this.loading = false
                 })
                 .catch()
@@ -117,6 +117,10 @@ export default {
             //console.log(this.zipData)
             this.chartIndex = index
             this.currentChartData = this.zipData[index]
+            this.currentChartData.indicator[this.currentChartData.indicator.length - 1] = {
+                name: "普通评论",
+            }
+
             this.chartVisible = true
         },
     },
