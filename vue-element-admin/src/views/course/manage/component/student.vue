@@ -84,7 +84,8 @@
                                 :on-success="handleSuccess"
                                 :before-upload="beforeUpload"
                                 :infoText="infoText"
-                                listType="学号"
+                                :tHeader="['学号', '姓名']"
+                                :filterVal="['id', 'name']"
                             />
                         </el-form-item>
                     </el-col>
@@ -221,7 +222,7 @@ export default {
         handleSuccess({ results }) {
             //console.log(results);
             //判断文件是否符合规范
-            if (!results[0]["学号"] || !results[0]["姓名"]) {
+            if (!results[0] || !results[0]["学号"] || !results[0]["姓名"]) {
                 this.$message({
                     type: "warning",
                     message: "文件错误，请遵循模板格式填入信息！",
@@ -232,8 +233,8 @@ export default {
             let studentNum = []
             results.forEach(e => {
                 //数组中已有这个学号
-                e["学号"] = e["学号"].toString().trim()
-                e["姓名"] = e["姓名"].toString().trim()
+                e["学号"] = (e["学号"] || "").toString().trim()
+                e["姓名"] = (e["姓名"] || "").toString().trim()
                 if (e["学号"] === "" || e["姓名"] === "") {
                     this.$message({
                         type: "warning",

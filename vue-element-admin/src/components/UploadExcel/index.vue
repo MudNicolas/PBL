@@ -33,7 +33,14 @@ export default {
         beforeUpload: Function, // eslint-disable-line
         onSuccess: Function, // eslint-disable-line
         infoText: String,
-        listType: String,
+        tHeader: {
+            type: Array,
+            default: () => [],
+        },
+        filterVal: {
+            type: Array,
+            default: () => [],
+        },
     },
     data() {
         return {
@@ -137,8 +144,8 @@ export default {
         getTemplate() {
             this.downloadLoading = true
             import("@/vendor/Export2Excel").then(excel => {
-                const tHeader = [this.listType, "姓名"]
-                const filterVal = ["id", "name"]
+                const tHeader = this.tHeader
+                const filterVal = this.filterVal
                 const list = this.list
                 const data = this.formatJson(filterVal, list)
                 excel.export_json_to_excel({

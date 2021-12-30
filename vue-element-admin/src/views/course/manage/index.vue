@@ -24,9 +24,10 @@ import student from "./component/student.vue"
 import partner from "./component/partner.vue"
 import commentTemplate from "./component/comment-template.vue"
 import group from "./component/group.vue"
+import interEvaluationTemplate from "./component/inter-evaluation-template.vue"
 
 export default {
-    components: { info, student, partner, commentTemplate, group },
+    components: { info, student, partner, commentTemplate, group, interEvaluationTemplate },
     name: "ManageCourse",
 
     data() {
@@ -39,6 +40,7 @@ export default {
                 { name: "group", label: "分组管理" },
                 { name: "partner", label: "协作教师管理" },
                 { name: "commentTemplate", label: "发言模板管理" },
+                { name: "interEvaluationTemplate", label: "互评模板管理" },
             ],
         }
     },
