@@ -50,6 +50,22 @@ var courseSchema = new mongoose.Schema({
             },
         },
     ],
+
+    interEvaluationTemplate: [
+        {
+            name: String,
+            dimensions: [
+                {
+                    dimensionName: String,
+                    starText: Array,
+                },
+            ],
+            isUsed: {
+                type: Boolean,
+                default: true,
+            },
+        },
+    ],
 })
 
 export default mongoose.model("Course", courseSchema)

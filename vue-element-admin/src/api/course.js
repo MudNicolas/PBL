@@ -95,9 +95,25 @@ export function getAllCommentTemplate(query) {
     })
 }
 
+export function getAllInterEvaluationTemplate(query) {
+    return request({
+        url: "/course/manage/InterEvaluationTemplate/get",
+        method: "get",
+        params: query,
+    })
+}
+
 export function submitNewCommentTemplate(data) {
     return request({
         url: "/course/manage/commentTemplate/create",
+        method: "post",
+        data,
+    })
+}
+
+export function submitNewInterEvaluationTemplate(data) {
+    return request({
+        url: "/course/manage/InterEvaluationTemplate/create",
         method: "post",
         data,
     })
@@ -114,6 +130,14 @@ export function editCommentTemplate(data) {
 export function deleteCommentTemplate(data) {
     return request({
         url: "/course/manage/commentTemplate/delete",
+        method: "delete",
+        data,
+    })
+}
+
+export function deleteInterEvaluationTemplate(data) {
+    return request({
+        url: "/course/manage/InterEvaluationTemplate/delete",
         method: "delete",
         data,
     })

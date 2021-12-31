@@ -13,20 +13,15 @@
             </div>
         </div>
         <el-table
-            :data="commentTemplate"
+            :data="interEvaluationTemplate"
             :span-method="objectSpanMethod"
             border
             style="width: 100%; margin-top: 20px"
             v-loading="loading"
         >
-            <el-table-column
-                prop="name"
-                label="模板名称"
-                width="240"
-                align="center"
-            ></el-table-column>
-            <el-table-column prop="title" label="模板条目"></el-table-column>
-            <el-table-column label="操作" align="center" width="360">
+            <el-table-column prop="name" label="模板名称" align="center"></el-table-column>
+            <el-table-column prop="dimensionName" align="center" label="维度"></el-table-column>
+            <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
                     <el-button @click="preview(scope.row._id)">
                         <i class="el-icon-view" />
@@ -37,7 +32,7 @@
                         type="danger"
                         v-if="editAndDeleteActive"
                         :disabled="deleteSubmitting"
-                        @click="deleteCommentTemplate(scope.row._id)"
+                        @click="deleteInterEvaluationTemplate(scope.row._id)"
                     >
                         <i class="el-icon-delete" />
                         &nbsp;删除
@@ -45,20 +40,27 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog title="模板预览" :visible.sync="previewDialogVisible">
+        <el-dialog :title="previewData.name" :visible.sync="previewDialogVisible">
             <el-form>
-                <el-form-item
-                    v-for="entry of previewData"
-                    :key="'perview' + entry._id + entry.title"
-                >
-                    <el-input placeholder="具体评论...">
-                        <template slot="prepend">{{ entry.title }}</template>
-                    </el-input>
+                <el-form-item>
+                    <el-table
+                        :data="previewData.tableData"
+                        border
+                        highlight-current-row
+                        style="width: 100%; margin-top: 20px"
+                    >
+                        <el-table-column prop="0" label="维度" />
+                        <el-table-column prop="1" label="1星文本" />
+                        <el-table-column prop="2" label="2星文本" />
+                        <el-table-column prop="3" label="3星文本" />
+                        <el-table-column prop="4" label="4星文本" />
+                        <el-table-column prop="5" label="5星文本" />
+                    </el-table>
                 </el-form-item>
             </el-form>
         </el-dialog>
 
-        <el-dialog title="创建互评模板" :visible.sync="createTeamplateDialogVisible">
+        <el-dialog title="创建互评模板" :visible.sync="createTeamplateDialogVisible" width="80%">
             <el-form>
                 <el-row>
                     <el-col>
@@ -69,11 +71,11 @@
                                 infoText="导入模板，将Excel文件拖到此处，或"
                                 :tHeader="[
                                     '维度',
-                                    '一星文本',
-                                    '二星文本',
-                                    '三星文本',
-                                    '四星文本',
-                                    '五星文本',
+                                    '1星文本',
+                                    '2星文本',
+                                    '3星文本',
+                                    '4星文本',
+                                    '5星文本',
                                 ]"
                                 :filterVal="[
                                     'dimension',
@@ -92,24 +94,35 @@
                     <el-col>
                         <el-form-item>
                             <el-table
-                                :data="[]"
+                                :data="newDimensionList"
                                 border
                                 highlight-current-row
                                 style="width: 100%; margin-top: 20px"
                             >
-                                <el-table-column prop="学号" label="学号" sortable />
-                                <el-table-column prop="姓名" label="姓名" />
+                                <el-table-column prop="维度" label="维度" />
+                                <el-table-column prop="1星文本" label="1星文本" />
+                                <el-table-column prop="2星文本" label="2星文本" />
+                                <el-table-column prop="3星文本" label="3星文本" />
+                                <el-table-column prop="4星文本" label="4星文本" />
+                                <el-table-column prop="5星文本" label="5星文本" />
                             </el-table>
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item>
+                            <el-input v-model="newTemplateName" placeholder="模板名称*"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <div style="display: flex">
-                    <el-button style="margin-left: auto" @click="cancelLoadExcel">取消</el-button>
+                    <el-button style="margin-left: auto" @click="resetLoadExcel">取消</el-button>
                     <el-button
                         type="primary"
-                        :disabled="true"
+                        :disabled="newDimensionList.length === 0 || !newTemplateName.trim()"
                         @click="handleSubmit"
-                        :loading="submitting"
+                        :loading="newDimensionSubmitting"
                     >
                         导入
                     </el-button>
@@ -121,64 +134,64 @@
 
 <script>
 import {
-    getAllCommentTemplate,
-    submitNewCommentTemplate,
-    deleteCommentTemplate,
+    submitNewInterEvaluationTemplate,
+    getAllInterEvaluationTemplate,
+    deleteInterEvaluationTemplate,
 } from "@/api/course"
 import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 
 export default {
-    name: "CommentTemplate",
+    name: "InterEvaluationTemplate",
     props: ["courseId"],
     components: { UploadExcelComponent },
     created() {
-        this.getAllCommentTemplate()
+        this.getAllInterEvaluationTemplate()
     },
     data() {
         return {
-            commentTemplate: [],
+            interEvaluationTemplate: [],
+            rawInterEvaluationTemplate: [],
             createTeamplateDialogVisible: false,
             previewDialogVisible: false,
-
-            newCommentTemplate: {
-                name: "",
-                entry: [{ value: "" }],
-            },
+            newDimensionList: [],
+            newTemplateName: "",
             newTemplateSubmitting: false,
             loading: true,
             previewData: [],
-            submitting: false,
+            newDimensionSubmitting: false,
             deleteSubmitting: false,
             editAndDeleteActive: false,
         }
     },
     methods: {
-        getAllCommentTemplate() {
+        getAllInterEvaluationTemplate() {
             this.loading = true
-            getAllCommentTemplate({ courseID: this.courseId }).then(res => {
-                let rowTeamplate = res.data.commentTemplate
+            getAllInterEvaluationTemplate({ courseID: this.courseId }).then(res => {
+                let rowTeamplate = res.data.interEvaluationTemplate
+                this.rawInterEvaluationTemplate = rowTeamplate
+                console.log(rowTeamplate)
                 this.transformTemplateData(rowTeamplate)
             })
         },
         transformTemplateData(data) {
             let tableData = []
             for (let template of data) {
-                let entry = template.template
+                let { dimensions } = template
                 let item = {}
-                for (let i = 0; i < entry.length; i++) {
+                for (let i = 0; i < dimensions.length; i++) {
                     item = {
                         name: template.name,
-                        title: entry[i],
+                        dimensionName: dimensions[i].dimensionName,
                     }
                     if (i === 0) {
-                        item.length = entry.length
+                        item.length = dimensions.length
                         item._id = template._id
                     }
                     tableData.push(item)
                 }
             }
             //console.log(tableData)
-            this.commentTemplate = []
+            this.interEvaluationTemplate = tableData
             this.loading = false
         },
         objectSpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -193,91 +206,32 @@ export default {
                 }
             }
         },
-        formValidate(formName) {
-            return new Promise((resolve, reject) => {
-                this[formName].name = this[formName].name.trim()
-                this[formName].entry.forEach(e => {
-                    e.value = e.value.trim()
-                })
-                this.$refs[formName].validate(valid => {
-                    if (valid) {
-                        let temp = Object.assign({}, this[formName])
-                        let entry = temp.entry.map(e => {
-                            return e.value
-                        })
-                        temp.entry = entry
-                        //console.log(temp)
-                        resolve(temp)
-                        return
-                    } else {
-                        this.$message({
-                            message: "请将信息填写完整",
-                            type: "warning",
-                        })
-                        reject()
-                        return
-                    }
-                })
-            })
-        },
-        submitTemplate(formName) {
-            this.formValidate(formName).then(temp => {
-                this.newTemplateSubmitting = true
-                submitNewCommentTemplate({
-                    courseID: this.courseId,
-                    template: temp,
-                })
-                    .then(() => {
-                        this.$message({
-                            type: "success",
-                            message: "添加模板成功",
-                        })
-                        this.newTemplateSubmitting = false
-                        this.getAllCommentTemplate()
-                        this.resetTemplate("newCommentTemplate")
-                        this.createTeamplateDialogVisible = false
-                    })
-                    .catch(() => {
-                        this.newTemplateSubmitting = false
-                    })
-            })
-        },
-
-        resetTemplate(formName) {
-            this.$refs[formName].resetFields()
-            this.newCommentTemplate = {
-                name: "",
-                entry: [{ value: "" }],
-            }
-        },
-        removeEntry(item) {
-            let index = this.newCommentTemplate.entry.indexOf(item)
-            if (index !== -1) {
-                this.newCommentTemplate.entry.splice(index, 1)
-            }
-        },
-
-        addEntry() {
-            this.newCommentTemplate.entry.push({
-                value: "",
-                key: Date.now(),
-            })
-        },
 
         preview(_id) {
-            let tData = this.commentTemplate
-            for (let i = 0; i < tData.length; i++) {
-                if (tData[i]._id === _id) {
-                    this.previewData = tData.slice(i, i + tData[i].length)
+            let rawData = this.rawInterEvaluationTemplate
+            let previewData = {
+                name: "",
+                tableData: [],
+            }
+            for (let i = 0; i < rawData.length; i++) {
+                if (rawData[i]._id.toString() === _id) {
+                    console.log(rawData[i].dimensions)
+                    previewData.name = rawData[i].name
+                    previewData.tableData = rawData[i].dimensions.map(e => [
+                        e.dimensionName,
+                        ...e.starText,
+                    ])
                     break
                 }
             }
+            console.log(previewData)
+            this.previewData = previewData
             this.previewDialogVisible = !this.previewDialogVisible
         },
 
-        deleteCommentTemplate(_id) {
+        deleteInterEvaluationTemplate(_id) {
             this.$confirm(
-                "确认删除此互评模板？删除后将无法再使用此模板，但已有的使用此模板的互评将继续显示",
+                "确认删除此互评模板？删除后将无法再使用此模板，但不影响已使用本模板的活动",
                 "提示",
                 {
                     confirmButtonText: "确定",
@@ -287,7 +241,7 @@ export default {
                         if (action === "confirm") {
                             instance.confirmButtonLoading = true
                             this.deleteSubmitting = true
-                            deleteCommentTemplate({
+                            deleteInterEvaluationTemplate({
                                 courseID: this.courseId,
                                 templateID: _id,
                             })
@@ -298,7 +252,7 @@ export default {
                                         type: "success",
                                         message: "删除成功!",
                                     })
-                                    this.getAllCommentTemplate()
+                                    this.getAllInterEvaluationTemplate()
                                     done()
                                 })
                                 .catch(() => {
@@ -313,10 +267,98 @@ export default {
                 }
             ).catch(() => {})
         },
-        handleLoadExcelSuccess() {},
-        beforeLoadExcel() {},
-        cancelLoadExcel() {},
-        handleSubmit() {},
+        handleLoadExcelSuccess({ results }) {
+            let newDimensionList = []
+            console.log(results)
+            for (let dimension of results) {
+                if (!this.checkDimension(dimension)) {
+                    this.$message({
+                        type: "warning",
+                        message: "文件错误，请遵循模板格式填入信息！",
+                    })
+
+                    return false
+                } else {
+                    dimension["维度"] = (dimension["维度"] || "").toString().trim()
+                    for (let i = 1; i <= 5; i++) {
+                        dimension[`${i}星文本`] = (dimension[`${i}星文本`] || "").toString().trim()
+                    }
+                    newDimensionList.push(dimension)
+                }
+            }
+            this.newDimensionList = newDimensionList
+        },
+        checkDimension(d) {
+            d["维度"] = (d["维度"] || "").toString().trim()
+            if (!d["维度"]) return false
+
+            for (let i = 1; i <= 5; i++) {
+                d[`${i}星文本`] = (d[`${i}星文本`] || "").toString().trim()
+                if (!d[`${i}星文本`]) return false
+            }
+            return true
+        },
+        beforeLoadExcel(file) {
+            const isLt1M = file.size / 1024 / 1024 < 1
+
+            if (isLt1M) {
+                return true
+            }
+
+            this.$message({
+                message: "文件大小限制1MB",
+                type: "warning",
+            })
+            return false
+        },
+        resetLoadExcel() {
+            this.createTeamplateDialogVisible = false
+            this.newDimensionSubmitting = false
+            this.newDimensionList = []
+            this.newTemplateName = ""
+        },
+        handleSubmit() {
+            this.newDimensionSubmitting = true
+            let list = this.newDimensionList
+            let newTemplateName = this.newTemplateName
+            console.log(newTemplateName, list)
+            for (let dimension of list) {
+                if (!this.checkDimension(dimension)) {
+                    this.$message({
+                        type: "warning",
+                        message: "文件错误，请遵循模板格式填入信息！",
+                    })
+                    return false
+                }
+            }
+            if (!newTemplateName.trim()) {
+                this.$message({
+                    type: "warning",
+                    message: "请输入模板名称",
+                })
+                return false
+            }
+            let data = {
+                newTemplateName,
+                dimensionList: list,
+            }
+            submitNewInterEvaluationTemplate({
+                courseID: this.courseId,
+                template: data,
+            })
+                .then(() => {
+                    this.$message({
+                        type: "success",
+                        message: "添加模板成功",
+                    })
+
+                    this.getAllInterEvaluationTemplate()
+                    this.resetLoadExcel()
+                })
+                .catch(err => {
+                    this.$message.error(err)
+                })
+        },
     },
 }
 </script>

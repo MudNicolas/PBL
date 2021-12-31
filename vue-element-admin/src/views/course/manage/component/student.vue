@@ -257,7 +257,7 @@ export default {
             this.amount = results.length
             if (this.amount == studentNum.length) {
                 //console.log(studentNum);
-                this.uploadStudentList = results
+                this.uploadStudentList = results.map(e => ({ 学号: e["学号"], 姓名: e["姓名"] }))
             }
         },
         cancel() {
