@@ -107,9 +107,25 @@ export function activityGetCommentTemplate(query) {
     })
 }
 
+export function activityGetInterEvaluationTemplate(query) {
+    return request({
+        url: "/section/manage/activity/interEvaluationTemplate/get",
+        method: "get",
+        params: query,
+    })
+}
+
 export function inActivitySubmitNewCommentTemplate(data) {
     return request({
         url: "/section/manage/activity/commentTemplate/new",
+        method: "post",
+        data,
+    })
+}
+
+export function inActivitySubmitNewInterEvaluationTemplate(data) {
+    return request({
+        url: "/section/manage/activity/interEvaluationTemplate/new",
         method: "post",
         data,
     })

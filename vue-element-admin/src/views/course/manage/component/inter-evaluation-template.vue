@@ -169,7 +169,7 @@ export default {
             getAllInterEvaluationTemplate({ courseID: this.courseId }).then(res => {
                 let rowTeamplate = res.data.interEvaluationTemplate
                 this.rawInterEvaluationTemplate = rowTeamplate
-                console.log(rowTeamplate)
+                //console.log(rowTeamplate)
                 this.transformTemplateData(rowTeamplate)
             })
         },
@@ -215,7 +215,7 @@ export default {
             }
             for (let i = 0; i < rawData.length; i++) {
                 if (rawData[i]._id.toString() === _id) {
-                    console.log(rawData[i].dimensions)
+                    // console.log(rawData[i].dimensions)
                     previewData.name = rawData[i].name
                     previewData.tableData = rawData[i].dimensions.map(e => [
                         e.dimensionName,
@@ -224,7 +224,7 @@ export default {
                     break
                 }
             }
-            console.log(previewData)
+            // console.log(previewData)
             this.previewData = previewData
             this.previewDialogVisible = !this.previewDialogVisible
         },
@@ -269,7 +269,7 @@ export default {
         },
         handleLoadExcelSuccess({ results }) {
             let newDimensionList = []
-            console.log(results)
+            // console.log(results)
             for (let dimension of results) {
                 if (!this.checkDimension(dimension)) {
                     this.$message({
@@ -321,7 +321,7 @@ export default {
             this.newDimensionSubmitting = true
             let list = this.newDimensionList
             let newTemplateName = this.newTemplateName
-            console.log(newTemplateName, list)
+            // console.log(newTemplateName, list)
             for (let dimension of list) {
                 if (!this.checkDimension(dimension)) {
                     this.$message({

@@ -88,7 +88,7 @@
                                 </el-date-picker>
                             </el-form-item>
                             <el-form-item
-                                label="发言模板"
+                                label="发言或互评模板"
                                 :rules="{
                                     required: true,
                                 }"
@@ -104,7 +104,10 @@
                                 </el-radio-group>
                             </el-form-item>
                             <el-form-item
-                                v-if="activity.isUseCommentTemplate"
+                                v-if="
+                                    activity.isUseCommentTemplate &&
+                                    ['TimeLineProject', 'Forum'].includes(activity.type)
+                                "
                                 label="模板"
                                 :rules="{
                                     required: true,
@@ -148,6 +151,77 @@
                                 >
                                     添加发言模板
                                 </el-button>
+                            </el-form-item>
+                            <el-form-item
+                                v-if="
+                                    activity.isUseCommentTemplate &&
+                                    ['Evaluation'].includes(activity.type)
+                                "
+                                label="互评模板"
+                                :rules="{
+                                    required: true,
+                                }"
+                            >
+                                <el-select
+                                    v-model="activity.evaluation.chosenInterEvaluationTemplate"
+                                    placeholder="请选择"
+                                    :loading="templateGetting"
+                                >
+                                    <el-option
+                                        v-for="item in interEvaluationTemplates"
+                                        :key="item._id"
+                                        :label="item.name"
+                                        :value="item.dimensions"
+                                    >
+                                        <span style="float: left">{{ item.name }}</span>
+                                        <span style="float: right; color: #8492a6">
+                                            <el-popover placement="right" trigger="hover">
+                                                <el-form style="padding-top: 16px">
+                                                    <el-form-item
+                                                        v-for="dimension of item.dimensions"
+                                                        :key="'perview' + dimension._id"
+                                                        :label="dimension.dimensionName"
+                                                    >
+                                                        <el-row>
+                                                            <el-col>
+                                                                <el-rate
+                                                                    v-model="reteValue"
+                                                                    text-color="#ff9900"
+                                                                ></el-rate>
+                                                            </el-col>
+                                                        </el-row>
+                                                    </el-form-item>
+                                                </el-form>
+                                                <i slot="reference" class="el-icon-view" />
+                                            </el-popover>
+                                        </span>
+                                    </el-option>
+                                </el-select>
+                                <el-button
+                                    style="margin-left: 10px"
+                                    icon="el-icon-plus"
+                                    @click="newInterEvaluationTemplateDialogVisible = true"
+                                >
+                                    添加互评模板
+                                </el-button>
+                            </el-form-item>
+                            <el-form-item
+                                v-if="
+                                    activity.evaluation.chosenInterEvaluationTemplate.length > 0 &&
+                                    activity.isUseCommentTemplate &&
+                                    ['Evaluation'].includes(activity.type)
+                                "
+                            >
+                                <el-checkbox-group v-model="activity.evaluation.chosenDimensions">
+                                    <el-checkbox
+                                        v-for="d of activity.evaluation
+                                            .chosenInterEvaluationTemplate"
+                                        :key="d._id"
+                                        :label="d._id"
+                                    >
+                                        {{ d.dimensionName }}
+                                    </el-checkbox>
+                                </el-checkbox-group>
                             </el-form-item>
                             <el-form-item
                                 label="项目审批"
@@ -359,6 +433,87 @@
                         </el-form-item>
                     </el-form>
                 </el-dialog>
+                <el-dialog
+                    title="新建互评模板"
+                    :visible.sync="newInterEvaluationTemplateDialogVisible"
+                    width="80%"
+                >
+                    <el-form>
+                        <el-row>
+                            <el-col>
+                                <el-form-item style="margin-bottom: 0px">
+                                    <upload-excel-component
+                                        :on-success="handleLoadExcelSuccess"
+                                        :before-upload="beforeLoadExcel"
+                                        infoText="导入模板，将Excel文件拖到此处，或"
+                                        :tHeader="[
+                                            '维度',
+                                            '1星文本',
+                                            '2星文本',
+                                            '3星文本',
+                                            '4星文本',
+                                            '5星文本',
+                                        ]"
+                                        :filterVal="[
+                                            'dimension',
+                                            'star1',
+                                            'star2',
+                                            'star3',
+                                            'star4',
+                                            'star5',
+                                        ]"
+                                    />
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col>
+                                <el-form-item>
+                                    <el-table
+                                        :data="newInterEvaluationTemplate.dimensionList"
+                                        border
+                                        highlight-current-row
+                                        style="width: 100%; margin-top: 20px"
+                                    >
+                                        <el-table-column prop="维度" label="维度" />
+                                        <el-table-column prop="1星文本" label="1星文本" />
+                                        <el-table-column prop="2星文本" label="2星文本" />
+                                        <el-table-column prop="3星文本" label="3星文本" />
+                                        <el-table-column prop="4星文本" label="4星文本" />
+                                        <el-table-column prop="5星文本" label="5星文本" />
+                                    </el-table>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item>
+                                    <el-input
+                                        v-model="newInterEvaluationTemplate.name"
+                                        placeholder="模板名称*"
+                                    ></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <div style="display: flex">
+                            <el-button style="margin-left: auto" @click="resetLoadExcel">
+                                取消
+                            </el-button>
+                            <el-button
+                                type="primary"
+                                :disabled="
+                                    newInterEvaluationTemplate.dimensionList.length === 0 ||
+                                    !newInterEvaluationTemplate.name.trim()
+                                "
+                                @click="handleSubmitNewInterEvaluationTemplate"
+                                :loading="newDimensionSubmitting"
+                            >
+                                导入
+                            </el-button>
+                        </div>
+                    </el-form>
+                </el-dialog>
             </div>
 
             <div class="suc-wrapper" v-else key="nas2">
@@ -383,10 +538,17 @@
 </template>
 
 <script>
-import { activityGetCommentTemplate, inActivitySubmitNewCommentTemplate } from "@/api/section"
+import {
+    activityGetCommentTemplate,
+    activityGetInterEvaluationTemplate,
+    inActivitySubmitNewCommentTemplate,
+    inActivitySubmitNewInterEvaluationTemplate,
+} from "@/api/section"
 import { submitCreateActivity } from "@/api/activity"
+import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 export default {
     name: "CreateActivity",
+    components: { UploadExcelComponent },
     created() {
         this.sectionID = this.$route.params.id
     },
@@ -400,26 +562,21 @@ export default {
                 name: "",
                 entry: [{ value: "" }],
             },
+            newInterEvaluationTemplate: {
+                name: "",
+                dimensionList: [],
+            },
             options: [
                 {
                     value: "TimeLineProject",
                     label: "形成性项目",
                     disabled: false,
                 },
-                {
-                    value: "Forum",
-                    label: "论坛",
-                    disabled: true,
-                },
+
                 {
                     value: "Evaluation",
                     label: "互动评价",
-                    disabled: true,
-                },
-                {
-                    value: "Work",
-                    label: "作业提交",
-                    disabled: true,
+                    disabled: false,
                 },
             ],
 
@@ -446,6 +603,8 @@ export default {
                 isNeedApprove: false,
                 authorType: "personal",
                 evaluation: {
+                    chosenInterEvaluationTemplate: [],
+                    chosenDimensions: [],
                     phaseSwitchMethod: "auto",
                     submitLimitTime: "",
                     evaluationLimitTime: "",
@@ -455,7 +614,10 @@ export default {
             },
             templateGetting: false,
             newCommentTemplateDialogVisible: false,
+            newInterEvaluationTemplateDialogVisible: false,
+            reteValue: 5,
             commentTemplates: [],
+            interEvaluationTemplates: [],
             pickerOptions: {
                 shortcuts: [
                     {
@@ -526,16 +688,50 @@ export default {
                 ],
             },
             newTemplateSubmitting: false,
+            newDimensionSubmitting: false,
         }
     },
     watch: {
-        "activity.isUseCommentTemplate"(v) {
-            if (v) {
-                this.getCommentTemplate()
-            }
+        "activity.isUseCommentTemplate": {
+            handler(v) {
+                if (v) {
+                    if (["TimeLineProject", "Forum"].includes(this.activity.type))
+                        this.getCommentTemplate()
+                    if (["Evaluation"].includes(this.activity.type))
+                        this.getInterEvaluationTemplate()
+                }
+            },
+            immediate: true,
+        },
+        "activity.type": {
+            handler(v) {
+                if (v) {
+                    if (["TimeLineProject", "Forum"].includes(v)) this.getCommentTemplate()
+                    if (["Evaluation"].includes(v)) this.getInterEvaluationTemplate()
+                }
+            },
+            immediate: true,
+        },
+        "activity.evaluation.chosenInterEvaluationTemplate": {
+            handler(v) {
+                if (v.length > 0) {
+                    this.activity.evaluation.chosenDimensions = v.map(e => e._id)
+                }
+            },
         },
     },
     methods: {
+        getInterEvaluationTemplate() {
+            this.templateGetting = true
+            activityGetInterEvaluationTemplate({ sectionID: this.sectionID })
+                .then(res => {
+                    this.templateGetting = false
+                    this.interEvaluationTemplates = res.data
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
         getCommentTemplate() {
             this.templateGetting = true
             activityGetCommentTemplate({ sectionID: this.sectionID })
@@ -543,7 +739,9 @@ export default {
                     this.templateGetting = false
                     this.commentTemplates = res.data
                 })
-                .catch()
+                .catch(err => {
+                    console.log(err)
+                })
         },
         resetTemplate(formName) {
             this.$refs[formName].resetFields()
@@ -714,6 +912,100 @@ export default {
                 },
             }),
                 (this.stage = 1)
+        },
+        handleLoadExcelSuccess({ results }) {
+            let newDimensionList = []
+            // console.log(results)
+            for (let dimension of results) {
+                if (!this.checkDimension(dimension)) {
+                    this.$message({
+                        type: "warning",
+                        message: "文件错误，请遵循模板格式填入信息！",
+                    })
+
+                    return false
+                } else {
+                    dimension["维度"] = (dimension["维度"] || "").toString().trim()
+                    for (let i = 1; i <= 5; i++) {
+                        dimension[`${i}星文本`] = (dimension[`${i}星文本`] || "").toString().trim()
+                    }
+                    newDimensionList.push(dimension)
+                }
+            }
+            this.newInterEvaluationTemplate.dimensionList = newDimensionList
+        },
+        checkDimension(d) {
+            d["维度"] = (d["维度"] || "").toString().trim()
+            if (!d["维度"]) return false
+
+            for (let i = 1; i <= 5; i++) {
+                d[`${i}星文本`] = (d[`${i}星文本`] || "").toString().trim()
+                if (!d[`${i}星文本`]) return false
+            }
+            return true
+        },
+        beforeLoadExcel(file) {
+            const isLt1M = file.size / 1024 / 1024 < 1
+
+            if (isLt1M) {
+                return true
+            }
+
+            this.$message({
+                message: "文件大小限制1MB",
+                type: "warning",
+            })
+            return false
+        },
+        resetLoadExcel() {
+            this.newInterEvaluationTemplateDialogVisible = false
+            this.newDimensionSubmitting = false
+            this.newInterEvaluationTemplate = {
+                name: "",
+                dimensionList: [],
+            }
+        },
+        handleSubmitNewInterEvaluationTemplate() {
+            this.newDimensionSubmitting = true
+            let list = this.newInterEvaluationTemplate.dimensionList
+            let newTemplateName = this.newInterEvaluationTemplate.name
+            // console.log(newTemplateName, list)
+            for (let dimension of list) {
+                if (!this.checkDimension(dimension)) {
+                    this.$message({
+                        type: "warning",
+                        message: "文件错误，请遵循模板格式填入信息！",
+                    })
+                    return false
+                }
+            }
+            if (!newTemplateName.trim()) {
+                this.$message({
+                    type: "warning",
+                    message: "请输入模板名称",
+                })
+                return false
+            }
+            let data = {
+                newTemplateName,
+                dimensionList: list,
+            }
+            inActivitySubmitNewInterEvaluationTemplate({
+                sectionID: this.sectionID,
+                template: data,
+            })
+                .then(() => {
+                    this.$message({
+                        type: "success",
+                        message: "添加模板成功",
+                    })
+
+                    this.getInterEvaluationTemplate()
+                    this.resetLoadExcel()
+                })
+                .catch(err => {
+                    this.$message.error(err)
+                })
         },
     },
 }
