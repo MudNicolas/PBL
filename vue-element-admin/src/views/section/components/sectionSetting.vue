@@ -5,7 +5,7 @@
                 <content-manage :section-id="sectionId" />
             </el-tab-pane>
 
-            <el-tab-pane label="信息查询与导出" lazy></el-tab-pane>
+            <!--   <el-tab-pane label="信息查询与导出" lazy></el-tab-pane> -->
 
             <el-tab-pane label="基本信息设置" lazy>
                 <info-manage :section-id="sectionId" />

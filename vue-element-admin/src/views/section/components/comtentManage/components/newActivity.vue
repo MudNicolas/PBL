@@ -892,7 +892,7 @@ export default {
                 isNeedApprove,
                 evaluation,
             } = this.activity
-            console.log(type)
+            //console.log(type)
             if (type === "TimeLineProject") {
                 data = {
                     name,

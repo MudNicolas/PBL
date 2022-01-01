@@ -61,6 +61,13 @@ export default {
                 isUseCommentTemplate: "是否使用发言模板",
                 commentTemplate: "发言模板",
                 isNeedApprove: "项目是否需要审批",
+
+                phaseSwitchMethod: "阶段切换方式",
+                submitLimitTime: "作品上传时间",
+                evaluationLimitTime: "互动评价时间",
+                isDiscussionTimeLimited: "讨论是否限时",
+                discussionLimitTime: "讨论时间",
+                dimensions: "互动评价维度",
             }
             return map[val] || val
         },
@@ -73,8 +80,12 @@ export default {
                     new Date(val[0]).toString() !== "Invalid Date" &&
                     new Date(val[1]).toString() !== "Invalid Date"
                 ) {
-                    return `${normalFormatTime(new Date(val[0]), "{y}年{m}月{d}日{h}点{i}分")} 至
-                        ${normalFormatTime(new Date(val[1]), "{y}年{m}月{d}日{h}点{i}分")}`
+                    return `${normalFormatTime(new Date(val[0]), "{y}/{m}/{d} {h}:{i}")} -
+                        ${normalFormatTime(new Date(val[1]), "{y}/{m}/{d} {h}:{i}")}`
+                }
+
+                if (val[0].dimensionName) {
+                    return val.map(e => e.dimensionName).join("，")
                 }
                 return val.join("，")
             }
@@ -83,6 +94,8 @@ export default {
                 false: "否",
                 personal: "个人",
                 group: "小组",
+                auto: "自动",
+                manual: "手动",
             }
             return map[val] || val
         },

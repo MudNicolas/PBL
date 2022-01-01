@@ -194,6 +194,7 @@ export default {
         activityType: function (val) {
             let map = {
                 TimeLineProject: "形成性项目",
+                Evaluation: "互动评价",
             }
             return map[val]
         },
