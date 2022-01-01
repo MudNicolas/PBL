@@ -35,8 +35,9 @@ router.use((req, res, next) => {
             return
         }
         CheckCourseAvailableAndReqUserHasPermission(s.courseID, 1, req)
-            .then(() => {
+            .then(course => {
                 req.section = s
+                req.course = course
                 next()
             })
             .catch(err => {

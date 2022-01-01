@@ -4,29 +4,65 @@ import Activity from "#models/Activity.js"
 
 let router = Router()
 
-function formatActivity(activity, sectionID) {
+function formatActivity(activity, sectionID, course) {
+    let { name, type, intro, authorType, isUseCommentTemplate } = activity
+    //timeline
+    let { isTimeLimited, limitTime, commentTemplate, isNeedApprove } = activity
+    //evaluation
+    let options = {}
     let {
-        name,
-        type,
-        intro,
-        authorType,
-        isTimeLimited,
-        limitTime,
-        isUseCommentTemplate,
-        commentTemplate,
-        isNeedApprove,
+        dimensions,
+        phaseSwitchMethod,
+        isDiscussionTimeLimited,
+        submitLimitTime,
+        evaluationLimitTime,
+        discussionLimitTime,
     } = activity
-    let options = {
-        authorType,
-        isTimeLimited,
-        isUseCommentTemplate,
-        isNeedApprove,
+    if (type === "TimeLineProject") {
+        options = {
+            authorType,
+            isTimeLimited,
+            isUseCommentTemplate,
+            isNeedApprove,
+        }
+        if (isTimeLimited) {
+            options.limitTime = [new Date(limitTime[0]), new Date(limitTime[1])]
+        }
+        if (isUseCommentTemplate) {
+            options.commentTemplate = commentTemplate
+        }
     }
-    if (isTimeLimited) {
-        options.limitTime = [new Date(limitTime[0]), new Date(limitTime[1])]
-    }
-    if (isUseCommentTemplate) {
-        options.commentTemplate = commentTemplate
+    if (type === "Evaluation") {
+        options = {
+            authorType,
+            phaseSwitchMethod,
+            isUseCommentTemplate,
+        }
+        if (phaseSwitchMethod === "auto") {
+            options.submitLimitTime = [new Date(submitLimitTime[0]), new Date(submitLimitTime[1])]
+            options.evaluationLimitTime = [
+                new Date(evaluationLimitTime[0]),
+                new Date(evaluationLimitTime[1]),
+            ]
+            options.isDiscussionTimeLimited = isDiscussionTimeLimited
+            if (isDiscussionTimeLimited) {
+                options.discussionLimitTime = [
+                    new Date(discussionLimitTime[0]),
+                    new Date(discussionLimitTime[1]),
+                ]
+            }
+        }
+        if (isUseCommentTemplate) {
+            let { interEvaluationTemplate } = course.toJSON()
+            options.dimensions = []
+            for (let ds of interEvaluationTemplate) {
+                for (let d of ds.dimensions) {
+                    if (dimensions.includes(d._id.toString())) {
+                        options.dimensions.push(d)
+                    }
+                }
+            }
+        }
     }
     return {
         name,
@@ -38,21 +74,25 @@ function formatActivity(activity, sectionID) {
 }
 
 function validateActivity(activity) {
+    let { name, type, authorType } = activity
+    //timeline
+    let { isTimeLimited, limitTime, isUseCommentTemplate, commentTemplate, isNeedApprove } =
+        activity
+    //evaluation
     let {
-        name,
-        type,
-        authorType,
-        isTimeLimited,
-        limitTime,
-        isUseCommentTemplate,
-        commentTemplate,
-        isNeedApprove,
+        dimensions,
+        phaseSwitchMethod,
+        isDiscussionTimeLimited,
+        submitLimitTime,
+        evaluationLimitTime,
+        discussionLimitTime,
     } = activity
 
+    if (!name.trim()) {
+        return false
+    }
+
     if (type === "TimeLineProject") {
-        if (!name.trim()) {
-            return false
-        }
         if (![true, false].includes(isTimeLimited)) {
             return false
         }
@@ -60,7 +100,7 @@ function validateActivity(activity) {
         if (![true, false].includes(isUseCommentTemplate)) {
             return false
         }
-        if (isUseCommentTemplate && !commentTemplate) {
+        if (isUseCommentTemplate && !commentTemplate.length > 0) {
             return false
         }
         if (!["personal", "group"].includes(authorType)) {
@@ -83,6 +123,44 @@ function validateActivity(activity) {
         }
         return true
     }
+
+    if (type === "Evaluation") {
+        if (!["manual", "auto"].includes(phaseSwitchMethod)) {
+            return false
+        }
+        if (isUseCommentTemplate && !dimensions.length > 0) {
+            return false
+        }
+        if (!["personal", "group"].includes(authorType)) {
+            return false
+        }
+        if (phaseSwitchMethod === "auto") {
+            if (
+                !submitLimitTime[0] ||
+                !submitLimitTime[1] ||
+                new Date(submitLimitTime[0]).toString() === "Invalid Date" ||
+                new Date(submitLimitTime[1]).toString() === "Invalid Date" ||
+                new Date(submitLimitTime[0]) > new Date(submitLimitTime[1]) ||
+                !evaluationLimitTime[0] ||
+                !evaluationLimitTime[1] ||
+                new Date(evaluationLimitTime[0]).toString() === "Invalid Date" ||
+                new Date(evaluationLimitTime[1]).toString() === "Invalid Date" ||
+                new Date(evaluationLimitTime[0]) > new Date(evaluationLimitTime[1])
+            )
+                return false
+            if (isDiscussionTimeLimited)
+                if (
+                    !discussionLimitTime[0] ||
+                    !discussionLimitTime[1] ||
+                    new Date(discussionLimitTime[0]).toString() === "Invalid Date" ||
+                    new Date(discussionLimitTime[1]).toString() === "Invalid Date" ||
+                    new Date(discussionLimitTime[0]) > new Date(discussionLimitTime[1])
+                )
+                    return false
+        }
+
+        return true
+    }
     return false
 }
 
@@ -96,7 +174,7 @@ router.post("/", (req, res) => {
         })
         return
     }
-    let transformData = formatActivity(activity, req.section._id)
+    let transformData = formatActivity(activity, req.section._id, req.course)
     let newActivity = new Activity(transformData)
     newActivity.markModified("options")
     newActivity.save((err, _a) => {

@@ -4,7 +4,7 @@
             <div v-if="stage === 1" key="nas1">
                 <el-form
                     label-position="right"
-                    label-width="120px"
+                    label-width="160px"
                     :model="activity"
                     ref="activityForm"
                 >
@@ -275,7 +275,7 @@
                                 </el-form-item>
                                 <span v-if="activity.evaluation.phaseSwitchMethod === 'auto'">
                                     <el-form-item
-                                        label="作品提交时间"
+                                        label="开放提交作品时间"
                                         :rules="{
                                             required: true,
                                         }"
@@ -294,7 +294,7 @@
                                         </el-date-picker>
                                     </el-form-item>
                                     <el-form-item
-                                        label="评价时间"
+                                        label="开放评价时间"
                                         :rules="{
                                             required: true,
                                         }"
@@ -314,7 +314,7 @@
                                     </el-form-item>
 
                                     <el-form-item
-                                        label="讨论时间"
+                                        label="开放讨论时间"
                                         v-if="activity.evaluation.isDiscussionTimeLimited"
                                         :rules="{
                                             required: true,
@@ -529,7 +529,6 @@
                         <router-link :to="'/course/section/view/' + sectionID">
                             <el-button style="margin-left: 10px">返回节</el-button>
                         </router-link>
-                        <el-button @click="toCreate" style="margin-left: 10px">继续创建</el-button>
                     </div>
                 </div>
             </div>
@@ -815,6 +814,7 @@ export default {
         },
         handleSubmit() {
             let valid = this.formValidate()
+
             if (!valid) {
                 this.$message.error("请完整填写表单必要内容")
                 return
@@ -856,6 +856,26 @@ export default {
                     return false
                 }
             }
+            if (type === "Evaluation") {
+                let { isUseCommentTemplate } = this.activity
+
+                let {
+                    chosenDimensions,
+                    phaseSwitchMethod,
+                    isDiscussionTimeLimited,
+                    submitLimitTime,
+                    evaluationLimitTime,
+                    discussionLimitTime,
+                } = this.activity.evaluation
+                if (isUseCommentTemplate && !Array.isArray(chosenDimensions)) return false
+
+                if (phaseSwitchMethod === "auto") {
+                    if (!Array.isArray(submitLimitTime) || !Array.isArray(evaluationLimitTime))
+                        return false
+                    if (isDiscussionTimeLimited && !Array.isArray(discussionLimitTime)) return false
+                }
+            }
+
             return true
         },
         transformData() {
@@ -872,6 +892,7 @@ export default {
                 isNeedApprove,
                 evaluation,
             } = this.activity
+            console.log(type)
             if (type === "TimeLineProject") {
                 data = {
                     name,
@@ -889,30 +910,40 @@ export default {
                     data.commentTemplate = commentTemplate
                 }
             }
+            if (type == "Evaluation") {
+                let {
+                    chosenDimensions,
+                    phaseSwitchMethod,
+                    submitLimitTime,
+                    evaluationLimitTime,
+                    discussionLimitTime,
+                    isDiscussionTimeLimited,
+                } = evaluation
+                data = {
+                    name,
+                    intro,
+                    type,
+                    authorType,
+                    phaseSwitchMethod,
+                    isUseCommentTemplate,
+                }
+
+                if (isUseCommentTemplate) {
+                    data.dimensions = chosenDimensions
+                }
+                if (phaseSwitchMethod === "auto") {
+                    data.submitLimitTime = submitLimitTime
+                    data.evaluationLimitTime = evaluationLimitTime
+                    data.isDiscussionTimeLimited = isDiscussionTimeLimited
+                    if (isDiscussionTimeLimited) {
+                        data.discussionLimitTime = discussionLimitTime
+                    }
+                }
+            }
 
             return data
         },
-        toCreate() {
-            ;(this.activity = {
-                name: "",
-                intro: "",
-                type: "",
-                isTimeLimited: false,
-                limitTime: "",
-                isUseCommentTemplate: false,
-                commentTemplate: [],
-                isNeedApprove: false,
-                authorType: "personal",
-                evaluation: {
-                    phaseSwitchMethod: "auto",
-                    submitLimitTime: "",
-                    evaluationLimitTime: "",
-                    discussionLimitTime: "",
-                    isDiscussionTimeLimited: false,
-                },
-            }),
-                (this.stage = 1)
-        },
+
         handleLoadExcelSuccess({ results }) {
             let newDimensionList = []
             // console.log(results)
