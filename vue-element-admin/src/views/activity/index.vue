@@ -65,9 +65,8 @@ export default {
                 phaseSwitchMethod: "阶段切换方式",
                 submitLimitTime: "作品上传时间",
                 evaluationLimitTime: "互动评价时间",
-                isDiscussionTimeLimited: "讨论是否限时",
-                discussionLimitTime: "讨论时间",
                 dimensions: "互动评价维度",
+                phase: "当前阶段",
             }
             return map[val] || val
         },
@@ -96,6 +95,7 @@ export default {
                 group: "小组",
                 auto: "自动",
                 manual: "手动",
+                submission: "作品提交阶段",
             }
             return map[val] || val
         },

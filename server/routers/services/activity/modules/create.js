@@ -37,6 +37,8 @@ function formatActivity(activity, sectionID, course) {
                 new Date(evaluationLimitTime[0]),
                 new Date(evaluationLimitTime[1]),
             ]
+        } else {
+            options.phase = "submission"
         }
         if (isUseCommentTemplate) {
             let { interEvaluationTemplate } = course.toJSON()
