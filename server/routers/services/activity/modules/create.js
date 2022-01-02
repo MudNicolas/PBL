@@ -10,14 +10,7 @@ function formatActivity(activity, sectionID, course) {
     let { isTimeLimited, limitTime, commentTemplate, isNeedApprove } = activity
     //evaluation
     let options = {}
-    let {
-        dimensions,
-        phaseSwitchMethod,
-        isDiscussionTimeLimited,
-        submitLimitTime,
-        evaluationLimitTime,
-        discussionLimitTime,
-    } = activity
+    let { dimensions, phaseSwitchMethod, submitLimitTime, evaluationLimitTime } = activity
     if (type === "TimeLineProject") {
         options = {
             authorType,
@@ -44,13 +37,6 @@ function formatActivity(activity, sectionID, course) {
                 new Date(evaluationLimitTime[0]),
                 new Date(evaluationLimitTime[1]),
             ]
-            options.isDiscussionTimeLimited = isDiscussionTimeLimited
-            if (isDiscussionTimeLimited) {
-                options.discussionLimitTime = [
-                    new Date(discussionLimitTime[0]),
-                    new Date(discussionLimitTime[1]),
-                ]
-            }
         }
         if (isUseCommentTemplate) {
             let { interEvaluationTemplate } = course.toJSON()
@@ -79,14 +65,7 @@ function validateActivity(activity) {
     let { isTimeLimited, limitTime, isUseCommentTemplate, commentTemplate, isNeedApprove } =
         activity
     //evaluation
-    let {
-        dimensions,
-        phaseSwitchMethod,
-        isDiscussionTimeLimited,
-        submitLimitTime,
-        evaluationLimitTime,
-        discussionLimitTime,
-    } = activity
+    let { dimensions, phaseSwitchMethod, submitLimitTime, evaluationLimitTime } = activity
 
     if (!name.trim()) {
         return false
@@ -148,15 +127,6 @@ function validateActivity(activity) {
                 new Date(evaluationLimitTime[0]) > new Date(evaluationLimitTime[1])
             )
                 return false
-            if (isDiscussionTimeLimited)
-                if (
-                    !discussionLimitTime[0] ||
-                    !discussionLimitTime[1] ||
-                    new Date(discussionLimitTime[0]).toString() === "Invalid Date" ||
-                    new Date(discussionLimitTime[1]).toString() === "Invalid Date" ||
-                    new Date(discussionLimitTime[0]) > new Date(discussionLimitTime[1])
-                )
-                    return false
         }
 
         return true

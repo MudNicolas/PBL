@@ -259,20 +259,6 @@
                                     </el-tooltip>
                                 </el-form-item>
 
-                                <el-form-item
-                                    label="讨论阶段限时"
-                                    v-if="activity.evaluation.phaseSwitchMethod === 'auto'"
-                                    :rules="{
-                                        required: true,
-                                    }"
-                                >
-                                    <el-radio-group
-                                        v-model="activity.evaluation.isDiscussionTimeLimited"
-                                    >
-                                        <el-radio-button :label="true">是</el-radio-button>
-                                        <el-radio-button :label="false">否</el-radio-button>
-                                    </el-radio-group>
-                                </el-form-item>
                                 <span v-if="activity.evaluation.phaseSwitchMethod === 'auto'">
                                     <el-form-item
                                         label="开放提交作品时间"
@@ -301,27 +287,6 @@
                                     >
                                         <el-date-picker
                                             v-model="activity.evaluation.evaluationLimitTime"
-                                            type="datetimerange"
-                                            :picker-options="pickerOptions"
-                                            range-separator="至"
-                                            start-placeholder="开始日期"
-                                            end-placeholder="结束日期"
-                                            align="left"
-                                            :default-time="['00:00:00', '23:59:59']"
-                                        >
-                                            >
-                                        </el-date-picker>
-                                    </el-form-item>
-
-                                    <el-form-item
-                                        label="开放讨论时间"
-                                        v-if="activity.evaluation.isDiscussionTimeLimited"
-                                        :rules="{
-                                            required: true,
-                                        }"
-                                    >
-                                        <el-date-picker
-                                            v-model="activity.evaluation.discussionLimitTime"
                                             type="datetimerange"
                                             :picker-options="pickerOptions"
                                             range-separator="至"
@@ -607,8 +572,6 @@ export default {
                     phaseSwitchMethod: "auto",
                     submitLimitTime: "",
                     evaluationLimitTime: "",
-                    discussionLimitTime: "",
-                    isDiscussionTimeLimited: false,
                 },
             },
             templateGetting: false,
@@ -859,20 +822,13 @@ export default {
             if (type === "Evaluation") {
                 let { isUseCommentTemplate } = this.activity
 
-                let {
-                    chosenDimensions,
-                    phaseSwitchMethod,
-                    isDiscussionTimeLimited,
-                    submitLimitTime,
-                    evaluationLimitTime,
-                    discussionLimitTime,
-                } = this.activity.evaluation
+                let { chosenDimensions, phaseSwitchMethod, submitLimitTime, evaluationLimitTime } =
+                    this.activity.evaluation
                 if (isUseCommentTemplate && !Array.isArray(chosenDimensions)) return false
 
                 if (phaseSwitchMethod === "auto") {
                     if (!Array.isArray(submitLimitTime) || !Array.isArray(evaluationLimitTime))
                         return false
-                    if (isDiscussionTimeLimited && !Array.isArray(discussionLimitTime)) return false
                 }
             }
 
@@ -911,14 +867,8 @@ export default {
                 }
             }
             if (type == "Evaluation") {
-                let {
-                    chosenDimensions,
-                    phaseSwitchMethod,
-                    submitLimitTime,
-                    evaluationLimitTime,
-                    discussionLimitTime,
-                    isDiscussionTimeLimited,
-                } = evaluation
+                let { chosenDimensions, phaseSwitchMethod, submitLimitTime, evaluationLimitTime } =
+                    evaluation
                 data = {
                     name,
                     intro,
@@ -934,10 +884,6 @@ export default {
                 if (phaseSwitchMethod === "auto") {
                     data.submitLimitTime = submitLimitTime
                     data.evaluationLimitTime = evaluationLimitTime
-                    data.isDiscussionTimeLimited = isDiscussionTimeLimited
-                    if (isDiscussionTimeLimited) {
-                        data.discussionLimitTime = discussionLimitTime
-                    }
                 }
             }
 
