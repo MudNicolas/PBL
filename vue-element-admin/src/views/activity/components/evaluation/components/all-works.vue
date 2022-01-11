@@ -84,6 +84,7 @@ export default {
             teacherGetAllWorks({ activityID })
                 .then(res => {
                     this.works = res.data
+                    console.log(this.works)
                     this.loading = false
                 })
                 .catch(err => {

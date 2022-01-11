@@ -49,10 +49,13 @@ router.get("/get", (req, res) => {
                         authors,
                     }
                 }
+                let { _id, workName } = work
+                return { _id, workName, authors }
             })
     })
     Promise.all(findArray)
         .then(works => {
+            console.log(works)
             works.sort((x, y) => {
                 return x.authors[0] > y.authors[0]
             })

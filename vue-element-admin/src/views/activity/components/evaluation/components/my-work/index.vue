@@ -269,7 +269,14 @@ export default {
         handleSuccess(response, file, fileList) {
             this.work.files = fileList
         },
-        handleSave() {},
+        handleSave() {
+            let { work } = this
+            work.workName = work.workName.trim()
+            if (!work.workName) {
+                this.$message.error("请输入作品名称")
+                return
+            }
+        },
         checkPermission,
         getMyWork() {
             this.loading = true
