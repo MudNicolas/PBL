@@ -1,7 +1,12 @@
 <template>
     <el-row>
         <el-col :span="16">
-            <el-form label-position="right" label-width="80px" :model="project">
+            <el-form
+                label-position="right"
+                label-width="80px"
+                :model="project"
+                @submit.native.prevent
+            >
                 <el-form-item
                     label="项目名称"
                     :rules="{
