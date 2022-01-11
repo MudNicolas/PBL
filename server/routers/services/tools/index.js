@@ -54,7 +54,7 @@ export function UploadImg(path, req) {
                 return
             }
             const imgPath = files.img[0].path
-            var imgFilename = imgPath.split(Path.sep)[imgPath.split(Path.sep).length - 1]
+            var imgFilename = Path.basename(imgPath)
             resolve(imgFilename)
             return
         })
@@ -72,7 +72,7 @@ export function UploadEditorVideo(req) {
                 return
             }
             const videoPath = files.video[0].path
-            var videoFilename = videoPath.split(Path.sep)[videoPath.split(Path.sep).length - 1]
+            var videoFilename = Path.basename(videoPath)
             resolve(videoFilename)
             return
         })

@@ -1,5 +1,6 @@
 import Router from "express"
 import fs from "fs"
+import Path from "path"
 
 import File from "#models/File.js"
 
@@ -12,7 +13,7 @@ router.post("/upload", (req, res) => {
         .then(uploadFile => {
             let file = new File({
                 originalFilename: uploadFile.originalFilename,
-                serverFilename: uploadFile.path.split("\\")[uploadFile.path.split("\\").length - 1],
+                serverFilename: Path.basename(uploadFile.path),
                 submitUID: req.uid,
                 size: uploadFile.size,
                 uploadTime: Date.now(),
