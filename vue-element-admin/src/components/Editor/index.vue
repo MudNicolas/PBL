@@ -69,7 +69,9 @@ export default {
 
                 autosave(path, { ...position, content })
                     .then()
-                    .catch()
+                    .catch(err => {
+                        console.log(err)
+                    })
             }
         },
         handleInit(editor) {

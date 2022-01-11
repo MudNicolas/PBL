@@ -39,13 +39,14 @@
 
 <script>
 import TimeLineProject from "./components/timeline-project"
+import Evaluation from "./components/evaluation"
 import { getActivityInfo } from "@/api/activity"
 import { normalFormatTime } from "@/utils/index.js"
 import checkPermission from "@/utils/permission" // 权限判断函数
 
 export default {
     name: "ActivityView",
-    components: { TimeLineProject },
+    components: { TimeLineProject, Evaluation },
     filters: {
         noIntro: function (val) {
             if (!val) {
@@ -63,7 +64,7 @@ export default {
                 isNeedApprove: "项目是否需要审批",
 
                 phaseSwitchMethod: "阶段切换方式",
-                submitLimitTime: "作品上传时间",
+                submitLimitTime: "作品提交时间",
                 evaluationLimitTime: "互动评价时间",
                 dimensions: "互动评价维度",
                 phase: "当前阶段",

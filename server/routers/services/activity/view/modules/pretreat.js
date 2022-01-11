@@ -4,9 +4,29 @@ import {
     stagePermission,
     timelineProjectPermission,
     activityPermission,
+    evaluationWorkPermission,
 } from "#services/tools/index.js"
 
 let router = Router()
+
+//验证stage的timeline的activity是否有权限访问
+router.use((req, res, next) => {
+    let workID = req.body.workID || req.query.workID
+    if (!workID) {
+        return next()
+    }
+
+    evaluationWorkPermission(workID)
+        .then(({ activityID, work }) => {
+            req.activityID = activityID
+            req.work = work
+            next()
+        })
+        .catch(err => {
+            console.log(err)
+            res.json(err)
+        })
+})
 
 //验证stage的timeline的activity是否有权限访问
 router.use((req, res, next) => {

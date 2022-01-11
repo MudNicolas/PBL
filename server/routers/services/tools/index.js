@@ -14,6 +14,7 @@ import File from "#models/File.js"
 import TimeLineProject from "#models/TimeLineProject.js"
 import Activity from "#models/Activity.js"
 import Stage from "#models/Stage.js"
+import EvaluationWork from "#models/EvaluationWork.js"
 
 import { DEFAULT_PASSWORD, SECRET_KEY, IV, SERVER_ADDRESS, SERVER_IP } from "#root/settings.js"
 
@@ -541,6 +542,37 @@ export function stagePermission(stageID) {
             return resolve({
                 projectID: stage.timelineProjectID,
                 stage,
+            })
+        })
+    })
+}
+
+export function evaluationWorkPermission(workID) {
+    return new Promise((resolve, reject) => {
+        let validate = /^[a-fA-F0-9]{24}$/.test(workID)
+        if (!validate) {
+            return reject({
+                code: 404,
+                message: "不存在此项目",
+            })
+        }
+        EvaluationWork.findById(workID).then((work, err) => {
+            if (err) {
+                return reject({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+            }
+            if (!work) {
+                return reject({
+                    code: 404,
+                    message: "作品不存在",
+                })
+            }
+
+            return resolve({
+                activityID: work.activityID,
+                work,
             })
         })
     })
