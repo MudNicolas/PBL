@@ -311,5 +311,11 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss' >
+.el-upload {
+    width: 100%;
+    .el-upload-dragger {
+        width: 100%;
+    }
+}
 </style>
