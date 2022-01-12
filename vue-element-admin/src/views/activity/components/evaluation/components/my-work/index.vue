@@ -148,8 +148,9 @@
                                             ref="comment"
                                             @reloadComments="getComments"
                                             v-if="commentsData.comments"
-                                            :position="{ workID }"
-                                            :commentable="!work.timeout"
+                                            :position="{ workID: work._id, name: 'workID' }"
+                                            :entry="dimensionName"
+                                            :commentable="work.evaluatable"
                                         />
                                     </slot>
                                 </el-skeleton>
@@ -172,6 +173,8 @@ import EditorViewer from "@/components/EditorViewer"
 import download from "@/utils/download"
 import uploadFile from "@/components/UploadFile"
 import workView from "../work-view"
+import { getComments } from "@/api/comments"
+import Comment from "@/components/Comment"
 
 export default {
     props: ["activityId"],
@@ -181,8 +184,13 @@ export default {
         download,
         uploadFile,
         workView,
+        Comment,
     },
-
+    inject: {
+        dimensions: {
+            default: null,
+        },
+    },
     data() {
         return {
             activityID: "",
@@ -203,6 +211,7 @@ export default {
                 process.env.VUE_APP_BASE_API +
                 "/activity/view/evaluation/work/my/editor/video/upload?workID=",
             autosavePath: "/activity/view/evaluation/work/my/editor/autosave",
+            dimensionName: this.dimensions ? this.dimensions.map(e => e.dimensionName) : [],
         }
     },
     created() {
@@ -274,11 +283,27 @@ export default {
                         this.imageUploadPath += work._id
                         this.videoUploadPath += work._id
                         this.status = "Normal"
+                        this.$nextTick(() => {
+                            let io = new IntersectionObserver(
+                                ([{ boundingClientRect, intersectionRatio }]) => {
+                                    if (intersectionRatio <= 0) {
+                                        return false
+                                    }
+                                    this.getComments()
+                                    io.disconnect()
+                                }
+                            )
+                            // 6. 获取被监听元素
+                            let commentList = document.getElementById("commentList")
+                            // 7. 在观察对象上，监听 6 中获取的对象
+                            io.observe(commentList)
+                        })
                     }
                 })
                 .catch(err => {
                     this.status = "Error"
                     this.errSubtitle = "Error: " + err.message
+                    console.log(err)
                     this.loading = false
                 })
         },
@@ -293,6 +318,18 @@ export default {
                 .catch(err => {
                     console.log(err)
                 })
+        },
+        getComments() {
+            let { work } = this
+            let workID = work._id
+            this.commentsLoading = true
+
+            getComments({ workID })
+                .then(res => {
+                    this.commentsData = res.data
+                    this.commentsLoading = false
+                })
+                .catch()
         },
     },
 }

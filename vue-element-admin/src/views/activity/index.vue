@@ -32,6 +32,7 @@
         <component
             :is="activeComponent"
             :activity-id="activityID"
+            :activity="activity"
             :type="activeComponent"
         ></component>
     </div>
@@ -103,6 +104,7 @@ export default {
             return map[val] || val
         },
     },
+
     data() {
         return {
             activityID: "",

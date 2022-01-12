@@ -142,7 +142,7 @@
                                     ref="comment"
                                     @reloadComments="getComments"
                                     v-if="commentsData.comments"
-                                    :position="{ stageID }"
+                                    :position="{ stageID, name: 'stageID' }"
                                     :entry="entry"
                                     :commentable="!stage.timeout"
                                 />

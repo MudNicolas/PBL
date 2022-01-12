@@ -25,7 +25,12 @@ import othersWorks from "./components/others-works.vue"
 import allWorks from "./components/all-works.vue"
 import { mapGetters } from "vuex"
 export default {
-    props: ["type", "activityId"],
+    props: ["type", "activityId", "activity"],
+    provide() {
+        return {
+            dimensions: this.activity.options.dimensions,
+        }
+    },
     components: { myWork, othersWorks, allWorks },
     data() {
         let activeName

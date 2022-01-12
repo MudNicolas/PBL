@@ -348,14 +348,15 @@ export default {
         ...mapGetters(["uid", "roles"]),
     },
     data() {
-        let stageID = this.$route.params.id
+        let contentName = this.position.name
+        let contentID = this.position[contentName]
         return {
-            stageID,
+            [contentName]: contentID,
             commentSubmitting: false,
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             autosavePath: "/activity/view/comments/editor/autosave",
-            imageUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/image/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
-            videoUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/video/upload?commentID=${this.commentsData.tempComm._id}&stageID=${stageID}`,
+            imageUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/image/upload?commentID=${this.commentsData.tempComm._id}&${contentName}=${contentID}`,
+            videoUploadPath: `${process.env.VUE_APP_BASE_API}/activity/view/comments/editor/video/upload?commentID=${this.commentsData.tempComm._id}&${contentName}=${contentID}`,
             showCommentsList: [],
             showUpPopoverKey: "",
             myReply: "",
@@ -385,9 +386,9 @@ export default {
                     }
                 })
             }
-            let { stageID } = this
+
             let commentID = this.commentsData.tempComm._id
-            submitComment({ comments, stageID, commentID })
+            submitComment({ comments, ...this.position, commentID })
                 .then(() => {
                     this.$message.success("提交成功")
                     if (this.$refs.Editor) this.$refs.Editor.editor.html.set("")
@@ -431,8 +432,8 @@ export default {
                     if (action === "confirm") {
                         instance.confirmButtonLoading = true
                         let commentID = _id
-                        let { stageID } = this
-                        removeComment({ commentID, stageID })
+
+                        removeComment({ commentID, ...this.position })
                             .then(() => {
                                 this.$message.success("移除成功")
                                 this.$emit("reloadComments")
@@ -459,8 +460,7 @@ export default {
                 beforeClose: (action, instance, done) => {
                     if (action === "confirm") {
                         instance.confirmButtonLoading = true
-                        let { stageID } = this
-                        removeReply({ ...e, stageID })
+                        removeReply({ ...e, ...this.position })
                             .then(() => {
                                 this.$message.success("移除成功")
                                 this.$emit("reloadComments")
@@ -479,9 +479,8 @@ export default {
         },
         handleReply(commentID, replyID) {
             this.replying = true
-            let { stageID } = this
             let reply = this.myReply
-            submitReply({ reply, commentID, replyID, stageID })
+            submitReply({ reply, commentID, replyID, ...this.position })
                 .then(() => {
                     this.$message.success("发送成功")
                     this.replyTo = ""

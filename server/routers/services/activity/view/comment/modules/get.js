@@ -7,13 +7,15 @@ import { processImgAndVideoHostUrl } from "#services/tools/index.js"
 let router = Router()
 
 router.get("/", (req, res) => {
-    let { stageID, type } = req.query
+    let { stageID, workID, type } = req.query
     let { activityID } = req
+
+    let activityContentID = stageID || workID
 
     //console.log(stageID, type, activityID)
 
     let comments = Comment.find({
-        activityContentID: stageID,
+        activityContentID,
         type,
         isSubmit: true,
         isUsed: true,
@@ -42,7 +44,7 @@ router.get("/", (req, res) => {
         })
 
     let tempSaveComment = Comment.findOne({
-        activityContentID: stageID,
+        activityContentID,
         type,
         isSubmit: false,
         commentUser: req.uid,
@@ -55,7 +57,7 @@ router.get("/", (req, res) => {
         let temp = e[1]
         if (!temp) {
             temp = await new Comment({
-                activityContentID: stageID,
+                activityContentID,
                 activityID,
                 commentUser: req.uid,
                 type,
