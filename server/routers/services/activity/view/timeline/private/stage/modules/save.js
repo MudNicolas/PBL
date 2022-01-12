@@ -1,8 +1,6 @@
 import Router from "express"
 
-import File from "#models/File.js"
-
-import { processContentSource } from "#services/tools/index.js"
+import { processContentSource, processStageFiles } from "#services/tools/index.js"
 
 let router = Router()
 
@@ -45,77 +43,5 @@ router.post("/", (req, res) => {
             res.json(err)
         })
 })
-
-function processStageFiles(stage, filesID) {
-    return new Promise((resolve, reject) => {
-        let validate = filesID.every(e => {
-            return /^[a-fA-F0-9]{24}$/.test(e)
-        })
-        if (!validate) {
-            return reject({
-                code: 32001,
-                message: "文件ID错误",
-            })
-        }
-
-        let allUploadedFiles = stage.allUploadedFiles.map(e => {
-            return e.toString()
-        })
-        let files = stage.files.map(e => {
-            return e.toString()
-        })
-        let notUsedFiles = allUploadedFiles.filter(e => files.indexOf(e) === -1)
-
-        File.find({
-            _id: { $in: filesID },
-            isNeeded: false,
-        }).then((files, err) => {
-            if (err) {
-                return reject({
-                    code: 30001,
-                    message: "DataBase Error",
-                })
-            }
-            let allSave = []
-            files.forEach(f => {
-                f.isNeeded = true
-                allSave.push(
-                    new Promise((resolve, reject) => {
-                        f.save(err => {
-                            if (err) {
-                                return reject(err)
-                            }
-                            resolve()
-                        })
-                    })
-                )
-            })
-            Promise.all(allSave)
-                .then(() => {
-                    resolve()
-                })
-                .catch(() => {
-                    reject({
-                        code: 30001,
-                        message: "DataBase Error",
-                    })
-                })
-        })
-
-        File.find({
-            _id: { $in: notUsedFiles },
-            isNeeded: true,
-        }).then(files => {
-            files.forEach(f => {
-                f.isNeeded = false
-                f.save(err => {
-                    if (err) {
-                        console.log(err)
-                    }
-                })
-            })
-        })
-    })
-}
 
 export default router

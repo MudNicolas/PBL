@@ -4,6 +4,8 @@ import editor from "./modules/editor.js"
 import EvaluationWork from "#models/EvaluationWork.js"
 import User from "#models/User.js"
 
+import { processContentSource, processStageFiles } from "#services/tools/index.js"
+
 let router = Router()
 
 router.use(pretreat)
@@ -24,8 +26,12 @@ router.get("/get", (req, res) => {
         activityID,
     })
         .select(
-            "activityID authorType authorID workName sketch createTime lastSubmitTime content files"
+            "activityID authorType authorID workName sketch createTime lastSubmitTime content files isSubmit"
         )
+        .populate([
+            { path: "authorUID", select: "name avatar" },
+            { path: "files", select: "originalFilename size" },
+        ])
         .then(async (work, err) => {
             if (err) {
                 res.json({
@@ -66,6 +72,14 @@ router.get("/get", (req, res) => {
 
             work = work.toJSON()
 
+            work.files = work.files.map(e => {
+                return {
+                    name: e.originalFilename,
+                    response: { _id: e._id },
+                    size: e.size,
+                }
+            })
+
             work.authors = authors
 
             work.editable = false
@@ -102,6 +116,28 @@ router.get("/get", (req, res) => {
                 data: { work },
             })
         })
+})
+
+router.use((req, res, next) => {
+    let { activity } = req
+    if (activity.options.phaseSwitchMethod === "auto") {
+        let submitLimitTime = activity.options.submitLimitTime
+        if (
+            new Date() > new Date(submitLimitTime[0]) &&
+            new Date() < new Date(submitLimitTime[1])
+        ) {
+            return next()
+        }
+    }
+    if (activity.options.phaseSwitchMethod === "manual") {
+        let { phase } = activity.options
+        if (phase === "submission") {
+            return next()
+        }
+    }
+    res.json({
+        message: "当前已不能更改作品",
+    })
 })
 
 router.post("/create", (req, res) => {
@@ -150,5 +186,43 @@ router.post("/create", (req, res) => {
 })
 
 router.use("/editor", editor)
+
+router.post("/save", (req, res) => {
+    let { work: newWork } = req.body
+    let { work: oldWork } = req
+    let { content, files, workName, sketch } = newWork
+    oldWork.content = content
+    oldWork.files = files
+    oldWork.workName = workName
+    oldWork.sketch = sketch
+    oldWork.lastSubmitTime = new Date()
+    oldWork.editLog.push({
+        uid: req.uid,
+        time: new Date(),
+        operation: "编辑保存",
+    })
+    oldWork.isSubmit = true
+    processContentSource(oldWork, content)
+        .then(d => {
+            let { imagesID, videosID } = d
+            oldWork.images = imagesID
+            oldWork.videos = videosID
+
+            processStageFiles(oldWork, files).then(() => {
+                oldWork.save(err => {
+                    if (err) {
+                        return
+                    }
+                    res.json({
+                        code: 20000,
+                    })
+                })
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json(err)
+        })
+})
 
 export default router

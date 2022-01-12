@@ -22,131 +22,80 @@
                 <div class="container">
                     <el-row>
                         <el-col :span="18" :offset="3">
-                            <el-form>
-                                <span v-if="work.editable">
-                                    <el-form-item>
-                                        <el-input
-                                            v-model="work.workName"
-                                            placeholder="作品名称（必填）"
-                                        />
-                                    </el-form-item>
-                                    <el-form-item>
-                                        <el-input
-                                            v-model="work.sketch"
-                                            type="textarea"
-                                            :autosize="{ minRows: 2 }"
-                                            placeholder="摘要"
-                                        />
-                                    </el-form-item>
-                                    <el-form-item v-if="work._id">
-                                        <!--frola-->
-                                        <editor
-                                            :exist-content="work.content"
-                                            ref="Editor"
-                                            :min-height="480"
-                                            :autosave-position="{ workID: work._id }"
-                                            :autosave-path="autosavePath"
-                                            :image-upload-path="imageUploadPath"
-                                            :video-upload-path="videoUploadPath"
-                                        />
-                                    </el-form-item>
+                            <div>
+                                <el-form>
+                                    <span v-if="!preview && work.editable">
+                                        <el-form-item style="font-size: 12px; color: #b2b2b2">
+                                            为
+                                            <span v-for="user of work.authors" :key="user._id">
+                                                {{ user.name }}
+                                            </span>
+                                            提交作品
+                                        </el-form-item>
+                                        <el-form-item>
+                                            <el-input
+                                                v-model="work.workName"
+                                                placeholder="作品名称（必填）"
+                                            />
+                                        </el-form-item>
+                                        <el-form-item>
+                                            <el-input
+                                                v-model="work.sketch"
+                                                type="textarea"
+                                                :autosize="{ minRows: 2 }"
+                                                placeholder="摘要"
+                                            />
+                                        </el-form-item>
+                                        <el-form-item v-if="work._id">
+                                            <!--frola-->
+                                            <editor
+                                                :exist-content="work.content"
+                                                ref="Editor"
+                                                :min-height="480"
+                                                :autosave-position="{ workID: work._id }"
+                                                :autosave-path="autosavePath"
+                                                :image-upload-path="imageUploadPath"
+                                                :video-upload-path="videoUploadPath"
+                                            />
+                                        </el-form-item>
 
-                                    <el-form-item style="width: 100%">
-                                        <upload-file
-                                            action="#"
-                                            drag
-                                            multiple
-                                            :file-list="work.files"
-                                            :on-preview="download"
-                                            :on-remove="handleRemove"
-                                            :on-success="handleSuccess"
-                                            ref="uploadFile"
+                                        <el-form-item style="width: 100%">
+                                            <upload-file
+                                                action="#"
+                                                drag
+                                                multiple
+                                                :file-list="work.files"
+                                                :on-preview="download"
+                                                :on-remove="handleRemove"
+                                                :on-success="handleSuccess"
+                                                ref="uploadFile"
+                                            >
+                                                <i class="el-icon-upload"></i>
+                                                <div class="el-upload__text">
+                                                    将文件拖到此处，或
+                                                    <em>点击上传</em>
+                                                </div>
+                                            </upload-file>
+                                        </el-form-item>
+                                    </span>
+
+                                    <span v-else>
+                                        <work-view :work="work" />
+                                    </span>
+                                    <el-form-item v-if="work.editable">
+                                        <el-button type="primary" @click="togglePreview">
+                                            {{ previewButtonText }}
+                                        </el-button>
+                                        <el-button
+                                            type="primary"
+                                            @click="handleSubmit"
+                                            :loading="saving"
                                         >
-                                            <i class="el-icon-upload"></i>
-                                            <div class="el-upload__text">
-                                                将文件拖到此处，或
-                                                <em>点击上传</em>
-                                            </div>
-                                        </upload-file>
+                                            保存
+                                        </el-button>
                                     </el-form-item>
-                                </span>
-
-                                <span v-else>
-                                    <el-form-item>
-                                        <div class="name">
-                                            {{ work.workName }}
-                                        </div>
-                                    </el-form-item>
-                                    <el-form-item>
-                                        <div class="sketch">
-                                            {{ work.sketch }}
-                                        </div>
-                                    </el-form-item>
-                                    <el-form-item v-if="work._id">
-                                        <editor-viewer :content="work.content"></editor-viewer>
-                                    </el-form-item>
-                                    <el-form-item>
-                                        <el-table
-                                            v-if="work.files.length > 0"
-                                            :data="work.files"
-                                            border
-                                            style="width: 100%"
-                                        >
-                                            <el-table-column prop="name" label="文件">
-                                                <template slot-scope="scope">
-                                                    <div class="content">
-                                                        <span @click="download(scope.row._id)">
-                                                            <svg-icon
-                                                                :icon-class="
-                                                                    scope.row.name | fileIcon
-                                                                "
-                                                            />
-                                                            {{ scope.row.name }}
-                                                        </span>
-                                                    </div>
-                                                </template>
-                                            </el-table-column>
-                                            <el-table-column prop="name" label="格式">
-                                                <template slot-scope="scope">
-                                                    <div class="content">
-                                                        {{ scope.row.name | fileType }}
-                                                    </div>
-                                                </template>
-                                            </el-table-column>
-
-                                            <el-table-column prop="size" label="大小">
-                                                <template slot-scope="scope">
-                                                    <div class="content">
-                                                        {{ scope.row.size | fileSize }}
-                                                    </div>
-                                                </template>
-                                            </el-table-column>
-
-                                            <el-table-column prop="operation" label="操作">
-                                                <template slot-scope="scope">
-                                                    <el-button
-                                                        type="text"
-                                                        icon="el-icon-download"
-                                                        @click="download(scope.row)"
-                                                    >
-                                                        下载
-                                                    </el-button>
-
-                                                    <slot
-                                                        name="fileOperation"
-                                                        :row="scope.row"
-                                                    ></slot>
-                                                </template>
-                                            </el-table-column>
-                                        </el-table>
-                                    </el-form-item>
-                                </span>
-                                <el-form-item v-if="work.editable && checkPermission(['student'])">
-                                    <el-button type="primary" @click="handleSave" :loading="saving">
-                                        保存
-                                    </el-button>
-                                </el-form-item>
-                            </el-form>
+                                </el-form>
+                            </div>
                         </el-col>
                     </el-row>
 
@@ -217,11 +166,12 @@
 <script>
 import { mapGetters } from "vuex"
 import checkPermission from "@/utils/permission" // 权限判断函数
-import { getMyWork, createWork } from "@/api/evaluation"
+import { getMyWork, createWork, submitWork } from "@/api/evaluation"
 import Editor from "@/components/Editor"
 import EditorViewer from "@/components/EditorViewer"
 import download from "@/utils/download"
 import uploadFile from "@/components/UploadFile"
+import workView from "../work-view"
 
 export default {
     props: ["activityId"],
@@ -230,6 +180,7 @@ export default {
         EditorViewer,
         download,
         uploadFile,
+        workView,
     },
 
     data() {
@@ -238,6 +189,8 @@ export default {
             loading: false,
             status: "",
             errSubtitle: "",
+            preview: false,
+            previewButtonText: "预览",
             work: {},
             saving: false,
             creating: false,
@@ -260,6 +213,14 @@ export default {
         ...mapGetters(["roles"]),
     },
     methods: {
+        togglePreview() {
+            this.preview = !this.preview
+            this.previewButtonText = this.preview ? "编辑" : "预览"
+        },
+        toPreview() {
+            this.preview = true
+            this.previewButtonText = "编辑"
+        },
         download(file) {
             download(file.response._id)
         },
@@ -269,13 +230,30 @@ export default {
         handleSuccess(response, file, fileList) {
             this.work.files = fileList
         },
-        handleSave() {
+        handleSubmit() {
             let { work } = this
             work.workName = work.workName.trim()
             if (!work.workName) {
                 this.$message.error("请输入作品名称")
                 return
             }
+            this.saving = true
+
+            let { activityID, content, files, workName, sketch, _id: workID } = work
+            files = files.map(e => {
+                return e.response._id
+            })
+            submitWork({ activityID, work: { content, files, workName, sketch }, workID })
+                .then(() => {
+                    this.$message.success("提交成功")
+                    this.getMyWork()
+                    this.saving = false
+                    this.toPreview()
+                })
+                .catch(err => {
+                    console.log(err)
+                    this.saving = false
+                })
         },
         checkPermission,
         getMyWork() {
@@ -289,8 +267,10 @@ export default {
                         this.status = "NoWork"
                     } else {
                         let { work } = res.data
-                        console.log(work)
                         this.work = work
+                        if (this.work.isSubmit && !this.preview) {
+                            this.togglePreview()
+                        }
                         this.imageUploadPath += work._id
                         this.videoUploadPath += work._id
                         this.status = "Normal"

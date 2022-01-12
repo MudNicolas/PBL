@@ -29,9 +29,9 @@
                     {{ scope.row.workName | workNameFilter }}
                 </template>
             </el-table-column>
-            <el-table-column label="创建时间" align="center">
+            <el-table-column label="提交时间" align="center">
                 <template slot-scope="scope">
-                    {{ scope.row.createTime | normalFormatTime }}
+                    {{ scope.row.lastSubmitTime | normalFormatTime }}
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="查看" align="center">
@@ -48,6 +48,7 @@
 <script>
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import { teacherGetAllWorks } from "@/api/evaluation"
+import { normalFormatTime } from "@/utils/index.js"
 
 export default {
     props: ["activityId"],

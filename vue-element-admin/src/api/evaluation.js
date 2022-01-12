@@ -23,3 +23,11 @@ export function createWork(data) {
         data,
     })
 }
+
+export function submitWork(data) {
+    return request({
+        url: "/activity/view/evaluation/work/my/save",
+        method: "post",
+        data,
+    })
+}

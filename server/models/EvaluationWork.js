@@ -67,4 +67,8 @@ export default mongoose.model("EvaluationWork", {
             operation: String,
         },
     ],
+    isSubmit: {
+        type: Boolean,
+        default: false,
+    },
 })

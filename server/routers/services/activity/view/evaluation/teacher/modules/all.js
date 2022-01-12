@@ -40,8 +40,9 @@ router.get("/get", (req, res) => {
             activityID,
             authorType,
             authorID: e._id,
+            isSubmit: true,
         })
-            .select("workName")
+            .select("workName lastSubmitTime")
             .then(work => {
                 if (!work) {
                     return {
@@ -49,8 +50,8 @@ router.get("/get", (req, res) => {
                         authors,
                     }
                 }
-                let { _id, workName } = work
-                return { _id, workName, authors }
+                let { _id, workName, lastSubmitTime } = work
+                return { _id, workName, authors, lastSubmitTime }
             })
     })
     Promise.all(findArray)
