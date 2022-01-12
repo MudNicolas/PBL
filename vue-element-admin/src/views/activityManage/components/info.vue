@@ -2,7 +2,7 @@
     <div class="wrapper" v-loading="loading">
         <el-form
             label-position="right"
-            label-width="100px"
+            label-width="160px"
             :model="activity"
             ref="activityForm"
             :disabled="!editable"
@@ -42,7 +42,7 @@
                         :rules="{
                             required: true,
                         }"
-                        v-if="['TimeLineProject', 'Evaluation', 'Work'].includes(activity.type)"
+                        v-if="['TimeLineProject', 'Work'].includes(activity.type)"
                     >
                         <el-radio-group v-model="activity.authorType" :disabled="true">
                             <el-radio label="personal">个人</el-radio>
@@ -82,18 +82,23 @@
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item
-                        label="发言模板"
+                        label="发言或互评模板"
                         :rules="{
                             required: true,
                         }"
-                        v-if="['TimeLineProject', 'Forum', 'Evaluation'].includes(activity.type)"
+                        v-if="['TimeLineProject', 'Forum'].includes(activity.type)"
                     >
                         <el-radio-group v-model="activity.isUseCommentTemplate">
                             <el-radio-button :label="true">使用</el-radio-button>
                             <el-radio-button :label="false">不使用</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <span v-if="activity.isUseCommentTemplate">
+                    <span
+                        v-if="
+                            activity.isUseCommentTemplate &&
+                            ['TimeLineProject', 'Forum'].includes(activity.type)
+                        "
+                    >
                         <el-form-item
                             v-if="!updateCommentTemplate && activity.commentTemplate"
                             label="当前模板"
@@ -163,6 +168,7 @@
                             </el-button>
                         </el-form-item>
                     </span>
+
                     <el-form-item
                         label="项目审批"
                         :rules="{
@@ -199,18 +205,6 @@
                             </el-tooltip>
                         </el-form-item>
 
-                        <el-form-item
-                            label="讨论阶段限时"
-                            v-if="activity.evaluation.phaseSwitchMethod === 'auto'"
-                            :rules="{
-                                required: true,
-                            }"
-                        >
-                            <el-radio-group v-model="activity.evaluation.isDiscussionTimeLimited">
-                                <el-radio-button :label="true">是</el-radio-button>
-                                <el-radio-button :label="false">否</el-radio-button>
-                            </el-radio-group>
-                        </el-form-item>
                         <span v-if="activity.evaluation.phaseSwitchMethod === 'auto'">
                             <el-form-item
                                 label="作品提交时间"
@@ -250,26 +244,16 @@
                                     >
                                 </el-date-picker>
                             </el-form-item>
-
-                            <el-form-item
-                                label="讨论时间"
-                                v-if="activity.evaluation.isDiscussionTimeLimited"
-                                :rules="{
-                                    required: true,
-                                }"
-                            >
-                                <el-date-picker
-                                    v-model="activity.evaluation.discussionLimitTime"
-                                    type="datetimerange"
-                                    :picker-options="pickerOptions"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    align="left"
-                                    :default-time="['00:00:00', '23:59:59']"
-                                >
-                                    >
-                                </el-date-picker>
+                        </span>
+                        <span v-if="activity.evaluation.phaseSwitchMethod === 'manual'">
+                            <el-form-item label="当前阶段">
+                                <el-radio-group v-model="activity.evaluation.phase">
+                                    <el-radio-button label="submission">
+                                        作品提交阶段
+                                    </el-radio-button>
+                                    <el-radio-button label="evaluation">互评阶段</el-radio-button>
+                                    <el-radio-button label="end">结束</el-radio-button>
+                                </el-radio-group>
                             </el-form-item>
                         </span>
                     </span>
@@ -547,8 +531,6 @@ export default {
                     phaseSwitchMethod: "auto",
                     submitLimitTime: "",
                     evaluationLimitTime: "",
-                    discussionLimitTime: "",
-                    isDiscussionTimeLimited: false,
                 },
             },
             sectionID: "",
@@ -572,7 +554,14 @@ export default {
             getActivityInfo({ activityID }).then(res => {
                 let { type, options, name, intro, sectionID } = res.data
 
-                let activity = options
+                let activity = {}
+
+                if (type === "TimeLineProject") {
+                    activity = options
+                }
+                if (type === "Evaluation") {
+                    activity.evaluation = options
+                }
 
                 activity.name = name
                 activity.intro = intro
@@ -714,8 +703,15 @@ export default {
         },
         transformData(type) {
             let data = {}
-            let { name, intro, isTimeLimited, limitTime, isUseCommentTemplate, commentTemplate } =
-                this.activity
+            let {
+                name,
+                intro,
+                isTimeLimited,
+                limitTime,
+                isUseCommentTemplate,
+                commentTemplate,
+                evaluation,
+            } = this.activity
             if (type === "TimeLineProject") {
                 data = {
                     name,
@@ -728,6 +724,21 @@ export default {
                 }
                 if (isUseCommentTemplate) {
                     data.commentTemplate = commentTemplate
+                }
+            }
+
+            if (type === "Evaluation") {
+                let { phaseSwitchMethod, submitLimitTime, evaluationLimitTime, phase } = evaluation
+                data = {
+                    name,
+                    intro,
+                    phaseSwitchMethod,
+                }
+                if (phaseSwitchMethod === "auto") {
+                    data.submitLimitTime = submitLimitTime
+                    data.evaluationLimitTime = evaluationLimitTime
+                } else {
+                    data.phase = phase
                 }
             }
 

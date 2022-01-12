@@ -56,7 +56,6 @@ router.get("/get", (req, res) => {
     })
     Promise.all(findArray)
         .then(works => {
-            console.log(works)
             works.sort((x, y) => {
                 return x.authors[0] > y.authors[0]
             })
