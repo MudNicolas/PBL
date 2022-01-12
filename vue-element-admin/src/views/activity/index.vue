@@ -97,6 +97,8 @@ export default {
                 auto: "自动",
                 manual: "手动",
                 submission: "作品提交阶段",
+                evaluation: "互评阶段",
+                end: "已结束",
             }
             return map[val] || val
         },
