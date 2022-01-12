@@ -100,7 +100,7 @@
                         "
                     >
                         <el-form-item
-                            v-if="!updateCommentTemplate && activity.commentTemplate"
+                            v-if="!updateCommentTemplate && activity.commentTemplate.length > 0"
                             label="当前模板"
                         >
                             <el-form style="padding-top: 6px">
@@ -648,6 +648,7 @@ export default {
                     this.$message.success("信息修改成功")
                     this.getInfo()
                     this.editable = false
+                    this.updateCommentTemplate = false
                 })
                 .catch(err => {
                     console.log(err)
