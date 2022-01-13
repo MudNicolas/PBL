@@ -241,8 +241,8 @@
                     </div>
                 </div>
             </div>
-            <el-form v-if="commentable || !checkPermission(['student'])">
-                <el-form-item style="margin-top: 60px">
+            <el-form v-if="commentable || !checkPermission(['student'])" style="margin-top: 60px">
+                <el-form-item>
                     <!--多条目的制作-->
                     <el-tabs type="card" v-if="entry.length > 0">
                         <el-tab-pane v-for="e of entry" :label="e" :key="'comentry' + e" lazy>
@@ -279,6 +279,9 @@
                         :image-upload-path="imageUploadPath"
                         :video-upload-path="videoUploadPath"
                     />
+                </el-form-item>
+                <el-form-item v-for="(dimension, index) of entry" :label="dimension" class="rate">
+                    <el-rate v-model="rate[index]" show-text :texts="starText[index]"></el-rate>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="handleSubmit" :loading="commentSubmitting">
@@ -318,6 +321,10 @@ export default {
             },
         },
         entry: {
+            type: Array,
+            default: () => [],
+        },
+        starText: {
             type: Array,
             default: () => [],
         },
@@ -363,6 +370,7 @@ export default {
             replyTo: "",
             deg: 0,
             replying: false,
+            rate: [],
         }
     },
     methods: {
@@ -538,6 +546,12 @@ export default {
 
 .tool {
     margin-top: 4px;
+}
+
+.rate {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .single-comment {

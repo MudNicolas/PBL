@@ -54,8 +54,8 @@
                                                 :min-height="480"
                                                 :autosave-position="{ workID: work._id }"
                                                 :autosave-path="autosavePath"
-                                                :image-upload-path="imageUploadPath"
-                                                :video-upload-path="videoUploadPath"
+                                                :image-upload-path="imageUploadPath + work._id"
+                                                :video-upload-path="videoUploadPath + work._id"
                                             />
                                         </el-form-item>
 
@@ -83,7 +83,7 @@
                                         <work-view :work="work" />
                                     </span>
                                     <el-form-item v-if="work.editable">
-                                        <el-button type="primary" @click="togglePreview">
+                                        <el-button type="primary" @click="togglePreviewPage">
                                             {{ previewButtonText }}
                                         </el-button>
                                         <el-button
@@ -151,6 +151,7 @@
                                             :position="{ workID: work._id, name: 'workID' }"
                                             :entry="dimensionName"
                                             :commentable="work.evaluatable"
+                                            :starText="starText"
                                         />
                                     </slot>
                                 </el-skeleton>
@@ -212,6 +213,7 @@ export default {
                 "/activity/view/evaluation/work/my/editor/video/upload?workID=",
             autosavePath: "/activity/view/evaluation/work/my/editor/autosave",
             dimensionName: this.dimensions ? this.dimensions.map(e => e.dimensionName) : [],
+            starText: this.dimensions ? this.dimensions.map(e => e.starText) : [],
         }
     },
     created() {
@@ -222,9 +224,19 @@ export default {
         ...mapGetters(["roles"]),
     },
     methods: {
+        getContent() {
+            this.work.content = this.$refs.Editor.editor.html.get()
+        },
         togglePreview() {
             this.preview = !this.preview
+
             this.previewButtonText = this.preview ? "编辑" : "预览"
+        },
+        togglePreviewPage() {
+            if (!this.preview) {
+                this.getContent()
+            }
+            this.togglePreview()
         },
         toPreview() {
             this.preview = true
@@ -249,6 +261,7 @@ export default {
             this.saving = true
 
             let { activityID, content, files, workName, sketch, _id: workID } = work
+            content = this.$refs.Editor ? this.$refs.Editor.editor.html.get() : this.work.content
             files = files.map(e => {
                 return e.response._id
             })
@@ -280,8 +293,6 @@ export default {
                         if (this.work.isSubmit && !this.preview) {
                             this.togglePreview()
                         }
-                        this.imageUploadPath += work._id
-                        this.videoUploadPath += work._id
                         this.status = "Normal"
                         this.$nextTick(() => {
                             let io = new IntersectionObserver(
