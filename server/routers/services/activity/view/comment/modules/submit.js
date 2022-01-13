@@ -4,7 +4,7 @@ let router = Router()
 import { processContentSource } from "#services/tools/index.js"
 
 router.post("/", (req, res) => {
-    let { comments } = req.body
+    let { comments, rate } = req.body
     let { commentData } = req
     let contents = ""
     for (let c of comments) {
@@ -18,6 +18,7 @@ router.post("/", (req, res) => {
         contents += content
     }
     commentData.commentUserRole = req.role
+    commentData.rate = rate
     commentData.isSubmit = true
     commentData.time = new Date()
     processContentSource(commentData, contents)

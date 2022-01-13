@@ -28,6 +28,7 @@ let commentSchemas = new mongoose.Schema({
             content: String,
         },
     ],
+    rate: Array,
     images: [
         {
             type: mongoose.Schema.Types.ObjectId,

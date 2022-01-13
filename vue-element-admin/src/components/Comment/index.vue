@@ -88,6 +88,22 @@
 
                 <div class="comment" v-show="showCommentsList.indexOf(comment._id) !== -1">
                     <div class="main">
+                        <span v-if="comment.rate && comment.rate.length > 0">
+                            <el-form>
+                                <el-form-item
+                                    v-for="(dimension, index) of entry"
+                                    :label="dimension"
+                                    class="rate"
+                                >
+                                    <el-rate
+                                        v-model="comment.rate[index]"
+                                        disabled
+                                        show-text
+                                        :texts="starText[index]"
+                                    ></el-rate>
+                                </el-form-item>
+                            </el-form>
+                        </span>
                         <span v-if="comment.comment.length === 1">
                             <editor-viewer :content="comment.comment[0].content" />
                         </span>
@@ -376,7 +392,6 @@ export default {
     methods: {
         checkPermission,
         handleSubmit() {
-            this.commentSubmitting = true
             let comments = []
             if (this.entry.length === 0) {
                 comments.push({
@@ -394,9 +409,16 @@ export default {
                     }
                 })
             }
-
+            let rate = this.rate
+            if (this.starText.length > 0) {
+                if (rate.includes(0)) {
+                    this.$message.warning("请完整打分评价")
+                    return
+                }
+            }
+            this.commentSubmitting = true
             let commentID = this.commentsData.tempComm._id
-            submitComment({ comments, ...this.position, commentID })
+            submitComment({ comments, ...this.position, commentID, rate })
                 .then(() => {
                     this.$message.success("提交成功")
                     if (this.$refs.Editor) this.$refs.Editor.editor.html.set("")
@@ -522,6 +544,7 @@ export default {
 .header {
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 
     .text {
         line-height: 18px;
@@ -592,5 +615,14 @@ export default {
 
 .reply-area {
     margin-bottom: 30px;
+}
+</style>
+<style lang='scss'>
+.el-rate {
+    display: flex;
+    align-items: center;
+}
+.el-form-item__label {
+    white-space: nowrap;
 }
 </style>

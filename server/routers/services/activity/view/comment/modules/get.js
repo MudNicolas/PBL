@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
         isSubmit: true,
         isUsed: true,
     })
-        .select({ commentUser: 1, comment: 1, time: 1, reply: 1, commentUserRole: 1 })
+        .select({ commentUser: 1, comment: 1, time: 1, reply: 1, commentUserRole: 1, rate: 1 })
         .populate([
             { path: "commentUser", select: "name avatar" },
             { path: "reply.fromUser", select: "name avatar" },
@@ -38,6 +38,7 @@ router.get("/", (req, res) => {
                         return c
                     }),
                     time: e.time,
+                    rate: e.rate,
                     reply: e.reply.filter(r => r.isUsed),
                 }
             })
