@@ -296,9 +296,15 @@
                         :video-upload-path="videoUploadPath"
                     />
                 </el-form-item>
-                <el-form-item v-for="(dimension, index) of entry" :label="dimension" class="rate">
-                    <el-rate v-model="rate[index]" show-text :texts="starText[index]"></el-rate>
-                </el-form-item>
+                <span v-if="starText.length > 0">
+                    <el-form-item
+                        v-for="(dimension, index) of entry"
+                        :label="dimension"
+                        class="rate"
+                    >
+                        <el-rate v-model="rate[index]" show-text :texts="starText[index]"></el-rate>
+                    </el-form-item>
+                </span>
                 <el-form-item>
                     <el-button type="primary" @click="handleSubmit" :loading="commentSubmitting">
                         提交
