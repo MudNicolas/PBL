@@ -230,7 +230,7 @@ export function editorImageUpload(req) {
                         })
                         return
                     }
-                    console.log(f.serverFilename)
+                    //console.log(f.serverFilename)
                     let path =
                         SERVER_ADDRESS + "/public/img/editor/" + f.serverFilename + "?_id=" + f._id
                     resolve({
