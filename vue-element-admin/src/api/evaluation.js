@@ -8,6 +8,14 @@ export function teacherGetAllWorks(query) {
     })
 }
 
+export function getOthersWork(query) {
+    return request({
+        url: "/activity/view/evaluation/work/others/all/get",
+        method: "get",
+        params: query,
+    })
+}
+
 export function getMyWork(query) {
     return request({
         url: "/activity/view/evaluation/work/my/get",
