@@ -99,52 +99,56 @@ export function UploadFiles(req) {
 
 /**
  * @list 人员列表，包含学号工号、姓名
- * @role 插入的人的角色 student teacher
+ * @role 插入的人的角色 student teacher admin
  */
 export function InsertUsersReturnIDs(list, role) {
-    let IDs = []
+    return new Promise((resolve, reject) => {
+        let IDs = []
 
-    let findOutOrInsert = e => {
-        return new Promise((resolve, reject) => {
-            User.findOne({
-                $and: [{ username: e.username }, { isUsed: true }],
-            }).then(user => {
-                if (user) {
-                    resolve(user._id)
-                    return
-                }
-
-                //未找到则插入
-                let newUser = new User({
-                    username: e.username,
-                    password: md5(DEFAULT_PASSWORD.toString()),
-                    name: e.name,
-                    role: [role],
-                })
-                newUser.save((err, theUser) => {
-                    if (err) {
-                        reject(err)
-                        return
+        let findOutOrInsert = e => {
+            return new Promise((resolve, reject) => {
+                User.findOne({
+                    $and: [{ username: e.username }, { isUsed: true }],
+                }).then(user => {
+                    if (user) {
+                        if (user.role.includes(role)) {
+                            return resolve(user._id)
+                        } else {
+                            return reject("发现异常数据")
+                        }
                     }
-                    resolve(theUser._id)
-                    return
+
+                    //未找到则插入
+                    let newUser = new User({
+                        username: e.username,
+                        password: md5(DEFAULT_PASSWORD.toString()),
+                        name: e.name,
+                        role: [role],
+                    })
+                    newUser.save((err, theUser) => {
+                        if (err) {
+                            reject(err)
+                            return
+                        }
+                        resolve(theUser._id)
+                        return
+                    })
                 })
             })
-        })
-    }
+        }
 
-    for (let e of list) {
-        IDs.push(findOutOrInsert(e))
-    }
+        for (let e of list) {
+            IDs.push(findOutOrInsert(e))
+        }
 
-    return Promise.all(IDs)
-        .then(e => {
-            //console.log(e)
-            return e
-        })
-        .catch(err => {
-            return err
-        })
+        return Promise.all(IDs)
+            .then(e => {
+                return resolve(e)
+            })
+            .catch(err => {
+                return reject(err)
+            })
+    })
 }
 
 /**

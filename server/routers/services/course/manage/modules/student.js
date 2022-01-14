@@ -53,44 +53,35 @@ router.post("/submit", async (req, res, next) => {
         }
     })
 
-    let studentIDs = await InsertUsersReturnIDs(studentList, "student")
+    InsertUsersReturnIDs(studentList, "student")
         .then(list => {
-            return list
+            for (let e of list) {
+                if (course.studentList.indexOf(e) === -1) {
+                    course.studentList.push(e)
+                }
+            }
+            //console.log(list, 'before')
+            course.save(err => {
+                if (err) {
+                    res.json({
+                        code: 30001,
+                        message: "DataBase Error",
+                    })
+                    return
+                }
+
+                res.json({
+                    code: 20000,
+                })
+            })
         })
         .catch(err => {
             console.log(err, "insert stuednt to User")
-            return "err"
-        })
-
-    //返回list说明无err
-    //console.log(studentIDs, typeof (studentIDs))
-    if (typeof studentIDs !== "object") {
-        res.json({
-            code: 30001,
-            message: "DataBase Error",
-        })
-        return
-    }
-
-    for (let e of studentIDs) {
-        if (course.studentList.indexOf(e) === -1) {
-            course.studentList.push(e)
-        }
-    }
-    //console.log(list, 'before')
-    course.save(err => {
-        if (err) {
             res.json({
-                code: 30001,
-                message: "DataBase Error",
+                message: "导入失败：" + err,
             })
             return
-        }
-
-        res.json({
-            code: 20000,
         })
-    })
 })
 
 export default router
