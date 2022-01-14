@@ -328,6 +328,7 @@ export default {
                 })
                 .catch(err => {
                     console.log(err)
+                    this.creating = false
                 })
         },
         getComments() {

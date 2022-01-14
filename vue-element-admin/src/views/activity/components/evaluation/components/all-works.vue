@@ -36,7 +36,14 @@
             </el-table-column>
             <el-table-column fixed="right" label="查看" align="center">
                 <template slot-scope="scope">
-                    <el-button :disabled="!scope.row._id" @click="$router.push(`${scope.row._id}`)">
+                    <el-button
+                        :disabled="!scope.row._id"
+                        @click="
+                            $router.push(
+                                `/course/section/activity/evaluation/view/${scope.row._id}`
+                            )
+                        "
+                    >
                         详情
                     </el-button>
                 </template>

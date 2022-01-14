@@ -39,14 +39,17 @@
             <editor-viewer :content="work.content"></editor-viewer>
         </el-form-item>
         <el-form-item>
-            <el-table v-if="work.files.length > 0" :data="work.files" border style="width: 100%">
+            <el-table
+                v-if="work.files && work.files.length > 0"
+                :data="work.files"
+                border
+                style="width: 100%"
+            >
                 <el-table-column prop="name" label="文件">
                     <template slot-scope="scope">
                         <div class="content">
-                            <span @click="download(scope.row._id)">
-                                <svg-icon :icon-class="scope.row.name | fileIcon" />
-                                {{ scope.row.name }}
-                            </span>
+                            <svg-icon :icon-class="scope.row.name | fileIcon" />
+                            {{ scope.row.name }}
                         </div>
                     </template>
                 </el-table-column>

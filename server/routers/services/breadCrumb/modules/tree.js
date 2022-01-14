@@ -3,6 +3,7 @@ import Section from "#models/Section.js"
 import Activity from "#root/models/Activity.js"
 import TimeLineProject from "#models/TimeLineProject.js"
 import Stage from "#models/Stage.js"
+import EvaluationWork from "#models/EvaluationWork.js"
 
 export default class {
     tree = {
@@ -290,6 +291,26 @@ export default class {
                                     return {
                                         name: project.subjectName || "暂无阶段名",
                                         parentID: project.timelineProjectID,
+                                    }
+                                }
+                            })
+                    }
+                },
+            },
+        },
+        ViewEvaluation: {
+            path: "/course/section/activity/evaluation/view/",
+            parent: "ActivityView",
+            meta: {
+                title: async id => {
+                    if (/^[a-fA-F0-9]{24}$/.test(id)) {
+                        return await EvaluationWork.findById(id)
+                            .select("activityID")
+                            .then(work => {
+                                if (work) {
+                                    return {
+                                        name: "详情与互评",
+                                        parentID: work.activityID,
                                     }
                                 }
                             })

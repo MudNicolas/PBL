@@ -210,6 +210,18 @@ export const asyncRoutes = [
                     roles: ["teacher"],
                 },
             },
+            {
+                path: "section/activity/evaluation/view/:id([a-f0-9]{24})",
+                component: () =>
+                    import(
+                        "@/views/activity/components/evaluation/components/work-view-page/index"
+                    ),
+                name: "ViewEvaluation",
+                hidden: true,
+                meta: {
+                    roles: ["teacher", "student"],
+                },
+            },
         ],
     },
     {

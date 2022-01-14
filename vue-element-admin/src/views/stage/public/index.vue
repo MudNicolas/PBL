@@ -60,10 +60,8 @@
                                 <el-table-column prop="name" label="文件">
                                     <template slot-scope="scope">
                                         <div class="content">
-                                            <span @click="download(scope.row._id)">
-                                                <svg-icon :icon-class="scope.row.name | fileIcon" />
-                                                {{ scope.row.name }}
-                                            </span>
+                                            <svg-icon :icon-class="scope.row.name | fileIcon" />
+                                            {{ scope.row.name }}
                                         </div>
                                     </template>
                                 </el-table-column>

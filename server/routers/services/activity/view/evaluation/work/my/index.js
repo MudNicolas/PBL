@@ -4,7 +4,11 @@ import editor from "./modules/editor.js"
 import EvaluationWork from "#models/EvaluationWork.js"
 import User from "#models/User.js"
 
-import { processContentSource, processStageFiles } from "#services/tools/index.js"
+import {
+    processContentSource,
+    processStageFiles,
+    processImgAndVideoHostUrl,
+} from "#services/tools/index.js"
 
 let router = Router()
 
@@ -80,6 +84,8 @@ router.get("/get", (req, res) => {
                 }
             })
 
+            work.content = processImgAndVideoHostUrl(work.content)
+
             work.authors = authors
 
             work.editable = false
@@ -140,6 +146,27 @@ router.use((req, res, next) => {
     })
 })
 
+function findStudentGroup(group, sid) {
+    return group.find(g => g.groupMember.some(m => m.toString() === sid.toString()))
+}
+
+router.use((req, res, next) => {
+    let { activity, uid } = req
+    if (activity.options.authorType === "group" && req.role === "student") {
+        let { group } = req.course
+        let userGroup = findStudentGroup(group, uid)
+        if (!userGroup) {
+            res.json({
+                code: 34001,
+                message: "你不属于任何小组",
+            })
+            return
+        }
+        req.group = userGroup
+    }
+    next()
+})
+
 router.post("/create", (req, res) => {
     let { activityID } = req.body
     if (req.role !== "student") {
@@ -151,16 +178,20 @@ router.post("/create", (req, res) => {
     let { activity } = req
 
     let authorType = activity.options.authorType
+
+    let authorUID = [req.uid]
     let authorID = req.uid
     if (authorType === "group") {
         let { group } = req
-
+        authorUID = group.groupMember
         authorID = group._id
     }
+
     let work = new EvaluationWork({
         authorType,
         activityID,
         authorID,
+        authorUID,
         createTime: new Date(),
         editLog: [
             {

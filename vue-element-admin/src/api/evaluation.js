@@ -16,6 +16,14 @@ export function getMyWork(query) {
     })
 }
 
+export function getWork(query) {
+    return request({
+        url: "/activity/view/evaluation/work/others/get",
+        method: "get",
+        params: query,
+    })
+}
+
 export function createWork(data) {
     return request({
         url: "/activity/view/evaluation/work/my/create",
