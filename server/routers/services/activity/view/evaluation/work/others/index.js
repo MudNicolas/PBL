@@ -23,12 +23,12 @@ router.get("/get", (req, res) => {
 
         //只有学生受template影响
         let dimensions = []
-        if (req.role === "student") {
-            let { options } = activity
-            if (options.isUseCommentTemplate) {
-                dimensions = options.dimensions
-            }
+
+        let { options } = activity
+        if (options.isUseCommentTemplate) {
+            dimensions = options.dimensions
         }
+
         content = processImgAndVideoHostUrl(content)
         let work = {
             content,
