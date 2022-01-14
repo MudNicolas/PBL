@@ -51,7 +51,17 @@ router.get("/", (req, res) => {
         commentUser: req.uid,
     })
         .select("comment")
-        .exec()
+        .then(e => {
+            if (e) {
+                return {
+                    _id: e._id,
+                    comment: e.comment.map(c => {
+                        c.content = processImgAndVideoHostUrl(c.content)
+                        return c
+                    }),
+                }
+            }
+        })
 
     Promise.all([comments, tempSaveComment]).then(async e => {
         let comm = e[0]
