@@ -111,6 +111,7 @@ export const asyncRoutes = [
         meta: {
             icon: "el-icon-s-data",
             title: "我的课程",
+            roles: ["teacher", "student"],
         },
         children: [
             {
