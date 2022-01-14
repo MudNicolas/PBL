@@ -433,7 +433,9 @@ export default {
                             e.editor.html.set("")
                         })
                     }
+                    this.rate = []
                     this.commentSubmitting = false
+
                     this.reloadComments()
                 })
                 .catch(err => {
