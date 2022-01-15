@@ -34,6 +34,8 @@ import Layout from "@/layout"
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+import adminRoutes from "./modules/admin"
+
 export const constantRoutes = [
     {
         path: "/redirect",
@@ -281,6 +283,8 @@ export const asyncRoutes = [
         },
         component: () => import("@/views/verificate"),
     },
+
+    ...adminRoutes,
 
     // 404 page must be placed at the end !!!
     { path: "*", redirect: "/404", hidden: true },

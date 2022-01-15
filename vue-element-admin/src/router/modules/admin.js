@@ -1,62 +1,61 @@
+import Layout from "@/layout"
+
 export default [
     {
-        path: "/admin/administrator",
-        name: "ManageAdministrator",
+        path: "/admin/manage/user",
+        component: Layout,
+        redirect: "noRedirect",
+        alwaysShow: true, //一直显示根路由
+        name: "UserManager",
         meta: {
-            roles: ["admin"],
+            icon: "el-icon-user-solid",
+            roles: ["admin", "root"],
+            title: "用户管理",
         },
+        children: [
+            {
+                path: "teacher",
+                name: "TeacherManager",
+                component: () => import("@/views/admin/user-manager/teacher"),
+                meta: {
+                    roles: ["admin", "root"],
+                    title: "教师管理",
+                },
+            },
+            {
+                path: "student",
+                name: "StudentManager",
+                meta: {
+                    roles: ["admin"],
+                    title: "学生管理",
+                },
+            },
+            {
+                path: "administrator",
+                name: "AdminManager",
+                meta: {
+                    roles: ["root"],
+                    title: "管理员管理",
+                },
+            },
+        ],
     },
-    {
-        path: "/admin/teacher",
-        name: "ManageTeacher",
-        meta: {
-            roles: ["admin"],
-        },
-    },
-    {
-        path: "/admin/student",
-        name: "ManageStudent",
-        meta: {
-            roles: ["admin"],
-        },
-    },
+
     {
         path: "/admin/course",
-        name: "ManageCourse",
+        name: "CourseManager",
+        component: Layout,
         meta: {
+            icon: "el-icon-s-data",
             roles: ["admin"],
+            title: "课程管理",
         },
-        children: [
-            {
-                path: "index",
-                name: "CourseDetail",
-            },
-            {
-                path: "recovery",
-                name: "CourseRecovery",
-            },
-        ],
     },
-    {
-        path: "/admin/content",
-        name: "ManageCourseContent",
-        meta: {
-            roles: ["admin"],
-        },
-        children: [
-            {
-                path: "section/recovery",
-                name: "SectionRecovery",
-            },
-            {
-                path: "activity/recovery",
-                name: "ActivityRecovery",
-            },
-        ],
-    },
+
     {
         path: "/admin/space/clear",
         name: "FreeUpSpace",
+        hidden: true,
         meta: {
             roles: ["admin"],
         },

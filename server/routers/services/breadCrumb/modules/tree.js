@@ -318,6 +318,38 @@ export default class {
                 },
             },
         },
+        UserManager: {
+            parent: "Home",
+            redirect: "noRedirect",
+            meta: {
+                title: "用户管理",
+            },
+        },
+        TeacherManager: {
+            parent: "UserManager",
+            meta: {
+                title: "教师管理",
+            },
+        },
+        StudentManager: {
+            parent: "UserManager",
+            meta: {
+                title: "学生管理",
+            },
+        },
+        AdminManager: {
+            parent: "UserManager",
+            meta: {
+                title: "管理员管理",
+            },
+        },
+        CourseManager: {
+            parent: "Home",
+            redirect: "noRedirect",
+            meta: {
+                title: "课程管理",
+            },
+        },
     }
 
     get(name) {

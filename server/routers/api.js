@@ -10,6 +10,7 @@ import breadCrumb from "#services/breadCrumb/index.js"
 import section from "#services/section/index.js"
 import files from "#services/files/index.js"
 import activity from "#services/activity/index.js"
+import admin from "#services/admin/index.js"
 
 router.use(pretreat)
 router.use("/user", user)
@@ -19,5 +20,6 @@ router.use("/activity", activity)
 router.use("/breadCrumb", breadCrumb)
 router.use("/section", section)
 router.use("/files", files)
+router.use("/admin", admin)
 
 export default router
