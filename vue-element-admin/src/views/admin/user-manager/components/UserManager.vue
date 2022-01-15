@@ -9,15 +9,16 @@
             >
                 导入{{ roleLabel[role] }}
             </el-button>
-            <el-button
-                type="primary"
-                class="filter-item"
-                icon="el-icon-document"
-                :loading="exporting"
-                @click="handleExport"
+            <el-autocomplete
+                v-model="searchQuery"
+                style="float: right"
+                :fetch-suggestions="remoteUserSearch"
+                placeholder="搜索"
+                :trigger-on-focus="false"
+                @select="handleSelect"
             >
-                导出Excel
-            </el-button>
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            </el-autocomplete>
         </div>
 
         <el-table
@@ -108,7 +109,7 @@
 </template>
 
 <script>
-import { getUser, submitUser } from "@/api/admin"
+import { getUser, submitUser, userSearch } from "@/api/admin"
 import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import EmitMessageButton from "@/components/EmitMessageButton"
@@ -121,6 +122,7 @@ export default {
         return {
             loading: true,
             users: [],
+            searchQuery: "",
             avatarPath: process.env.VUE_APP_PUBLIC_PATH + process.env.VUE_APP_AVATAR_PATH,
             usernameLabel: {
                 teacher: "工号",
@@ -143,6 +145,20 @@ export default {
         this.getUser()
     },
     methods: {
+        remoteUserSearch(queryString, cb) {
+            let { role } = this
+            userSearch({ queryString, role })
+                .then(res => {
+                    cb(res.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        handleSelect() {
+            this.searchQuery = ""
+            //打开info model
+        },
         handleSubmit() {
             this.submitting = true
             let { uploadUserList, role } = this

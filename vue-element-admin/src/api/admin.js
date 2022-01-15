@@ -15,3 +15,11 @@ export function submitUser(data) {
         data,
     })
 }
+
+export function userSearch(query) {
+    return request({
+        url: "/admin/user/role/search",
+        method: "get",
+        params: query,
+    })
+}

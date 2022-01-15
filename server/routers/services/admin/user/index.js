@@ -47,4 +47,36 @@ router.post("/role/submit", (req, res) => {
         })
 })
 
+router.get("/role/search", (req, res) => {
+    let { queryString, role } = req.query
+    const reg = new RegExp(queryString, "i")
+    //find 教师角色的，不是创建课程的教师，返回_id,username,name
+    User.find(
+        {
+            $or: [{ name: { $regex: reg } }, { username: { $regex: reg } }],
+            role,
+            $where: "(this.role.length===1)",
+        },
+        ["_id", "username", "name"],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.json({
+                    code: 30001,
+                    message: "DataBase Error",
+                })
+                return
+            }
+            result = result.map(e => ({
+                value: `${e.username} - ${e.name}`,
+                _id: e._id,
+            }))
+            res.json({
+                code: 20000,
+                data: result,
+            })
+        }
+    )
+})
+
 export default router
