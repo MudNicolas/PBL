@@ -39,3 +39,11 @@ export function resetPWD(data) {
         data,
     })
 }
+
+export function removeUser(data) {
+    return request({
+        url: "/admin/user/removeUser",
+        method: "delete",
+        data,
+    })
+}

@@ -135,13 +135,36 @@ router.use((req, res, next) => {
 
 router.post("/resetPWD", (req, res) => {
     let { targetUser } = req
-    ;(targetUser.password = md5(DEFAULT_PASSWORD)),
-        targetUser.save(err => {
-            if (err) {
-                return console.log(err)
-            }
+    targetUser.password = md5(DEFAULT_PASSWORD)
+    targetUser
+        .save()
+        .then(() => {
             res.json({
                 code: 20000,
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
+            })
+        })
+})
+
+router.delete("/removeUser", (req, res) => {
+    let { targetUser } = req
+    targetUser.isUsed = false
+    targetUser
+        .save()
+        .then(() => {
+            res.json({
+                code: 20000,
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
             })
         })
 })

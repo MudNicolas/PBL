@@ -130,7 +130,9 @@
                     </el-descriptions>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="danger">删除用户</el-button>
+                    <el-button type="danger" @click="handleRemoveUser(userInfo.user._id)">
+                        删除用户
+                    </el-button>
                     <el-button style="float: right" @click="handleResetPWD(userInfo.user._id)">
                         重置密码
                     </el-button>
@@ -141,7 +143,7 @@
 </template>
 
 <script>
-import { getUser, submitUser, userSearch, getInfo, resetPWD } from "@/api/admin"
+import { getUser, submitUser, userSearch, getInfo, resetPWD, removeUser } from "@/api/admin"
 import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import EmitMessageButton from "@/components/EmitMessageButton"
@@ -200,6 +202,34 @@ export default {
                             .then(() => {
                                 this.$message.success("重置成功")
                                 instance.confirmButtonLoading = false
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        instance.confirmButtonLoading = false
+                    }
+                },
+            }).catch(err => {
+                console.log(err)
+            })
+        },
+        handleRemoveUser(_id) {
+            this.$confirm("确定删除此用户？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+                        removeUser({ _id })
+                            .then(() => {
+                                this.$message.success("删除成功")
+                                instance.confirmButtonLoading = false
+                                this.getUser()
+                                this.infoVisible = false
                                 done()
                             })
                             .catch(() => {
