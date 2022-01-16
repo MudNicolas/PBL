@@ -1,15 +1,17 @@
 import Router from "express"
 import User from "#models/User.js"
+import Course from "#models/Course.js"
 import { InsertUsersReturnIDs } from "#services/tools/index.js"
+import md5 from "js-md5"
+import { DEFAULT_PASSWORD } from "#root/settings.js"
 
-var router = Router()
+let router = Router()
 
 router.get("/role/all/get", (req, res) => {
     let { role } = req.query
     User.find({
         role: role,
         isUsed: true,
-        $where: "(this.role.length===1)", //仅包含此角色的user
     })
         .select("name avatar username")
         .sort({
@@ -77,6 +79,71 @@ router.get("/role/search", (req, res) => {
             })
         }
     )
+})
+
+router.get("/getInfo", (req, res) => {
+    let { _id } = req.query
+    User.findById(_id)
+        .select("username name intro role avatar")
+        .then(async user => {
+            let course = await Course.find({
+                $or: [{ chiefTeacher: _id }, { partnerTeacher: _id }, { studentList: _id }],
+            })
+                .select("name chiefTeacher")
+                .populate({
+                    path: "chiefTeacher",
+                    select: "name",
+                })
+                .then(courses => {
+                    return courses.map(e => ({ name: e.name, chief: e.chiefTeacher.name }))
+                })
+            res.json({
+                code: 20000,
+                data: { user, course },
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
+            })
+        })
+})
+
+//重置密码和删除用户验证权限，admin可以处理teacher，student，root可以处理全部
+router.use((req, res, next) => {
+    let { _id } = req.body
+    let { role: operatorRole } = req
+    User.findById(_id)
+        .then(user => {
+            let { role } = user
+            if (role.includes("admin") && operatorRole !== "root") {
+                return res.json({
+                    message: "你无权操作此用户",
+                })
+            }
+            req.targetUser = user
+            return next()
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
+            })
+        })
+})
+
+router.post("/resetPWD", (req, res) => {
+    let { targetUser } = req
+    ;(targetUser.password = md5(DEFAULT_PASSWORD)),
+        targetUser.save(err => {
+            if (err) {
+                return console.log(err)
+            }
+            res.json({
+                code: 20000,
+            })
+        })
 })
 
 export default router

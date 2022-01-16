@@ -23,3 +23,19 @@ export function userSearch(query) {
         params: query,
     })
 }
+
+export function getInfo(query) {
+    return request({
+        url: "/admin/user/getInfo",
+        method: "get",
+        params: query,
+    })
+}
+
+export function resetPWD(data) {
+    return request({
+        url: "/admin/user/resetPWD",
+        method: "post",
+        data,
+    })
+}

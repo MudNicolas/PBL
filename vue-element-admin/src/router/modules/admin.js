@@ -25,6 +25,8 @@ export default [
             {
                 path: "student",
                 name: "StudentManager",
+                component: () => import("@/views/admin/user-manager/student"),
+
                 meta: {
                     roles: ["admin"],
                     title: "学生管理",

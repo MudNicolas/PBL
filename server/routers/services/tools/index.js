@@ -108,14 +108,18 @@ export function InsertUsersReturnIDs(list, role) {
         let findOutOrInsert = e => {
             return new Promise((resolve, reject) => {
                 User.findOne({
-                    $and: [{ username: e.username }, { isUsed: true }],
-                }).then(user => {
+                    $and: [{ username: e.username }],
+                }).then(async user => {
                     if (user) {
-                        if (user.role.includes(role)) {
-                            return resolve(user._id)
-                        } else {
-                            return reject("发现异常数据")
+                        if (!user.isUsed) {
+                            user.isUsed = true
+                            await user.save()
                         }
+                        if (!user.role.includes(role)) {
+                            user.role.push(role)
+                            await user.save()
+                        }
+                        return resolve(user._id)
                     }
 
                     //未找到则插入

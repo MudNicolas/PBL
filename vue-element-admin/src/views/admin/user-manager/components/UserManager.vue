@@ -53,7 +53,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
-                    <el-button type="primary">详情</el-button>
+                    <el-button type="primary" @click="showInfo(scope.row._id)">详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -105,11 +105,43 @@
                 </div>
             </el-form>
         </el-dialog>
+        <el-dialog title="详情" :visible.sync="infoVisible" @closed="clearInfo">
+            <el-form v-if="userInfo.user && userInfo.user._id">
+                <el-form-item>
+                    <el-descriptions direction="vertical" border>
+                        <el-descriptions-item label="用户名">
+                            {{ userInfo.user.username }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="姓名">
+                            {{ userInfo.user.name }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="头像">
+                            <el-avatar :src="avatarPath + userInfo.user.avatar"></el-avatar>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="用户组">
+                            <span v-for="role of userInfo.user.role">{{ role }}&nbsp;</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="简介" :span="3">
+                            {{ userInfo.user.intro | introFilter }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="参与的课程">
+                            <div v-for="c of userInfo.course">《{{ c.name }}》- {{ c.chief }}</div>
+                        </el-descriptions-item>
+                    </el-descriptions>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="danger">删除用户</el-button>
+                    <el-button style="float: right" @click="handleResetPWD(userInfo.user._id)">
+                        重置密码
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { getUser, submitUser, userSearch } from "@/api/admin"
+import { getUser, submitUser, userSearch, getInfo, resetPWD } from "@/api/admin"
 import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import EmitMessageButton from "@/components/EmitMessageButton"
@@ -117,7 +149,14 @@ import EmitMessageButton from "@/components/EmitMessageButton"
 export default {
     props: ["role"],
     components: { UploadExcelComponent, ProfilePopover, EmitMessageButton },
-
+    filters: {
+        introFilter: val => {
+            if (!val) {
+                return "暂无简介"
+            }
+            return val
+        },
+    },
     data() {
         return {
             loading: true,
@@ -139,12 +178,55 @@ export default {
             popoverOpenDelay: 200,
             submitting: false,
             dialogVisible: false,
+            infoID: "",
+            infoVisible: false,
+            userInfo: {},
         }
     },
     created() {
         this.getUser()
     },
     methods: {
+        handleResetPWD(_id) {
+            this.$confirm("确定为此用户重置密码？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+                beforeClose: (action, instance, done) => {
+                    if (action === "confirm") {
+                        instance.confirmButtonLoading = true
+
+                        resetPWD({ _id })
+                            .then(() => {
+                                this.$message.success("重置成功")
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        instance.confirmButtonLoading = false
+                    }
+                },
+            }).catch(err => {
+                console.log(err)
+            })
+        },
+        clearInfo() {
+            this.userInfo = {}
+        },
+        showInfo(_id) {
+            this.infoVisible = true
+            getInfo({ _id })
+                .then(res => {
+                    this.userInfo = res.data
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
         remoteUserSearch(queryString, cb) {
             let { role } = this
             userSearch({ queryString, role })
@@ -155,9 +237,9 @@ export default {
                     console.log(err)
                 })
         },
-        handleSelect() {
+        handleSelect(item) {
             this.searchQuery = ""
-            //打开info model
+            this.showInfo(item._id)
         },
         handleSubmit() {
             this.submitting = true

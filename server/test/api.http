@@ -25,5 +25,4 @@ token: {{ token }}
 
 
 ###
-
- GET https://zhuanlan.zhihu.com/p/54266685
+GET http://localhost:14758/api/admin/user/getInfo?_id=6087bf82bc61cb2d9d3e325
