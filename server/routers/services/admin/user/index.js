@@ -8,19 +8,30 @@ import { DEFAULT_PASSWORD } from "#root/settings.js"
 let router = Router()
 
 router.get("/role/all/get", (req, res) => {
-    let { role } = req.query
+    let { role, limit, page } = req.query
+    const DEFAULT_LIMIT = 30
+    const DEFAULT_PAGE = 1
+    limit = Number(limit) || DEFAULT_LIMIT
+    page = Number(page) || DEFAULT_PAGE
+
     User.find({
         role: role,
         isUsed: true,
     })
+        .skip((page - 1) * limit)
+        .limit(limit)
         .select("name avatar username")
         .sort({
             username: 1,
         })
-        .then(users => {
+        .then(async users => {
+            let userNum = await User.countDocuments({
+                role: role,
+                isUsed: true,
+            }).exec()
             res.json({
                 code: 20000,
-                data: { users },
+                data: { users, userNum },
             })
         })
 })

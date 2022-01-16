@@ -57,6 +57,15 @@
                 </template>
             </el-table-column>
         </el-table>
+        <pagination
+            style="padding-top: 10px; margin-top: 10px"
+            :total="userNum"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="pagination"
+            :limit="30"
+            :pageSizes="[20, 30, 50, 80, 100]"
+        />
         <el-dialog :title="`导入${roleLabel[role]}`" :visible.sync="dialogVisible">
             <el-form>
                 <el-row>
@@ -147,10 +156,11 @@ import { getUser, submitUser, userSearch, getInfo, resetPWD, removeUser } from "
 import UploadExcelComponent from "@/components/UploadExcel/index.vue"
 import ProfilePopover from "@/components/ProfilePopover/profile-popover.vue"
 import EmitMessageButton from "@/components/EmitMessageButton"
+import Pagination from "@/components/Pagination"
 
 export default {
     props: ["role"],
-    components: { UploadExcelComponent, ProfilePopover, EmitMessageButton },
+    components: { UploadExcelComponent, ProfilePopover, EmitMessageButton, Pagination },
     filters: {
         introFilter: val => {
             if (!val) {
@@ -183,6 +193,11 @@ export default {
             infoID: "",
             infoVisible: false,
             userInfo: {},
+            listQuery: {
+                page: 1,
+                limit: 30,
+            },
+            userNum: 0,
         }
     },
     created() {
@@ -294,16 +309,26 @@ export default {
         },
         getUser() {
             this.loading = true
-            let { role } = this
-            getUser({ role })
+            let { listQuery, role } = this
+            getUser({ ...listQuery, role })
                 .then(res => {
                     this.users = res.data.users
+                    this.userNum = res.data.userNum
                     this.loading = false
                 })
                 .catch(err => {
                     console.log(err)
                 })
         },
+        pagination() {
+            this.loading = true
+            let { listQuery, role } = this
+            getUser({ ...listQuery, role }).then(res => {
+                this.users = res.data.users
+                this.loading = false
+            })
+        },
+
         handleExport() {
             this.exporting = true
             import("@/vendor/Export2Excel")
