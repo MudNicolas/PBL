@@ -1,32 +1,32 @@
 <template>
-    <div class="dashboard-container">
-        <component :is="currentRole" />
-    </div>
+  <div class="dashboard-container">
+    <component :is="currentRole" />
+  </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex"
-import AdminHome from "./admin"
-import DefaultHome from "./default"
+import { mapGetters } from 'vuex'
+import AdminHome from './admin'
+import DefaultHome from './default'
 
 export default {
-    name: "Home",
+    name: 'Home',
     components: { AdminHome, DefaultHome },
     data() {
         return {
-            currentRole: "",
+            currentRole: ''
         }
     },
     computed: {
-        ...mapGetters(["roles"]),
+        ...mapGetters(['roles'])
     },
     created() {
-        //console.log(this.roles);
-        if (this.roles.includes("student")) {
-            this.currentRole = "DefaultHome"
+        // console.log(this.roles);
+        if (this.roles.includes('admin')) {
+            this.currentRole = 'AdminHome'
         } else {
-            this.currentRole = "AdminHome"
+            this.currentRole = 'DefaultHome'
         }
-    },
+    }
 }
 </script>
