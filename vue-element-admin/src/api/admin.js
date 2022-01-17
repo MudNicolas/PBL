@@ -71,3 +71,27 @@ export function getCourse(query) {
         params: query
     })
 }
+
+export function getCourseInfo(query) {
+    return request({
+        url: '/admin/course/getInfo',
+        method: 'get',
+        params: query
+    })
+}
+
+export function removeCourse(data) {
+    return request({
+        url: '/admin/course/remove',
+        method: 'delete',
+        data
+    })
+}
+
+export function handleRecover(data) {
+    return request({
+        url: '/admin/course/recover',
+        method: 'post',
+        data
+    })
+}
