@@ -1,14 +1,17 @@
 <template>
-    <div class="container">
-        <user-manager role="teacher" />
-    </div>
+  <div class="container">
+    <user-manager role="teacher" :show-set-admin="checkPermission(['root'])" />
+  </div>
 </template>
 
 <script>
-import UserManager from "../components/UserManager.vue"
+import checkPermission from '@/utils/permission' // 权限判断函数
+
+import UserManager from '../components/UserManager.vue'
 export default {
-    name: "TeacherManager",
+    name: 'TeacherManager',
     components: { UserManager },
+    methods: { checkPermission }
 }
 </script>
 

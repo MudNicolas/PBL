@@ -68,7 +68,6 @@ router.get("/role/search", (req, res) => {
         {
             $or: [{ name: { $regex: reg } }, { username: { $regex: reg } }],
             role,
-            $where: "(this.role.length===1)",
         },
         ["_id", "username", "name"],
         (err, result) => {
@@ -106,7 +105,11 @@ router.get("/getInfo", (req, res) => {
                     select: "name",
                 })
                 .then(courses => {
-                    return courses.map(e => ({ name: e.name, chief: e.chiefTeacher.name }))
+                    return courses.map(e => ({
+                        name: e.name,
+                        chief: e.chiefTeacher.name,
+                        _id: e._id,
+                    }))
                 })
             res.json({
                 code: 20000,
@@ -165,6 +168,49 @@ router.post("/resetPWD", (req, res) => {
 router.delete("/removeUser", (req, res) => {
     let { targetUser } = req
     targetUser.isUsed = false
+    targetUser
+        .save()
+        .then(() => {
+            res.json({
+                code: 20000,
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
+            })
+        })
+})
+
+Array.prototype.remove = function (val) {
+    var index = this.indexOf(val)
+    if (index > -1) {
+        this.splice(index, 1)
+    }
+}
+
+router.delete("/removeAdminRole", (req, res) => {
+    let { targetUser } = req
+    targetUser.role.remove("admin")
+    targetUser
+        .save()
+        .then(() => {
+            res.json({
+                code: 20000,
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
+            })
+        })
+})
+
+router.post("/setAdmin", (req, res) => {
+    let { targetUser } = req
+    targetUser.role.push("admin")
     targetUser
         .save()
         .then(() => {

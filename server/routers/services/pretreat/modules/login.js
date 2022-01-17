@@ -32,16 +32,17 @@ router.post("/", (req, res, next) => {
             return
         }
         //console.log(validateUser.role, role)
+
+        if (validateUser.role.includes("root")) {
+            role = "root"
+        }
+
         if (!validateUser.role.includes(role)) {
             res.json({
                 code: 60205,
                 message: "该用户无此角色",
             })
             return
-        }
-
-        if (username === "root") {
-            role = "root"
         }
 
         let verification = new Verification({

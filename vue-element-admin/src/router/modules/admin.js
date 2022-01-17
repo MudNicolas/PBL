@@ -1,75 +1,77 @@
-import Layout from "@/layout"
+import Layout from '@/layout'
 
 export default [
     {
-        path: "/admin/manage/user",
+        path: '/admin/manage/user',
         component: Layout,
-        redirect: "noRedirect",
-        alwaysShow: true, //一直显示根路由
-        name: "UserManager",
+        redirect: 'noRedirect',
+        alwaysShow: true, // 一直显示根路由
+        name: 'UserManager',
         meta: {
-            icon: "el-icon-user-solid",
-            roles: ["admin", "root"],
-            title: "用户管理",
+            icon: 'el-icon-user-solid',
+            roles: ['admin', 'root'],
+            title: '用户管理'
         },
         children: [
             {
-                path: "teacher",
-                name: "TeacherManager",
-                component: () => import("@/views/admin/user-manager/teacher"),
+                path: 'teacher',
+                name: 'TeacherManager',
+                component: () => import('@/views/admin/user-manager/teacher'),
                 meta: {
-                    roles: ["admin", "root"],
-                    title: "教师管理",
-                },
+                    roles: ['admin', 'root'],
+                    title: '教师管理'
+                }
             },
             {
-                path: "student",
-                name: "StudentManager",
-                component: () => import("@/views/admin/user-manager/student"),
+                path: 'student',
+                name: 'StudentManager',
+                component: () => import('@/views/admin/user-manager/student'),
 
                 meta: {
-                    roles: ["admin"],
-                    title: "学生管理",
-                },
+                    roles: ['admin'],
+                    title: '学生管理'
+                }
             },
             {
-                path: "administrator",
-                name: "AdminManager",
+                path: 'administrator',
+                name: 'AdminManager',
+                component: () => import('@/views/admin/user-manager/admin'),
+
                 meta: {
-                    roles: ["root"],
-                    title: "管理员管理",
-                },
-            },
-        ],
+                    roles: ['root'],
+                    title: '管理员管理'
+                }
+            }
+        ]
     },
 
     {
-        path: "/admin/course",
-        name: "CourseManager",
+        path: '/admin/course',
+        name: 'CourseManager',
         component: Layout,
         meta: {
-            icon: "el-icon-s-data",
-            roles: ["admin"],
-            title: "课程管理",
-        },
+            icon: 'el-icon-s-data',
+            roles: ['admin'],
+            title: '课程管理'
+        }
     },
 
     {
-        path: "/admin/space/clear",
-        name: "FreeUpSpace",
+        path: '/admin/space/clear',
+        name: 'FreeUpSpace',
         hidden: true,
         meta: {
-            roles: ["admin"],
+            roles: ['admin']
         },
         children: [
             {
-                path: "file",
-                name: "ClearFile",
+                path: 'file',
+                name: 'ClearFile'
             },
             {
-                path: "editor",
-                name: "ClearEditorSource",
-            },
-        ],
-    },
+                path: 'editor',
+                name: 'ClearEditorSource'
+            }
+        ]
+    }
 ]
