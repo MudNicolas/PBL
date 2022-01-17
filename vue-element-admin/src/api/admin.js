@@ -63,3 +63,11 @@ export function setAdmin(data) {
         data
     })
 }
+
+export function getCourse(query) {
+    return request({
+        url: '/admin/course/getAll',
+        method: 'get',
+        params: query
+    })
+}

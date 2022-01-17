@@ -127,8 +127,8 @@
               <el-avatar :src="avatarPath + userInfo.user.avatar" />
             </el-descriptions-item>
             <el-descriptions-item label="用户组">
-              <el-tag v-for="role of userInfo.user.role" :key="role">
-                {{ role }}
+              <el-tag v-for="userRole of userInfo.user.role" :key="userRole">
+                {{ userRole }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="简介" :span="3">

@@ -2,6 +2,10 @@ import Layout from '@/layout'
 
 export default [
     {
+        path: '/admin',
+        redirect: '/'
+    },
+    {
         path: '/admin/manage/user',
         component: Layout,
         redirect: 'noRedirect',
@@ -47,13 +51,19 @@ export default [
 
     {
         path: '/admin/course',
-        name: 'CourseManager',
         component: Layout,
-        meta: {
-            icon: 'el-icon-s-data',
-            roles: ['admin'],
-            title: '课程管理'
-        }
+        children: [
+            {
+                path: '',
+                name: 'CourseManager',
+                component: () => import('@/views/admin/course-manager'),
+                meta: {
+                    icon: 'el-icon-s-data',
+                    roles: ['admin'],
+                    title: '课程管理'
+                }
+            }
+        ]
     },
 
     {
