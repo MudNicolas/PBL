@@ -84,4 +84,30 @@ router.post("/submit", async (req, res, next) => {
         })
 })
 
+router.delete("/remove", (req, res) => {
+    let { _id } = req.body
+    let { course } = req
+    course.studentList.remove(_id)
+    course
+        .save()
+        .then(() => {
+            res.json({
+                code: 20000,
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "移除失败",
+            })
+        })
+})
+
+Array.prototype.remove = function (val) {
+    var index = this.indexOf(val)
+    if (index > -1) {
+        this.splice(index, 1)
+    }
+}
+
 export default router

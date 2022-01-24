@@ -1,5 +1,6 @@
 import Router from "express"
 import Course from "#models/Course.js"
+import User from "#models/User.js"
 
 let router = Router()
 
@@ -30,7 +31,7 @@ router.get("/get", (req, res) => {
  *
  * @param {array} group
  * @param {student _id} sid
- *
+ * @description 该sid是否在课程的一个group中
  */
 function studentInGroup(group, sid) {
     return group.some(g => {
@@ -173,7 +174,7 @@ router.get("/editData/get", (req, res) => {
                 },
             },
         })
-        .then((course, err) => {
+        .then(async (course, err) => {
             if (err) {
                 res.json({
                     code: 30001,
@@ -181,7 +182,7 @@ router.get("/editData/get", (req, res) => {
                 })
                 return
             }
-
+            //editSourceData 课程中未成组的学生
             let editSourceData = course.studentList.filter(s => {
                 if (!studentInGroup(course.group, s._id)) {
                     return s
@@ -197,7 +198,11 @@ router.get("/editData/get", (req, res) => {
                 }
             }
 
-            let groupData = course.studentList.filter(s => groupMembersID.indexOf(s._id) > -1)
+            let groupData = await User.find({
+                _id: { $in: groupMembersID },
+            })
+                .select("name username")
+                .exec()
             editSourceData = [...editSourceData, ...groupData]
 
             res.json({
