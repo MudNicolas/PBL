@@ -358,10 +358,7 @@
             >
               <el-row>
                 <el-col :span="16">
-                  <el-input
-                    v-model="entry.value"
-                    style="margin-right: 10px"
-                  />
+                  <el-input v-model="entry.value" style="margin-right: 10px" />
                 </el-col>
 
                 <el-button
@@ -657,8 +654,12 @@ export default {
         'activity.isUseCommentTemplate': {
             handler(v) {
                 if (v) {
-                    if (['TimeLineProject', 'Forum'].includes(this.activity.type)) { this.getCommentTemplate() }
-                    if (['Evaluation'].includes(this.activity.type)) { this.getInterEvaluationTemplate() }
+                    if (['TimeLineProject', 'Forum'].includes(this.activity.type)) {
+                        this.getCommentTemplate()
+                    }
+                    if (['Evaluation'].includes(this.activity.type)) {
+                        this.getInterEvaluationTemplate()
+                    }
                 }
             },
             immediate: true
@@ -823,12 +824,18 @@ export default {
             if (type === 'Evaluation') {
                 const { isUseCommentTemplate } = this.activity
 
-                const { chosenDimensions, phaseSwitchMethod, submitLimitTime, evaluationLimitTime } =
-                    this.activity.evaluation
+                const {
+                    chosenDimensions,
+                    phaseSwitchMethod,
+                    submitLimitTime,
+                    evaluationLimitTime
+                } = this.activity.evaluation
                 if (isUseCommentTemplate && !Array.isArray(chosenDimensions)) return false
 
                 if (phaseSwitchMethod === 'auto') {
-                    if (!Array.isArray(submitLimitTime) || !Array.isArray(evaluationLimitTime)) { return false }
+                    if (!Array.isArray(submitLimitTime) || !Array.isArray(evaluationLimitTime)) {
+                        return false
+                    }
                 }
             }
 
@@ -867,8 +874,12 @@ export default {
                 }
             }
             if (type === 'Evaluation') {
-                const { chosenDimensions, phaseSwitchMethod, submitLimitTime, evaluationLimitTime } =
-                    evaluation
+                const {
+                    chosenDimensions,
+                    phaseSwitchMethod,
+                    submitLimitTime,
+                    evaluationLimitTime
+                } = evaluation
                 data = {
                     name,
                     intro,
@@ -986,3 +997,28 @@ export default {
         }
     }
 }
+</script>
+
+<style lang="scss" scoped>
+.container {
+    padding: 50px 60px 0px;
+}
+.new-template-footbar {
+    display: flex;
+}
+.suc-wrapper {
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+}
+.wrapper-col {
+    flex-direction: column;
+}
+.suc-icon {
+    font-size: 14rem;
+    color: rgb(17, 169, 131);
+}
+.suc-word {
+    font-size: 1.4rem;
+}
+</style>
