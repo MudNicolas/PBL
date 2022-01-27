@@ -48,7 +48,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="课程详情" :visible.sync="infoDialogVisible">
+    <el-dialog title="课程详情" :visible.sync="infoDialogVisible" @closed="clearCourseInfo">
       <el-form v-if="courseInfo.info && courseInfo.info._id">
         <el-form-item>
           <el-descriptions direction="vertical" border>
@@ -168,6 +168,28 @@
           </el-table>
         </el-form-item>
         <el-form-item>
+          <el-table :data="courseInfo.info.partnerTeacher">
+            <el-table-column label="协作教师管理">
+              <el-table-column prop="username" label="工号" />
+
+              <el-table-column prop="name" label="姓名" />
+
+              <el-table-column label="操作" align="center">
+                <template slot-scope="scope">
+                  <el-button
+                    type="danger"
+                    @click="
+                      handleRemovePartner(courseInfo.info._id, scope.row._id)
+                    "
+                  >
+                    移除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item>
           <el-button
             v-if="courseInfo.info.isUsed"
             type="danger"
@@ -202,7 +224,7 @@ import Pagination from '@/components/Pagination'
 import { normalFormatTime } from '@/utils/index.js'
 import debounce from 'throttle-debounce/debounce'
 
-import { getCourse, getCourseInfo, removeCourse, handleRecover } from '@/api/admin'
+import { getCourse, getCourseInfo, removeCourse, handleRecover, removePartner } from '@/api/admin'
 
 export default {
     name: 'CourseManager',
@@ -257,6 +279,36 @@ export default {
         this.debouncedGetData = debounce(delay, this.getCourse)
     },
     methods: {
+        clearCourseInfo() {
+            this.courseInfo = {}
+        },
+        handleRemovePartner(courseID, uid) {
+            this.$confirm('确定从本课程中移除此协作教师？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                beforeClose: (action, instance, done) => {
+                    if (action === 'confirm') {
+                        instance.confirmButtonLoading = true
+                        removePartner({ courseID, uid })
+                            .then(() => {
+                                this.$message.success('移除成功')
+                                instance.confirmButtonLoading = false
+                                this.showInfo(courseID)
+                                done()
+                            })
+                            .catch(() => {
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                    } else {
+                        done()
+                    }
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        },
         handleRemoveCourse(_id) {
             this.$confirm('确定删除此课程？', '提示', {
                 confirmButtonText: '确定',
@@ -302,8 +354,7 @@ export default {
                             .then(() => {
                                 this.$message.success('恢复成功')
                                 instance.confirmButtonLoading = false
-                                this.infoDialogVisible = false
-                                this.getCourse()
+                                this.showInfo(this.courseInfo.info._id)
                                 done()
                             })
                             .catch(() => {
@@ -318,9 +369,9 @@ export default {
                 console.log(err)
             })
         },
-        showInfo(_id) {
+        showInfo(courseID) {
             this.infoDialogVisible = true
-            getCourseInfo({ _id })
+            getCourseInfo({ courseID })
                 .then(res => {
                     this.courseInfo = res.data
                 })

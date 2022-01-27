@@ -47,12 +47,12 @@ router.get("/getAll", (req, res) => {
 })
 
 router.get("/getInfo", (req, res) => {
-    let { _id } = req.query
+    let { courseID: _id } = req.query
     Course.findById(_id)
         .select("studentList isUsed name chiefTeacher date partnerTeacher cover introduction")
         .populate([
             { path: "chiefTeacher", select: "name" },
-            { path: "partnerTeacher", select: "name" },
+            { path: "partnerTeacher", select: "name username" },
         ])
         .then(async course => {
             let section = await Section.find({
@@ -145,6 +145,26 @@ router.post("/recover", (req, res) => {
         .then(e => {
             e.isUsed = true
             e.save().then(() => {
+                res.json({
+                    code: 20000,
+                })
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            res.json({
+                message: "Error",
+            })
+        })
+})
+
+router.post("/partner/remove", (req, res) => {
+    let { courseID, uid } = req.body
+    Course.findById(courseID)
+        .select("partnerTeacher")
+        .then(course => {
+            course.partnerTeacher.remove(uid)
+            course.save().then(() => {
                 res.json({
                     code: 20000,
                 })

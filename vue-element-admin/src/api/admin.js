@@ -95,3 +95,11 @@ export function handleRecover(data) {
         data
     })
 }
+
+export function removePartner(data) {
+    return request({
+        url: '/admin/course/partner/remove',
+        method: 'post',
+        data
+    })
+}
