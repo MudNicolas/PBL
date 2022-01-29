@@ -46,7 +46,8 @@ app.use(
 app.use(express.json({ limit: "8000mb" }))
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-app.use("/public", express.static(path.join(__dirname, "public")))
+app.use("/public/img", express.static(path.join(__dirname, "public/img")))
+app.use("/public/css", express.static(path.join(__dirname, "public/css")))
 
 app.use("/api", api)
 
