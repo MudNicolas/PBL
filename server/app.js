@@ -45,10 +45,10 @@ app.use(
 )
 app.use(express.json({ limit: "8000mb" }))
 
+app.use("/api", api)
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 app.use("/public", express.static(path.join(__dirname, "public")))
-
-app.use("/api", api)
 
 let mongoUrl = "mongodb://localhost:27027/PBL"
 let options = {
