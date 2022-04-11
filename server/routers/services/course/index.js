@@ -13,26 +13,30 @@ var router = Router()
 
 router.use("/view", view)
 
-var findCourseQuery = uid => {
+var findCourseQuery = (uid, role) => {
     let query = {
         $and: [
-            {
-                $or: [
-                    {
-                        chiefTeacher: uid,
-                    },
-                    {
-                        partnerTeacher: uid,
-                    },
-                    {
-                        studentList: uid,
-                    },
-                ],
-            },
             {
                 isUsed: true,
             },
         ],
+    }
+    if (role === "student") {
+        query.$and.push({
+            studentList: uid,
+        })
+    }
+    if (role === "teacher") {
+        query.$and.push({
+            $or: [
+                {
+                    chiefTeacher: uid,
+                },
+                {
+                    partnerTeacher: uid,
+                },
+            ],
+        })
     }
     return query
 }
@@ -43,7 +47,7 @@ router.get("/getList", (req, res, next) => {
     let limit = Number(req.query.limit) || DEFAULT_LIMIT
     let page = Number(req.query.page) || DEFAULT_PAGE
 
-    Course.find(findCourseQuery(req.uid))
+    Course.find(findCourseQuery(req.uid, req.role))
         .skip((page - 1) * limit)
         .limit(limit)
         .select("name partnerTeacher chiefTeacher introduction cover")
@@ -75,7 +79,7 @@ router.get("/getList", (req, res, next) => {
 })
 
 router.get("/route", (req, res, next) => {
-    Course.find(findCourseQuery(req.uid))
+    Course.find(findCourseQuery(req.uid, req.role))
         .select("name")
         .sort({
             _id: -1,
