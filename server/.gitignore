@@ -3,3 +3,8 @@ db/*
 public/img/*/*
 public/files/*
 logs/*
+
+package-lock.json
+yarn.lock
+
+settings.js
