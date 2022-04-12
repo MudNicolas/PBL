@@ -22,7 +22,7 @@ export default {
     },
     created() {
         // console.log(this.roles);
-        if (this.roles.includes('admin')) {
+        if (this.roles.includes('admin') || this.roles.includes('root')) {
             this.currentRole = 'AdminHome'
         } else {
             this.currentRole = 'DefaultHome'
