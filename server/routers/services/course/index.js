@@ -8,6 +8,7 @@ import courseManage from "./manage/index.js"
 
 import { UploadImg } from "#services/tools/index.js"
 import { InsertUsersReturnIDs } from "#services/tools/index.js"
+import { COVER_PATH } from "#root/settings.js"
 
 var router = Router()
 
@@ -65,6 +66,10 @@ router.get("/getList", (req, res, next) => {
                 })
                 return
             }
+
+            courseList.forEach(course => {
+                course.cover = `${COVER_PATH}/${course.cover}`
+            })
 
             Course.countDocuments(findCourseQuery(req.uid)).then(courseNum => {
                 res.json({
