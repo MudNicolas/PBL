@@ -7,4 +7,6 @@ logs/*
 package-lock.json
 yarn.lock
 
+settings.js
+
 
