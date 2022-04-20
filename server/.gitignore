@@ -8,4 +8,5 @@ package-lock.json
 yarn.lock
 
 settings.js
+pm2.json
 
