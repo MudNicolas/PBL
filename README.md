@@ -17,7 +17,7 @@
 
 ### 对于前端
 
-- `cd vue-element-admin`
+- `cd website`
 - `npm install` 安装依赖（推荐使用 yarn 进行依赖管理）
 - 修改`.env.production`中的配置参数
 - `npm run build:prod` 构建网页文件，在生成`dist`目录之后使用 nginx 或 iis 等进行静态部署
