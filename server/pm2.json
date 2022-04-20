@@ -1,19 +1,19 @@
 {
-    "apps": [
-        {
-            "name": "PBL_Server",
-            "script": "app.js",
-            "cwd": "/usr/local/application/PBL/server/",
-            "error_file": "/usr/local/application/PBL/server/logs/error.log",
-            "out_file": "/usr/local/application/PBL/server/logs/out.log",
-            "log_date_format": "YYYY-MM-DD HH:mm:ss",
-            "watch": [
-                "models",
-                "routers",
-                "app.js",
-                "./pm2.json",
-                "./settings.js"
-            ]
-        }
-    ]
+	"apps": [
+		{
+			"name": "PBL_Server",
+			"script": "app.js",
+			"cwd": "./",
+			"error_file": "./logs/error.log",
+			"out_file": "./logs/out.log",
+			"log_date_format": "YYYY-MM-DD HH:mm:ss",
+			"watch": [
+				"models",
+				"routers",
+				"app.js",
+				"./pm2.json",
+				"./settings.js"
+			]
+		}
+	]
 }
